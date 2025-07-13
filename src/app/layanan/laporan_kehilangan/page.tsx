@@ -20,6 +20,9 @@ interface LPFormState {
 export default function LaporanKehilanganForm() {
   const router = useRouter();
   const userId = getUserId();
+  const baseApiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+
 
   const [formData, setFormData] = useState<LPFormState>({
     reporter_name: "",
@@ -71,8 +74,10 @@ export default function LaporanKehilanganForm() {
         chronology: formData.chronology,
         status_handling: formData.status_handling,
       };
+  
+      const apiSlkUrl = `${baseApiUrl}slk`;
 
-      const response = await axios.post('https://striking-vision-production-4ee1.up.railway.app/api/slk', payload);
+      const response = await axios.post(apiSlkUrl, payload);
 
       if (response.status === 200 || response.status === 201) {
         setFormData((prev) => ({

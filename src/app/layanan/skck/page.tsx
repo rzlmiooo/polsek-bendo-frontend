@@ -24,6 +24,7 @@ export default function SkckForm() {
   const userId = getUserId();
   const [isClient, setIsClient] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+  const baseApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const [formData, setFormData] = useState<SkckFormState>({
     applicant_name: "",
@@ -95,9 +96,11 @@ export default function SkckForm() {
       for (const pair of cloudinaryFormData.entries()) {
         console.log(`${pair[0]}:`, pair[1]);
       }
+      const apiCloudinaryUrl = `${baseApiUrl}upload`;
+
 
       const response = await axios.post(
-        'https://striking-vision-production-4ee1.up.railway.app/api/upload',
+        apiCloudinaryUrl,
         cloudinaryFormData,
         {
           headers: {
@@ -177,8 +180,10 @@ export default function SkckForm() {
         officer_notes: formData.officer_notes,
         passport_photo: formData.passport_photo,
       };
+      const apiSkckUrl = `${baseApiUrl}skck`;
 
-      const response = await axios.post('https://striking-vision-production-4ee1.up.railway.app/api/skck', payload); 
+
+      const response = await axios.post(apiSkckUrl, payload); 
 
       if (response.status === 200 || response.status === 201) {
         setFormData((prev) => ({

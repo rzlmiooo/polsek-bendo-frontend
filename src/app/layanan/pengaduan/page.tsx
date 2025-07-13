@@ -25,6 +25,10 @@ export default function PengaduanMasyarakatForm() {
 
   const router = useRouter();
   const userId = getUserId();
+  const baseApiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+
+
 
   const [formData, setFormData] = useState<PMFormState>({
     complainant_name: "",
@@ -136,8 +140,9 @@ export default function PengaduanMasyarakatForm() {
         complaint_date: formData.complaint_date,
         complaint_status: formData.complaint_status,
       };
+      const apiReportsUrl = `${baseApiUrl}reports`;
 
-      const response = await axios.post('https://striking-vision-production-4ee1.up.railway.app/api/reports', payload);
+      const response = await axios.post(apiReportsUrl, payload);
 
       if (response.status === 200 || response.status === 201) {
         setFormData((prev) => ({

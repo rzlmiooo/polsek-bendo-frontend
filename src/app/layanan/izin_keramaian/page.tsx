@@ -21,9 +21,9 @@ interface SIKFormState {
 }
 
 export default function IzinKeramaianForm() {
-
   const router = useRouter();
   const userId = getUserId();
+  const baseApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const [formData, setFormData] = useState<SIKFormState>({
     organizer_name: "",
@@ -86,7 +86,9 @@ export default function IzinKeramaianForm() {
         form_creation: formData.form_creation,
       };
 
-      const response = await axios.post('https://striking-vision-production-4ee1.up.railway.app/api/sik', payload);
+        const apiSikUrl = `${baseApiUrl}sik`;
+
+      const response = await axios.post(apiSikUrl, payload);
 
       if (response.status === 200 || response.status === 201) {
         setFormData((prev) => ({
