@@ -23,7 +23,6 @@ export default function Login() {
         username?: string;
     }
 
-
     const handleSubmitClick = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("");

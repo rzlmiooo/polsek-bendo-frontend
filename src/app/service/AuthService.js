@@ -1,9 +1,12 @@
 import axios from 'axios';
 
 export const AuthService = {
+    
   login: async (email, password) => {
     try {
-      const response = await axios.post(`https://striking-vision-production-4ee1.up.railway.app/auth/login`, { email, password }, {
+      const baseAuthUrl = process.env.NEXT_PUBLIC_AUTH_URL;
+
+      const response = await axios.post(`${baseAuthUrl}login`, { email, password }, {
         headers: {
           "Content-Type": "application/json"
         }
@@ -42,7 +45,9 @@ export const AuthService = {
   refreshToken: async () => {
     try {
       const refreshToken = localStorage.getItem('refresh_token');
-      const response = await axios.post(`${API_URL}/refresh`, { refresh_token: refreshToken });
+      const baseAuthUrl = process.env.NEXT_PUBLIC_AUTH_URL;
+
+      const response = await axios.post(`${baseAuthUrl}refresh`, { refresh_token: refreshToken });
       localStorage.setItem('access_token', response.data.access_token);
       return response.data.access_token;
     } catch (error) {
