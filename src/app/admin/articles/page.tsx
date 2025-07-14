@@ -59,7 +59,6 @@ export default function Article() {
     }, [router]);
 
     useEffect(() => {
-        if (!token) return;
 
         const fetchData = async () => {
             const apiUrl = `${baseUrl}news`;
