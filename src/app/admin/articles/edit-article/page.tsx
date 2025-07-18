@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
-
-const EditArticle = dynamic(() => import("./EditArticle"), { ssr: false });
+import EditArticle from "./EditArticle";
 
 export default function EditArticlePage() {
   return (

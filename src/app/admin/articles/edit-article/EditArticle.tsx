@@ -254,6 +254,7 @@ export default function EditArticle() {
             <div className="bg-white text-black min-h-screen p-8">
                 <div className="max-w-3xl mx-auto">
                     <h1 className="text-3xl font-bold mb-6">Edit a Blog</h1>
+                    <p>Blog ID: {articleId}</p>
                     <form className="space-y-6" onSubmit={handleSubmitClick}>
                         <div>
                             <label className="block font-semibold mb-2">Title</label>
