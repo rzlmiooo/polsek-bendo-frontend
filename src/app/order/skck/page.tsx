@@ -37,8 +37,7 @@ export default function OrderSkck() {
 
     const userId = getUserId();
 
-    
-    // ganti page
+
     const itemsPerPage = 5;
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -51,12 +50,6 @@ export default function OrderSkck() {
 
             const storedToken = localStorage.getItem('token');
             console.log("Token", storedToken);
-            const role = localStorage.getItem('role');
-
-            if (role !== 'user') {
-                router.replace('/unauthorized');
-                return;
-            }
 
             if (storedToken) {
                 setToken(storedToken);
@@ -66,10 +59,7 @@ export default function OrderSkck() {
 
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-
     useEffect(() => {
-        if (!token) return;
-
         const fetchData = async () => {
             try {    
                 const apiSkckUrl = `${baseUrl}skck`;

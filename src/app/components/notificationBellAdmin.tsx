@@ -17,6 +17,7 @@ export default function NotificationBell() {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [token, setToken] = useState<string | null>(null);
   
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   
       useEffect(() => {
           setIsClient(true);
@@ -38,18 +39,19 @@ export default function NotificationBell() {
   }, [router]);
 
   useEffect(() => {
-    if (!token || role !== 'konselor') return;
-
-    const fetchNewBookings = async () => {
+    const fetchNewSkck = async () => {
       try {
-        const [usersRes, bookingsRes] = await Promise.all([
-          axios.get('https://sejiwa.onrender.com/api/users', {
+        const apiSkckUrl = `${baseUrl}skck`;
+        const apiUserUrl = `${baseUrl}users`;
+
+        const [usersRes, skcksRes] = await Promise.all([
+          axios.get(apiUserUrl, {
             headers: {
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',
             },
           }),
-          axios.get('https://sejiwa.onrender.com/api/bookings', {
+          axios.get(apiSkckUrl, {
             headers: {
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',
@@ -58,35 +60,32 @@ export default function NotificationBell() {
         ]);
 
         const users = usersRes.data || [];
-        const allBookings = bookingsRes.data || [];
+        const allSkcks = skcksRes.data || [];
   
-        // 2. Ambil userId dari token / localStorage / context
         if (!userId) return;
   
-        // 3. Filter hanya booking yang pending dan milik si konselor ini
-        const pendingBookings = allBookings.filter(
+        const pendingSkcks = allSkcks.filter(
           (b:any) =>
             b.status === "pending" &&
             b.counselor_id === userId
         );
   
-        // 4. Gabungkan data pelajar ke masing-masing booking
-        const combinedData = pendingBookings.map((booking:any) => {
-          const user = users.find((u:any) => u.id === booking.student_id);
+        const combinedData = pendingSkcks.map((skck:any) => {
+          const user = users.find((u:any) => u.id === skck.officer_in_charge);
           return {
-            ...booking,
+            ...skck,
             user,
           };
         });
 
         setCount(combinedData.length);
       } catch (err) {
-        console.error('Gagal ambil booking baru:', err);
+        console.error('Gagal ambil skck baru:', err);
       }
     };
 
-    fetchNewBookings();
-    const interval = setInterval(fetchNewBookings, 10000);
+    fetchNewSkck();
+    const interval = setInterval(fetchNewSkck, 10000);
     return () => clearInterval(interval);
   }, [token, role]);
 
@@ -128,7 +127,7 @@ export default function NotificationBell() {
                 <>
                 <p className="mb-2 font-medium">{count} Booking terbaru</p>
                 <Link
-                    href="/konselor/bookings"
+                    href="/admin/order"
                     className="text-sky-500 hover:underline"
                 >
                     Pergi ke Booking

@@ -34,6 +34,8 @@ export default function EditArticle() {
         router.push(`/admin/articles/success-message`);
     };
 
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
     useEffect(() => {
@@ -52,7 +54,9 @@ export default function EditArticle() {
             setLoading(true);
             setError(null);
             try {
-                const response = await axios.get(`https://striking-vision-production-4ee1.up.railway.app/api/news/${articleId}`, {
+                const apiArticleUrl = `${baseUrl}news/${articleId}`;
+
+                const response = await axios.get(apiArticleUrl, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json',
@@ -76,8 +80,6 @@ export default function EditArticle() {
 
         fetchArticleDetail();
     }, [articleId, token]);
-
-
 
     const [formData, setFormData] = useState<EditedNewsArticle>({
         title: "",
@@ -148,9 +150,11 @@ export default function EditArticle() {
         try {
             const cloudinaryFormData = new FormData();
             cloudinaryFormData.append('image', file);
+            
+            const apiCloudinaryUrl = `${baseUrl}upload`;
 
             const response = await axios.post(
-                'https://striking-vision-production-4ee1.up.railway.app/api/upload',
+                apiCloudinaryUrl,
                 cloudinaryFormData,
                 {
                     headers: {
@@ -226,7 +230,9 @@ export default function EditArticle() {
                 updated_at: formData.updated_at
             };
 
-            const response = await axios.post(`https://striking-vision-production-4ee1.up.railway.app/api/news/${articleId}`, payload);
+            const apiArticleUrl = `${baseUrl}news/${articleId}`;
+
+            const response = await axios.post(apiArticleUrl, payload);
 
             if (response.status === 200) {
                 response.data?.message || "Blog post created successfully"

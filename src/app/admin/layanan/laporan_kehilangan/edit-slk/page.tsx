@@ -4,212 +4,347 @@ import axios from "axios";
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from 'next/navigation';
+import getUserId from "@/app/utils/auth/page";
 
-interface EditedSkck {
-    applicant_name: string;
-    submission_date: string,
-    passport_photo : string,
-    officer_note: string,
+
+interface SlkDetail {
+    id : string;
+    user_id: string;
+    reporter_name: string;
+    contact_reporter: string,
+    date_lost: string,
+    item_type: string,
     verification_status: string,
     successMessage: string | null;
     errorMessage: string | null;
 }
 
+interface NotesFormData {
+    user_id: string;
+    officer_id: string;
+    officer_name: string;
+    officer_note: string;
+    date: string;
+    time: string;
+    related_field: string;
+    correction_link: string;
+    successMessage: string | null;
+    errorMessage: string | null;
+}
+
 export default function EditSik() {
+    const adminId = getUserId();
     const searchParams = useSearchParams();
-    const skckId = searchParams.get('skck_id');
+    const slkId = searchParams.get('slk_id');
     const router = useRouter();
-    const [skck, setSkck] = useState<EditedSkck[]>([]);
+    const [slkData, setSlkDetail] = useState<SlkDetail[]>([]);
+    const [isClient, setIsClient] = useState(false);
+    const [token, setToken] = useState<string | null>(null);
 
 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    const redirectToSuccessMessage = () => {
-        router.push(`/admin/layanan/skck/success-message`);
-    };
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+
+    const [formData, setFormData] = useState<NotesFormData>({
+        user_id: '',
+        officer_id: adminId || '',
+        officer_name: '',
+        officer_note: '',
+        date: new Date().toISOString().split('T')[0],
+        time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+        related_field: 'SLK',
+        correction_link: slkId ? `/order/slk/edit-slk?slk_id=${slkId}` : '',
+        successMessage: null,
+        errorMessage: null,
+    });
+
+    const [formError, setFormError] = useState<string | null>(null);
+    const [formSuccess, setFormSuccess] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!token) {
-            setError("Authentication token not found. Please log in.");
-            setLoading(false);
-            return;
+        if (typeof window !== 'undefined') {
+            const storedToken = localStorage.getItem('token');
+
+            if (storedToken) {
+                setToken(storedToken);
+            }
         }
-        if (!skckId) {
-            setError("Skck ID not found in URL.");
+    }, []); 
+
+
+    useEffect(() => {
+        if (!slkId) {
+            setError("slk ID not found in URL.");
             setLoading(false);
             return;
         }
 
-        const fetchSkckDetail = async () => {
-            setLoading(true);
-            setError(null);
+        const fetchData = async () => {
             try {
-                const response = await axios.get(`https://striking-vision-production-4ee1.up.railway.app/api/skck/${skckId}`, {
+                const apiSlkUrl = `${baseUrl}slk/${slkId}`;
+
+                const slkRes = await axios.get<SlkDetail[]>(apiSlkUrl, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                 });
 
-                const skckRes = response.data || [];
+                const fetchedSlkArray = slkRes.data;
 
-                setSkck(skckRes);
-            } catch (err) {
-                console.error(`Error fetching article ${skckId}:`, err);
-                if (axios.isAxiosError(err)) {
-                    setError(err.response?.data?.message || `Failed to fetch article. Article not found or server error.`);
+                if (fetchedSlkArray && fetchedSlkArray.length > 0) {
+                    setSlkDetail(fetchedSlkArray); 
+                    setFormData((prev) => ({ ...prev, user_id: fetchedSlkArray[0].user_id }));
                 } else {
-                    setError('An unexpected error occurred while fetching the article.');
+                    setError("Slk detail not found for the given ID or the array was empty.");
+                }
+            } catch (err) {
+                console.error('Error fetching slk data:', err);
+                if (axios.isAxiosError(err) && err.response) {
+                    setError(`Error fetching slk details: ${err.response.status} - ${err.response.data?.message || err.message}`);
+                } else {
+                    setError('Failed to load slk details due to a network or unexpected error.');
                 }
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchSkckDetail();
-    }, [skckId, token]);
+        fetchData();
+    }, [slkId, token, baseUrl]); 
 
-
-
-    const [formData, setFormData] = useState<EditedSkck>({
-        applicant_name :"",
-        passport_photo : "",
-        officer_note: "",
-        submission_date: new Date().toISOString(),
-        verification_status: "",
-        successMessage: null,
-        errorMessage: null,
-    });
-
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [imageLoading, setImageLoading] = useState<boolean>(false);
-    const [imageError, setImageError] = useState<string | null>(null);
-    const [formError, setFormError] = useState<string | null>(null);
-    const [formSuccess, setFormSuccess] = useState<string | null>(null);
-
-
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-        setFormError(null);
+    const handleChange = (
+            e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+        ) => {
+            const { name, value } = e.target;
+            setFormData((prev) => ({
+                ...prev,
+                [name]: value,
+                errorMessage: null, 
+            }));
     };
 
-    const handleSubmitClick = async (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        setFormData((prev: any) => ({ ...prev, successMessage: null, errorMessage: null }));
+        setFormData((prev) => ({ ...prev, successMessage: null, errorMessage: null }));
 
-
-        if (imageLoading) {
-            setFormData((prev: any) => ({
+        if (!formData.officer_note || !formData.date || !formData.time || !formData.related_field) {
+            setFormData((prev) => ({
                 ...prev,
-                errorMessage: "Please wait for the image to finish uploading.",
+                errorMessage: 'Please fill in all required fields.',
             }));
             return;
         }
 
-        if (imageError) {
-            setFormData((prev: any) => ({
+        if (!formData.officer_id || !formData.officer_name) {
+            setFormData((prev) => ({
                 ...prev,
-                errorMessage: `Image upload failed: ${imageError}. Please fix or re-upload.`,
+                errorMessage: 'Officer ID or Name is missing. Please ensure you are logged in correctly.',
             }));
             return;
         }
 
-        if (!formData.submission_date || !formData.officer_note ) {
-            setFormData((prev: any) => ({
+        if (!formData.user_id) {
+            setFormData((prev) => ({
                 ...prev,
-                errorMessage: "Please fill in all required fields.",
+                errorMessage: 'User ID for SIK is missing. Please ensure SIK details loaded correctly.',
             }));
             return;
         }
 
         try {
             const payload = {
+                user_id: formData.user_id, 
+                officer_id: formData.officer_id,
+                officer_name: formData.officer_name,
                 officer_note: formData.officer_note,
-                submission_date: formData.submission_date,
-                erification_status: formData.verification_status,
+                date: formData.date,
+                time: formData.time,
+                related_field: formData.related_field,
+                correction_link: formData.correction_link,
             };
 
-            const response = await axios.put(`https://striking-vision-production-4ee1.up.railway.app/api/skck/${skckId}`, payload);
+            const apiNotesUrl = `${baseUrl}notes`;
+
+            const response = await axios.post(apiNotesUrl, payload, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
 
             if (response.status === 200 || response.status === 201) {
-                response.data?.message || "Skck post created successfully"
-                router.push("/admin/layanan/skck/success-message");
+                setFormData((prev) => ({
+                    ...prev,
+                    successMessage: response.data?.message || 'Notes submitted successfully!',
+                }));
+                router.push('/admin/layanan/izin_keramaian/success-message');
             } else {
-                response.data?.message || "Unexpected server response during registration.";
+                setFormData((prev) => ({
+                    ...prev,
+                    errorMessage: response.data?.message || 'Unexpected server response.',
+                }));
             }
         } catch (error: any) {
-            console.error("Registration error:", error);
-            setFormData((prev: any) => ({
+            console.error('Notes submission error:', error);
+            setFormData((prev) => ({
                 ...prev,
-                errorMessage: "Server error: " + (error.response?.data?.message || error.message),
+                errorMessage:
+                    'Server error: ' + (error.response?.data?.message || error.message),
                 successMessage: null,
             }));
         }
+    };
+
+    if (loading) {
+        return <div className="p-6 text-center text-gray-700">Loading SIK details...</div>;
+    }
+
+    if (error) {
+        return <div className="p-6 text-center text-red-500">Error: {error}</div>;
+    }
+
+    if (slkData.length === 0) {
+        return <div className="p-6 text-center text-gray-500">No SKCK details found for this ID.</div>;
     }
     return (
-        <div>
-            <div className="bg-white text-black min-h-screen p-8">
-                <div className="max-w-3xl mx-auto">
-                    <h1 className="text-3xl font-bold mb-6">Edit a Skck</h1>
-                {skck.map((skck, index) => (
-                    <section key={index} className="bg-white dark:bg-gray-900">
-                        <div className="max-w-2xl px-4 py-8 mx-auto lg:py-16">
-                            <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Update product</h2>
-                            <form action="#">
-                                <div className="grid gap-4 mb-4 sm:grid-cols-2 sm:gap-6 sm:mb-5">
-                                    <div className="sm:col-span-2">
-                                        <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Name</label>
-                                        <input type="text" name="name" id="name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" value={skck.applicant_name} placeholder="Type product name" required/>
-                                    </div>
-                                    <div className="w-full">
-                                        <label htmlFor="brand" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Brand</label>
-                                        <input type="text" name="brand" id="brand" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" value="Apple" placeholder="Product brand" required/>
-                                    </div>
-                                    <div className="w-full">
-                                        <label htmlFor="price" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
-                                        <input type="number" name="price" id="price" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" value="2999" placeholder="$299" required/>
-                                    </div>
-                                    <div>
-                                        <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
-                                        <select id="category" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                            <option value="">Electronics</option>
-                                            <option value="TV">TV/Monitors</option>
-                                            <option value="PC">PC</option>
-                                            <option value="GA">Gaming/Console</option>
-                                            <option value="PH">Phones</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label htmlFor="item-weight" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Item Weight (kg)</label>
-                                        <input type="number" name="item-weight" id="item-weight" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" value="15" placeholder="Ex. 12" required/>
-                                    </div>
-                                    <div className="sm:col-span-2">
-                                        <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                                        <textarea id="description"  className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Write a product description here...">Standard glass, 3.8GHz 8-core 10th-generation Intel Core i7 processor, Turbo Boost up to 5.0GHz, 16GB 2666MHz DDR4 memory, Radeon Pro 5500 XT with 8GB of GDDR6 memory, 256GB SSD storage, Gigabit Ethernet, Magic Mouse 2, Magic Keyboard - US</textarea>
-                                    </div>
-                                </div>
-                                <div className="flex items-center space-x-4">
-                                    <button type="submit" className="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-                                        Update product
-                                    </button>
-                                    <button type="button" className="text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
-                                        <svg className="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
-                                        Delete
-                                    </button>
-                                </div>
-                            </form>
+        <div className="min-h-screen bg-gray-100 p-6 flex items-center justify-center">
+            <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
+                <h2 className="text-2xl font-bold mb-6 text-gray-800">Tambahkan Catatan untuk Surat Izin Keramaian</h2>
+
+                {slkData.map((slk, index) => (
+                    <div key={index} className="mb-6 border-b pb-4">
+                        <h3 className="text-xl font-semibold mb-2">slk Detail:</h3>
+                        <p>
+                            <span className="font-medium">slk ID:</span> {slk.id}
+                        </p>
+                        <p>
+                            <span className="font-medium">Nama :</span> {slk.reporter_name|| 'N/A'}
+                        </p>
+                        <p>
+                            <span className="font-medium">Nomor Telepon :</span> {slk.contact_reporter|| 'N/A'}
+                        </p>
+                        <p>
+                            <span className="font-medium">Tanggal Kehilangan:</span> {new Date(slk.date_lost).toLocaleDateString()}
+                        </p>
+                    </div>
+                ))}
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    {formData.errorMessage && (
+                        <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded-md">
+                            {formData.errorMessage}
                         </div>
-                    </section>
-                    ))}
-                </div>
+                    )}
+                    {formData.successMessage && (
+                        <div className="p-3 bg-green-100 border border-green-400 text-green-700 rounded-md">
+                            {formData.successMessage}
+                        </div>
+                    )}
+
+                    <div>
+                        <label htmlFor="officer_name" className="block text-sm font-medium text-gray-700 mb-1">
+                            Nama Petugas:
+                        </label>
+                        <input
+                            type="text"
+                            id="officer_name"
+                            name="officer_name"
+                            value={formData.officer_name}
+                            onChange={handleChange}
+                            required
+                            placeholder="Masukkan Namamu..."
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            aria-label="Officer Name"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="officer_note" className="block text-sm font-medium text-gray-700 mb-1">
+                            Catatan Petugas: <span className="text-red-500">*</span>
+                        </label>
+                        <textarea
+                            id="officer_note"
+                            name="officer_note"
+                            rows={5}
+                            value={formData.officer_note}
+                            onChange={handleChange}
+                            placeholder="Masukkan Catatanmu disini..."
+                            required
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        ></textarea>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+                                Tanggal Pembuatan: <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="date"
+                                id="date"
+                                name="date"
+                                value={formData.date}
+                                onChange={handleChange}
+                                required
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">
+                                Waktu Pembuatan: <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="time"
+                                id="time"
+                                name="time"
+                                value={formData.time}
+                                onChange={handleChange}
+                                required
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label htmlFor="related_field" className="block text-sm font-medium text-gray-700 mb-1">
+                            Bidang Terkait: <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            id="related_field"
+                            name="related_field"
+                            value={formData.related_field}
+                            readOnly
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="correction_link" className="block text-sm font-medium text-gray-700 mb-1">
+                            Tautan Koreksi:
+                        </label>
+                        <input
+                            type="text"
+                            id="correction_link"
+                            name="correction_link"
+                            value={formData.correction_link}
+                            readOnly
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                        Submit Notes
+                    </button>
+                </form>
             </div>
         </div>
     )

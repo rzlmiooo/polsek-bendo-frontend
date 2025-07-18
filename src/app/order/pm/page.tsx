@@ -44,13 +44,7 @@ export default function OrderPm() {
 
             const storedToken = localStorage.getItem('token');
             console.log("Token", storedToken);
-            const role = localStorage.getItem('role');
-
-            if (role !== 'user') {
-                router.replace('/unauthorized');
-                return;
-            }
-
+           
             if (storedToken) {
                 setToken(storedToken);
             }
@@ -59,8 +53,6 @@ export default function OrderPm() {
 
 
     useEffect(() => {
-        if (!token) return;
-
         const fetchData = async () => {
             try {
                 const apiPmUrl = `${baseUrl}pm`;

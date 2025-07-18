@@ -3,7 +3,7 @@
 import axios from "axios";
 import { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { getStudentId } from "../../../utils/auth/page";
+import  getStudentId  from "../../../utils/auth/page";
 
 interface CreateArticleFormState {
   title: string;

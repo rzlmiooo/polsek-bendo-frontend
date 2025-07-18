@@ -40,7 +40,6 @@ export default function KelolaLaporanKehilangan() {
   const currentItems: Slk[] = slkData.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages: number = Math.ceil(slkData.length / itemsPerPage);
 
-  
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedToken = localStorage.getItem('token');
@@ -134,24 +133,11 @@ export default function KelolaLaporanKehilangan() {
   return (
     <div>
       <AdminNavbar />
-
-      <div className="absolute right-6 top-24 z-10 sm:top-18">
-        <Link href="./articles/create-article">
-          <button
-            type="button"
-            className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-          >
-            Create Article
-          </button>
-        </Link>
-      </div>
-
       {message && (
         <div className={`fixed inset-x-0 top-0 z-50 p-4 transition-all duration-300 ease-in-out ${message.type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white text-center font-medium`}>
           {message.text}
         </div>
       )}
-
       <section className="bg-white py-24 antialiased dark:bg-gray-900 md:py-18">
         <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
           <div className="mx-auto max-w-5xl">
@@ -271,7 +257,7 @@ export default function KelolaLaporanKehilangan() {
                             type="button"
                             onClick={() => handleSubmitStatus(slk.id, 'investigasi')} 
                             disabled={isLoading}
-                            className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-medium text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'}`}
+                            className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-medium text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'}`}
                           >
                             {isLoading ? 'Processing...' : 'Terima & Proses'}
                           </button>
@@ -279,13 +265,13 @@ export default function KelolaLaporanKehilangan() {
                             type="button"
                             onClick={() => handleSubmitStatus(slk.id, 'selesai')} 
                             disabled={isLoading}
-                            className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-medium text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800'}`}
+                            className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-medium text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-red-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'}`}
                           >
                             {isLoading ? 'Processing...' : 'Selesai'}
                           </button>
-                          <Link href={`/admin/layanan/slk/edit-slk?slk_id=${slk.id}`} legacyBehavior>
+                          <Link href={`/admin/layanan/laporan_kehilangan/edit-slk?slk_id=${slk.id}`} legacyBehavior>
                             <a className="flex-1 rounded-lg border border-blue-700 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900 sm:flex-none">
-                              Lihat Detail
+                              Catatan
                             </a>
                           </Link>
                         </div>

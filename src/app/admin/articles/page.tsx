@@ -86,10 +86,16 @@ export default function Article() {
     return (
         <div>
             <AdminNavbar />
-            <div className="absolute top-18 right-6">
-                <a href="./articles/create-article">
-                    <button type="button" className=" focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Create</button>
-                </a>
+
+            <div className="absolute right-6 top-24 z-10 sm:top-18">
+                <Link href="./articles/create-article">
+                    <button
+                        type="button"
+                        className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                    >
+                        Create Article
+                    </button>
+                </Link>
             </div>
             <section className="bg-white py-24 antialiased dark:bg-gray-900 md:py-18">
                 <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">

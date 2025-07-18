@@ -42,12 +42,8 @@ export default function OrderSlk() {
         if (typeof window !== 'undefined') {
 
             const storedToken = localStorage.getItem('token');
+            console.log("Token", storedToken);
             const role = localStorage.getItem('role');
-
-            if (role !== 'user') {
-                router.replace('/unauthorized');
-                return;
-            }
 
             if (storedToken) {
                 setToken(storedToken);
@@ -57,8 +53,6 @@ export default function OrderSlk() {
 
 
     useEffect(() => {
-        if (!token) return;
-
         const fetchData = async () => {
             try {    
                 const apiSlkUrl = `${baseUrl}slk`;

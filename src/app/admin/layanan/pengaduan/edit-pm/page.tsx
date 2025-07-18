@@ -3,25 +3,42 @@
 import axios from "axios";
 import AdminNavbar from "@/app/components/adminnavbar";
 import Footer from "@/app/components/footer";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import getUserId from "@/app/utils/auth/page";
 
 
-interface EditedPm {
+interface PmDetail {
+    id: string;
+    user_id: string;
     complainant_name: string;
     contact: string;
     complainant_address: string;
+    complainant_date: string;
     complaint_status: string;
     successMessage: string | null;
     errorMessage: string | null;
 }
 
-export default function EditedPm() {
+interface NotesFormData {
+    user_id: string;
+    officer_id: string;
+    officer_name: string;
+    officer_note: string;
+    date: string;
+    time: string;
+    related_field: string;
+    correction_link: string;
+    successMessage: string | null;
+    errorMessage: string | null;
+}
+
+export default function EditedNotesPm() {
+    const adminId = getUserId();
     const router = useRouter();
-    const [pmData, setPm] = useState<EditedPm[]>([]);
+    const [pmData, setPmDetail] = useState<PmDetail[]>([]);
     const searchParams = useSearchParams();
     const pmId = searchParams.get('pm_id');
     const [loading, setLoading] = useState<boolean>(true);
@@ -33,11 +50,23 @@ export default function EditedPm() {
 
     const userId = getUserId();
 
-    const [formData, setFormData] = useState<EditedPm>({
-        complainant_name: "",
-        contact: "",
-        complainant_address: "",
-        complaint_status: "",
+
+    const redirectToSuccessMessage = () => {
+        router.push(`/admin/layanan/skck/success-message`);
+    };
+
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+
+    const [formData, setFormData] = useState<NotesFormData>({
+        user_id: '',
+        officer_id: adminId || '',
+        officer_name: '',
+        officer_note: '',
+        date: new Date().toISOString().split('T')[0],
+        time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+        related_field: 'PM',
+        correction_link: pmId ? `/order/pm/edit-pm?pm_id=${pmId}` : '',
         successMessage: null,
         errorMessage: null,
     });
@@ -45,98 +74,286 @@ export default function EditedPm() {
     const [formError, setFormError] = useState<string | null>(null);
     const [formSuccess, setFormSuccess] = useState<string | null>(null);
 
-    const handleSubmitClick = async (e: any) => {
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const storedToken = localStorage.getItem('token');
+
+            if (storedToken) {
+                setToken(storedToken);
+            }
+        }
+    }, []); 
+
+    useEffect(() => {
+        if (!pmId) {
+            setError("pm ID not found in URL.");
+            setLoading(false);
+            return;
+        }
+
+        const fetchData = async () => {
+            try {
+                const apiPmUrl = `${baseUrl}pm/${pmId}`;
+
+                const pmRes = await axios.get<PmDetail[]>(apiPmUrl, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                const fetchedPmArray = pmRes.data;
+
+                if (fetchedPmArray && fetchedPmArray.length > 0) {
+                    setPmDetail(fetchedPmArray); 
+                    setFormData((prev) => ({ ...prev, user_id: fetchedPmArray[0].user_id }));
+                } else {
+                    setError("pm detail not found for the given ID or the array was empty.");
+                }
+            } catch (err) {
+                console.error('Error fetching pm data:', err);
+                if (axios.isAxiosError(err) && err.response) {
+                    setError(`Error fetching pm details: ${err.response.status} - ${err.response.data?.message || err.message}`);
+                } else {
+                    setError('Failed to load pm details due to a network or unexpected error.');
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [pmId, token, baseUrl]); 
+
+     const handleChange = (
+            e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+        ) => {
+            const { name, value } = e.target;
+            setFormData((prev) => ({
+                ...prev,
+                [name]: value,
+                errorMessage: null, 
+            }));
+    };
+
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        setFormData((prev: any) => ({ ...prev, successMessage: null, errorMessage: null }));
+        setFormData((prev) => ({ ...prev, successMessage: null, errorMessage: null }));
 
-        if (!formData.complaint_status) {
-            setFormData((prev: any) => ({
+        if (!formData.officer_note || !formData.date || !formData.time || !formData.related_field) {
+            setFormData((prev) => ({
                 ...prev,
-                errorMessage: "Please fill in all required fields.",
+                errorMessage: 'Please fill in all required fields.',
+            }));
+            return;
+        }
+
+        if (!formData.officer_id || !formData.officer_name) {
+            setFormData((prev) => ({
+                ...prev,
+                errorMessage: 'Officer ID or Name is missing. Please ensure you are logged in correctly.',
+            }));
+            return;
+        }
+
+        if (!formData.user_id) {
+            setFormData((prev) => ({
+                ...prev,
+                errorMessage: 'User ID for SIK is missing. Please ensure SIK details loaded correctly.',
             }));
             return;
         }
 
         try {
             const payload = {
-                complaint_status: formData.complaint_status,
+                user_id: formData.user_id, 
+                officer_id: formData.officer_id,
+                officer_name: formData.officer_name,
+                officer_note: formData.officer_note,
+                date: formData.date,
+                time: formData.time,
+                related_field: formData.related_field,
+                correction_link: formData.correction_link,
             };
 
-            const response = await axios.patch(`https://striking-vision-production-4ee1.up.railway.app/api/pm/${pmId}`, payload);
+            const apiNotesUrl = `${baseUrl}notes`;
+
+            const response = await axios.post(apiNotesUrl, payload, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
 
             if (response.status === 200 || response.status === 201) {
-                response.data?.message || "Pm post created successfully"
-                router.push("/admin/layanan/pm/success-message");
+                setFormData((prev) => ({
+                    ...prev,
+                    successMessage: response.data?.message || 'Notes submitted successfully!',
+                }));
+                router.push('/admin/layanan/izin_keramaian/success-message');
             } else {
-                response.data?.message || "Unexpected server response during registration.";
+                setFormData((prev) => ({
+                    ...prev,
+                    errorMessage: response.data?.message || 'Unexpected server response.',
+                }));
             }
         } catch (error: any) {
-            console.error("Registration error:", error);
-            setFormData((prev: any) => ({
+            console.error('Notes submission error:', error);
+            setFormData((prev) => ({
                 ...prev,
-                errorMessage: "Server error: " + (error.response?.data?.message || error.message),
+                errorMessage:
+                    'Server error: ' + (error.response?.data?.message || error.message),
                 successMessage: null,
             }));
         }
+    };
+
+    if (loading) {
+        return <div className="p-6 text-center text-gray-700">Loading SIK details...</div>;
     }
 
+    if (error) {
+        return <div className="p-6 text-center text-red-500">Error: {error}</div>;
+    }
+
+    if (pmData.length === 0) {
+        return <div className="p-6 text-center text-gray-500">No SKCK details found for this ID.</div>;
+    }
     return (
-        <div>
-            <div className="bg-white text-black min-h-screen p-8">
-                <div className="max-w-3xl mx-auto">
-                    <h1 className="text-3xl font-bold mb-6">Edit a Pengaduan Masyarakat</h1>
+        <div className="min-h-screen bg-gray-100 p-6 flex items-center justify-center">
+            <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
+                <h2 className="text-2xl font-bold mb-6 text-gray-800">Tambahkan Catatan untuk Surat Izin Keramaian</h2>
+
                 {pmData.map((pm, index) => (
-                    <section key={index} className="bg-white dark:bg-gray-900">
-                        <div className="max-w-2xl px-4 py-8 mx-auto lg:py-16">
-                            <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Update product</h2>
-                            <form action="#">
-                                <div className="grid gap-4 mb-4 sm:grid-cols-2 sm:gap-6 sm:mb-5">
-                                    <div className="sm:col-span-2">
-                                        <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Name</label>
-                                        <input type="text" name="name" id="name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" value={pm.complainant_name} placeholder="Type product name" required/>
-                                    </div>
-                                    <div className="w-full">
-                                        <label htmlFor="brand" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Brand</label>
-                                        <input type="text" name="brand" id="brand" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" value="Apple" placeholder="Product brand" required/>
-                                    </div>
-                                    <div className="w-full">
-                                        <label htmlFor="price" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
-                                        <input type="number" name="price" id="price" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" value="2999" placeholder="$299" required/>
-                                    </div>
-                                    <div>
-                                        <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
-                                        <select id="category" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                            <option value="">Electronics</option>
-                                            <option value="TV">TV/Monitors</option>
-                                            <option value="PC">PC</option>
-                                            <option value="GA">Gaming/Console</option>
-                                            <option value="PH">Phones</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label htmlFor="item-weight" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Item Weight (kg)</label>
-                                        <input type="number" name="item-weight" id="item-weight" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" value="15" placeholder="Ex. 12" required/>
-                                    </div>
-                                    <div className="sm:col-span-2">
-                                        <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                                        <textarea id="description"  className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Write a product description here...">Standard glass, 3.8GHz 8-core 10th-generation Intel Core i7 processor, Turbo Boost up to 5.0GHz, 16GB 2666MHz DDR4 memory, Radeon Pro 5500 XT with 8GB of GDDR6 memory, 256GB SSD storage, Gigabit Ethernet, Magic Mouse 2, Magic Keyboard - US</textarea>
-                                    </div>
-                                </div>
-                                <div className="flex items-center space-x-4">
-                                    <button type="submit" className="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-                                        Update product
-                                    </button>
-                                    <button type="button" className="text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
-                                        <svg className="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
-                                        Delete
-                                    </button>
-                                </div>
-                            </form>
+                    <div key={index} className="mb-6 border-b pb-4">
+                        <h3 className="text-xl font-semibold mb-2">pm Detail:</h3>
+                        <p>
+                            <span className="font-medium">pm ID:</span> {pm.id}
+                        </p>
+                        <p>
+                            <span className="font-medium">Nama :</span> {pm.complainant_name || 'N/A'}
+                        </p>
+                        <p>
+                            <span className="font-medium">Alamat :</span> {pm.complainant_address || 'N/A'}
+                        </p>
+                        <p>
+                            <span className="font-medium">Tanggal Diajukan:</span> {new Date(pm.complainant_date).toLocaleDateString()}
+                        </p>
+                    </div>
+                ))}
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    {formData.errorMessage && (
+                        <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded-md">
+                            {formData.errorMessage}
                         </div>
-                    </section>
-                    ))}
-                </div>
+                    )}
+                    {formData.successMessage && (
+                        <div className="p-3 bg-green-100 border border-green-400 text-green-700 rounded-md">
+                            {formData.successMessage}
+                        </div>
+                    )}
+
+                    <div>
+                        <label htmlFor="officer_name" className="block text-sm font-medium text-gray-700 mb-1">
+                            Nama Petugas:
+                        </label>
+                        <input
+                            type="text"
+                            id="officer_name"
+                            name="officer_name"
+                            value={formData.officer_name}
+                            onChange={handleChange}
+                            required
+                            placeholder="Masukkan Namamu..."
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            aria-label="Officer Name"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="officer_note" className="block text-sm font-medium text-gray-700 mb-1">
+                            Catatan Petugas: <span className="text-red-500">*</span>
+                        </label>
+                        <textarea
+                            id="officer_note"
+                            name="officer_note"
+                            rows={5}
+                            value={formData.officer_note}
+                            onChange={handleChange}
+                            placeholder="Masukkan Catatanmu disini..."
+                            required
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        ></textarea>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+                                Tanggal Pembuatan: <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="date"
+                                id="date"
+                                name="date"
+                                value={formData.date}
+                                onChange={handleChange}
+                                required
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">
+                                Waktu Pembuatan: <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="time"
+                                id="time"
+                                name="time"
+                                value={formData.time}
+                                onChange={handleChange}
+                                required
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label htmlFor="related_field" className="block text-sm font-medium text-gray-700 mb-1">
+                            Bidang Terkait: <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            id="related_field"
+                            name="related_field"
+                            value={formData.related_field}
+                            readOnly
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="correction_link" className="block text-sm font-medium text-gray-700 mb-1">
+                            Tautan Koreksi:
+                        </label>
+                        <input
+                            type="text"
+                            id="correction_link"
+                            name="correction_link"
+                            value={formData.correction_link}
+                            readOnly
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                        Submit Notes
+                    </button>
+                </form>
             </div>
         </div>
     )

@@ -16,7 +16,7 @@ export default function SuccessMessage() {
                         <p className="text-gray-600 my-2">Terima kasih telah membuat Informasi yang berguna.</p>
                         <p> Semoga harimu Menyenangkan!  </p>
                         <div className="py-10 text-center">
-                            <a href="/admin/layanan/skck" className="px-12 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3">
+                            <a href="/admin/layanan/pengaduan" className="px-12 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3">
                                 KEMBALI
                             </a>
                         </div>

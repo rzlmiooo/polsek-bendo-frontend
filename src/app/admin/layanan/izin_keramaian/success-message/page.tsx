@@ -12,11 +12,11 @@ export default function SuccessMessage() {
                         </path>
                     </svg>
                     <div className="text-center">
-                        <h3 className="md:text-2xl text-base text-gray-900 font-semibold text-center">Skck telah dipublik!</h3>
+                        <h3 className="md:text-2xl text-base text-gray-900 font-semibold text-center">Catatan telah dipublik!</h3>
                         <p className="text-gray-600 my-2">Terima kasih telah membuat Informasi yang berguna.</p>
                         <p> Semoga harimu Menyenangkan!  </p>
                         <div className="py-10 text-center">
-                            <a href="/admin/layanan/skck" className="px-12 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3">
+                            <a href="/admin/layanan/izin_keramaian" className="px-12 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3">
                                 KEMBALI
                             </a>
                         </div>

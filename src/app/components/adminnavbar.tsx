@@ -7,7 +7,7 @@ import Path from './pathname';
 import UserGreeting from './greetings'
 import UserProfile from './foto'
 import { usePathname } from 'next/navigation'
-import NotificationBell from './notificationBell'
+import NotificationBell from './notificationBellAdmin'
 
 declare global {
   interface Window {
