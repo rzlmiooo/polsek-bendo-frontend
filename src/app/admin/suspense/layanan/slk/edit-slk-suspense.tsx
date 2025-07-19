@@ -29,7 +29,7 @@ interface NotesFormData {
     correction_link: string;
 }
 
-export default function EditSik() {
+export default function EditSlk() {
     const adminId = getUserId();
     const searchParams = useSearchParams();
     const slkId = searchParams.get('slk_id');
