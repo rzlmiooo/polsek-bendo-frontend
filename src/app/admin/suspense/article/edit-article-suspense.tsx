@@ -4,6 +4,7 @@ import axios from "axios";
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from 'next/navigation';
+import SuccessMessage from "../../../components/successMessageAdmin";
 
 interface EditedNewsArticle {
     title: string;
@@ -17,8 +18,6 @@ interface EditedNewsArticle {
     url_gambar_unggulan: string;
     created_at: string;
     updated_at: string;
-    successMessage: string | null;
-    errorMessage: string | null;
 }
 
 export default function EditArticle() {
@@ -26,24 +25,40 @@ export default function EditArticle() {
     const articleId = searchParams.get('blog_id');
     const router = useRouter();
     const [article, setArticle] = useState<EditedNewsArticle[]>([]);
-
+    const [isClient, setIsClient] = useState(false);
+    const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    const redirectToSuccessMessage = () => {
-        router.push(`/admin/articles/success-message`);
-    };
-
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    useEffect(() => {
+        setIsClient(true);
+        if (typeof window !== 'undefined') {
+
+            const storedToken = localStorage.getItem('token');
+            const role = localStorage.getItem('role');
+
+            if (role !== 'admin') {
+                router.replace('/unauthorized');
+                return;
+            }
+            if (storedToken) {
+                setToken(storedToken);
+            }
+        }
+    }, [router]);
+
+    const [showSuccessMessage, setShowSuccessMessage] = useState<boolean>(false);
+    const [successDetails, setSuccessDetails] = useState<{
+        title: string;
+        description: string;
+        farewell: string;
+        backLinkHref: string;
+        backLinkText: string;
+    } | null>(null);
 
     useEffect(() => {
-        if (!token) {
-            setError("Authentication token not found. Please log in.");
-            setLoading(false);
-            return;
-        }
         if (!articleId) {
             setError("Article ID not found in URL.");
             setLoading(false);
@@ -93,16 +108,16 @@ export default function EditArticle() {
         url_gambar_unggulan: "",
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        successMessage: null,
-        errorMessage: null,
     });
 
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [imageLoading, setImageLoading] = useState<boolean>(false);
     const [imageError, setImageError] = useState<string | null>(null);
     const [formError, setFormError] = useState<string | null>(null);
     const [formSuccess, setFormSuccess] = useState<string | null>(null);
-    
+
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -150,7 +165,7 @@ export default function EditArticle() {
         try {
             const cloudinaryFormData = new FormData();
             cloudinaryFormData.append('image', file);
-            
+
             const apiCloudinaryUrl = `${baseUrl}upload`;
 
             const response = await axios.post(
@@ -178,6 +193,9 @@ export default function EditArticle() {
         }
     };
     const handleSubmitClick = async (e: FormEvent<HTMLFormElement>) => {
+        setErrorMessage(null);
+        setShowSuccessMessage(false);
+        setIsLoading(true);
         e.preventDefault();
 
         setFormData((prev: any) => ({ ...prev, successMessage: null, errorMessage: null }));
@@ -236,7 +254,29 @@ export default function EditArticle() {
 
             if (response.status === 200) {
                 response.data?.message || "Blog post created successfully"
-                router.push("/admin/articles/success-message");
+                setShowSuccessMessage(true);
+
+                setSuccessDetails({
+                    title: response.data?.message || "Artikel berhasil dipublikasikan!",
+                    description: "Terima kasih telah membuat Informasi yang berguna.",
+                    farewell: "Semoga harimu Menyenangkan!",
+                    backLinkHref: "/admin/articles/",
+                    backLinkText: "KEMBALI"
+                });
+
+                setFormData({
+                    title: "",
+                    slug: "",
+                    excerpt: "",
+                    content: "",
+                    author_id: "",
+                    category_id: "",
+                    published_at: new Date().toISOString(),
+                    status: "published",
+                    url_gambar_unggulan: "",
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                });
             } else {
                 response.data?.message || "Unexpected server response during registration.";
             }
@@ -322,9 +362,6 @@ export default function EditArticle() {
                             )}
                         </div>
 
-                        {formData.errorMessage && <p style={{ color: 'red' }} className="mb-4">{formData.errorMessage}</p>}
-                        {formData.successMessage && <p style={{ color: 'green' }} className="mb-4">{formData.successMessage}</p>}
-
                         <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Pilih Kategori
                         </label>
@@ -355,8 +392,14 @@ export default function EditArticle() {
                                 onChange={handleChange}
                             />
                         </div>
-                        <button type="submit" onClick={redirectToSuccessMessage} className="bg-[#00BFFF] text-white px-6 py-3 rounded-xl font-semibold">Publish</button>
-                    </form>
+                        <button
+                        type="submit"
+                        className="bg-[#00BFFF] text-white px-6 py-3 rounded-xl font-semibold"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Edited...' : 'Edit Blog Post'}
+                    </button>
+                     </form>
                 </div>
             </div>
         </div>

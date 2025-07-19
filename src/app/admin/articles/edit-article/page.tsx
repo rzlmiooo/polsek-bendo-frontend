@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
-import EditArticle from "./EditArticle";
+import EditArticle from "../../suspense/article/edit-article-suspense";
 
 export default function EditArticlePage() {
   return (
