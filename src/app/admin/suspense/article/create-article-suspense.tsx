@@ -23,7 +23,6 @@ interface CreateArticleFormState {
 export default function CreateArticle() {
     const router = useRouter();
     const studentId = getStudentId();
-    
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 

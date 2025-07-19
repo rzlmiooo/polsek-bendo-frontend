@@ -4,6 +4,7 @@ import axios from "axios";
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from 'next/navigation';
+import SuccessMessage from "../../../components/successMessageAdmin";
 
 interface EditedSlk {
     reporter_name: string;
@@ -11,8 +12,6 @@ interface EditedSlk {
     item_type: string;
     date_lost: string;
     chronology: string;
-    successMessage: string | null;
-    errorMessage: string | null;
 }
 
 export default function EditSlk() {
@@ -25,9 +24,7 @@ export default function EditSlk() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    const redirectToSuccessMessage = () => {
-        router.push(`/admin/articles/success-message`);
-    };
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
@@ -36,10 +33,11 @@ export default function EditSlk() {
         contact_reporter: "",
         item_type: "",
         date_lost: "",
-        chronology: "",
-        successMessage: null,
-        errorMessage: null,
+        chronology: ""
     });
+
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     useEffect(() => {
         if (!token) {
@@ -57,7 +55,9 @@ export default function EditSlk() {
             setLoading(true);
             setError(null);
             try {
-                const response = await axios.get(`https://striking-vision-production-4ee1.up.railway.app/api/slk/${slkId}`, {
+
+                const apiSlkUrl = `${baseUrl}slk/${slkId}`;
+                const response = await axios.get(apiSlkUrl, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json',
@@ -74,8 +74,6 @@ export default function EditSlk() {
                     item_type: formData.item_type,
                     date_lost: formData.date_lost,
                     chronology: formData.chronology,
-                    successMessage: null,
-                    errorMessage: null,
                 });
             } catch (err) {
                 console.error(`Error fetching article ${slkId}:`, err);
@@ -98,6 +96,14 @@ export default function EditSlk() {
     const [formError, setFormError] = useState<string | null>(null);
     const [formSuccess, setFormSuccess] = useState<string | null>(null);
 
+    const [showSuccessMessage, setShowSuccessMessage] = useState<boolean>(false);
+    const [successDetails, setSuccessDetails] = useState<{
+        title: string;
+        description: string;
+        farewell: string;
+        backLinkHref: string;
+        backLinkText: string;
+    } | null>(null);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -105,7 +111,7 @@ export default function EditSlk() {
             ...prev,
             [name]: value,
         }));
-        setFormError(null);
+        setErrorMessage(null);
     };
 
     const handleFilePictureChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -145,8 +151,12 @@ export default function EditSlk() {
             const cloudinaryFormData = new FormData();
             cloudinaryFormData.append('image', file);
 
+            const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+            const apiCloudinaryUrl = `${baseUrl}upload`;
+
             const response = await axios.post(
-                'https://striking-vision-production-4ee1.up.railway.app/api/upload',
+                apiCloudinaryUrl,
                 cloudinaryFormData,
                 {
                     headers: {
@@ -171,6 +181,9 @@ export default function EditSlk() {
     };
     const handleSubmitClick = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setErrorMessage(null);
+        setShowSuccessMessage(false);
+        setIsLoading(true);
 
         setFormData((prev: any) => ({ ...prev, successMessage: null, errorMessage: null }));
 
@@ -209,11 +222,29 @@ export default function EditSlk() {
                 chronology: formData.chronology,
             };
 
-            const response = await axios.put(`https://striking-vision-production-4ee1.up.railway.app/api/slk/${slkId}`, payload);
+            const apiSlkUrl = `${baseUrl}slk/${slkId}`;
+
+            const response = await axios.patch(apiSlkUrl, payload);
 
             if (response.status === 200 || response.status === 201) {
-                response.data?.message || "Slk post created successfully"
-                router.push("/admin/skck/success-message");
+                console.log("API response SUCCESS (200 or 201):", response.data);
+                setShowSuccessMessage(true);
+                console.log("showSuccessMessage set to true.");
+
+                setSuccessDetails({
+                    title: response.data?.message || "Artikel berhasil dipublikasikan!",
+                    description: "Terima kasih telah membuat Informasi yang berguna.",
+                    farewell: "Semoga harimu Menyenangkan!",
+                    backLinkHref: "/order/skck",
+                    backLinkText: "KEMBALI"
+                });
+                setFormData({
+                    reporter_name: `${reporterName}`,
+                    contact_reporter: "",
+                    item_type: "",
+                    date_lost: "",
+                    chronology: ""
+                });
             } else {
                 response.data?.message || "Unexpected server response during registration.";
             }
@@ -251,6 +282,11 @@ export default function EditSlk() {
             </div>
         );
     }
+
+    if (showSuccessMessage && successDetails) {
+            console.log("Rendering SuccessMessage component.");
+            return <SuccessMessage {...successDetails} />;
+        }
 
     return (
         <div>
@@ -332,17 +368,13 @@ export default function EditSlk() {
                                 />
                             </div>
 
-
-                            {formData.errorMessage && <p className="text-red-600 mb-4">{formData.errorMessage}</p>}
-                            {formData.successMessage && <p className="text-green-600 mb-4">{formData.successMessage}</p>}
-
                             <div>
                                 <button
                                     type="submit"
-                                    className="w-full bg-yellow-700 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded"
-                                    disabled={imageLoading}
+                                    className="bg-[#00BFFF] text-white px-6 py-3 rounded-xl font-semibold"
+                                    disabled={isLoading}
                                 >
-                                    Ubah Datamu
+                                    {isLoading ? 'Edited...' : 'Edit Surat Laporan Kehilangan Post'}
                                 </button>
                             </div>
                         </form>

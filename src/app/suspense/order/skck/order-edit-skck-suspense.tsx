@@ -4,6 +4,7 @@ import axios from "axios";
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from 'next/navigation';
+import SuccessMessage from "../../../components/successMessageAdmin";
 
 interface EditedSkck {
     applicant_name: string;
@@ -15,8 +16,6 @@ interface EditedSkck {
     officer_notes: string;
     passport_photo: string;
     verification_status: string;
-    successMessage: string | null;
-    errorMessage: string | null;
 }
 
 export default function EditSkck() {
@@ -29,9 +28,7 @@ export default function EditSkck() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    const redirectToSuccessMessage = () => {
-        router.push(`/admin/articles/success-message`);
-    };
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
@@ -45,9 +42,10 @@ export default function EditSkck() {
         officer_notes: "",
         passport_photo: "",
         submission_date: new Date().toISOString(),
-        successMessage: null,
-        errorMessage: null,
     });
+
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     useEffect(() => {
         if (!token) {
@@ -65,7 +63,9 @@ export default function EditSkck() {
             setLoading(true);
             setError(null);
             try {
-                const response = await axios.get(`https://striking-vision-production-4ee1.up.railway.app/api/skck/${skckId}`, {
+                const apiSkckUrl = `${baseUrl}skck/${skckId}`;
+
+                const response = await axios.get(apiSkckUrl, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json',
@@ -86,8 +86,6 @@ export default function EditSkck() {
                     officer_notes: skckRes.officer_notes,
                     passport_photo: skckRes.passport_photo,
                     verification_status: skckRes.verification_status,
-                    successMessage: null,
-                    errorMessage: null,
                 });
             } catch (err) {
                 console.error(`Error fetching article ${skckId}:`, err);
@@ -111,13 +109,23 @@ export default function EditSkck() {
     const [formSuccess, setFormSuccess] = useState<string | null>(null);
 
 
+    const [showSuccessMessage, setShowSuccessMessage] = useState<boolean>(false);
+    const [successDetails, setSuccessDetails] = useState<{
+        title: string;
+        description: string;
+        farewell: string;
+        backLinkHref: string;
+        backLinkText: string;
+    } | null>(null);
+
+
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
             [name]: value,
         }));
-        setFormError(null);
+        setErrorMessage(null);
     };
 
     const handleFilePictureChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -157,8 +165,12 @@ export default function EditSkck() {
             const cloudinaryFormData = new FormData();
             cloudinaryFormData.append('image', file);
 
+            const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+            const apiCloudinaryUrl = `${baseUrl}upload`;
+
             const response = await axios.post(
-                'https://striking-vision-production-4ee1.up.railway.app/api/upload',
+                apiCloudinaryUrl,
                 cloudinaryFormData,
                 {
                     headers: {
@@ -183,6 +195,9 @@ export default function EditSkck() {
     };
     const handleSubmitClick = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setErrorMessage(null);
+        setShowSuccessMessage(false);
+        setIsLoading(true);
 
         setFormData((prev: any) => ({ ...prev, successMessage: null, errorMessage: null }));
 
@@ -231,12 +246,33 @@ export default function EditSkck() {
                 passport_photo: formData.passport_photo,
                 verification_status: formData.verification_status
             };
+            const apiSkckUrl = `${baseUrl}skck/${skckId}`;
 
-            const response = await axios.put(`https://striking-vision-production-4ee1.up.railway.app/api/skck/${skckId}`, payload);
+            const response = await axios.patch(apiSkckUrl, payload);
 
             if (response.status === 200 || response.status === 201) {
-                response.data?.message || "Skck post created successfully"
-                router.push("/admin/skck/success-message");
+                console.log("API response SUCCESS (200 or 201):", response.data);
+                setShowSuccessMessage(true);
+                console.log("showSuccessMessage set to true.");
+
+                setSuccessDetails({
+                    title: response.data?.message || "Artikel berhasil dipublikasikan!",
+                    description: "Terima kasih telah membuat Informasi yang berguna.",
+                    farewell: "Semoga harimu Menyenangkan!",
+                    backLinkHref: "/order/skck",
+                    backLinkText: "KEMBALI"
+                });
+                setFormData({
+                    applicant_name: `${applicantName}`,
+                    place_date_birth: "",
+                    complete_address: "",
+                    needs: "",
+                    id_number: "",
+                    verification_status: "s",
+                    officer_notes: "",
+                    passport_photo: "",
+                    submission_date: new Date().toISOString(),
+                });
             } else {
                 response.data?.message || "Unexpected server response during registration.";
             }
@@ -250,7 +286,7 @@ export default function EditSkck() {
         }
     }
 
-     if (loading) {
+    if (loading) {
         return (
             <div className="bg-white text-black min-h-screen p-8">
                 <div className="max-w-3xl mx-auto">
@@ -275,14 +311,19 @@ export default function EditSkck() {
         );
     }
 
+    if (showSuccessMessage && successDetails) {
+        console.log("Rendering SuccessMessage component.");
+        return <SuccessMessage {...successDetails} />;
+    }
+
     return (
         <div>
             <div className="bg-white text-black min-h-screen p-8">
                 {loading && <p>Loading SKCK details...</p>}
                 {error && <p className="text-red-600">{error}</p>}
-                {skckData && ( 
-                <div className="max-w-3xl mx-auto">
-                    <h1 className="text-3xl font-bold mb-6">Edit a Skck</h1>
+                {skckData && (
+                    <div className="max-w-3xl mx-auto">
+                        <h1 className="text-3xl font-bold mb-6">Edit a Skck</h1>
                         <form onSubmit={handleSubmitClick} className="space-y-5">
                             {/* Nama Lengkap */}
                             <div>
@@ -401,22 +442,19 @@ export default function EditSkck() {
                                 )}
                             </div>
 
-                            {formData.errorMessage && <p className="text-red-600 mb-4">{formData.errorMessage}</p>}
-                            {formData.successMessage && <p className="text-green-600 mb-4">{formData.successMessage}</p>}
-
                             <div>
                                 <button
                                     type="submit"
-                                    className="w-full bg-yellow-700 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded"
-                                    disabled={imageLoading}
+                                    className="bg-[#00BFFF] text-white px-6 py-3 rounded-xl font-semibold"
+                                    disabled={isLoading}
                                 >
-                                    Ubah Datamu
+                                    {isLoading ? 'Edited...' : 'Edit Skck Post'}
                                 </button>
                             </div>
                         </form>
                     </div>
-                    )}
-                </div>
+                )}
             </div>
+        </div>
     )
 }

@@ -23,6 +23,7 @@ export default function Article() {
     const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [filteredNews, setFilteredNews] = useState<NewsArticle[]>([]);
+    
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 

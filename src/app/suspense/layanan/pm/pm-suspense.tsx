@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import getUserId from '@/app/utils/auth/page';
+import SuccessMessage from "../../../components/successMessageAdmin";
 
 
 interface PMFormState {
@@ -17,19 +18,17 @@ interface PMFormState {
   proof: string;
   complaint_date: string;
   complaint_status: string;
-  successMessage: string | null;
-  errorMessage: string | null;
 }
 
 
 export default function PengaduanMasyarakatForm() {
-
   const router = useRouter();
   const userId = getUserId();
+
   const baseApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-
-
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<PMFormState>({
     complainant_name: "",
@@ -41,27 +40,36 @@ export default function PengaduanMasyarakatForm() {
     proof: "",
     complaint_date: "",
     complaint_status: "diterima",
-    successMessage: null,
-    errorMessage: null,
   });
+
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imageLoading, setImageLoading] = useState<boolean>(false);
   const [imageError, setImageError] = useState<string>("");
+
+  const [showSuccessMessage, setShowSuccessMessage] = useState<boolean>(false);
+  const [successDetails, setSuccessDetails] = useState<{
+    title: string;
+    description: string;
+    farewell: string;
+    backLinkHref: string;
+    backLinkText: string;
+  } | null>(null);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-      errorMessage: null,
-      successMessage: null,
     }));
+    setErrorMessage(null);;
   };
 
   const handleFilePictureChange = async (e: ChangeEvent<HTMLInputElement>) => {
     setImageError("");
-    setFormData((prev) => ({ ...prev, proof: "" })); 
+    setFormData((prev) => ({ ...prev, proof: "" }));
 
     const file = e.target.files ? e.target.files[0] : null;
 
@@ -82,9 +90,12 @@ export default function PengaduanMasyarakatForm() {
       for (const pair of cloudinaryFormData.entries()) {
         console.log(`${pair[0]}:`, pair[1]);
       }
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+      const apiCloudinaryUrl = `${baseUrl}upload`;
 
       const response = await axios.post(
-        'https://striking-vision-production-4ee1.up.railway.app/api/upload',
+        apiCloudinaryUrl,
         cloudinaryFormData,
         {
           headers: {
@@ -109,6 +120,10 @@ export default function PengaduanMasyarakatForm() {
 
   const handleSubmitClick = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrorMessage(null);
+    setShowSuccessMessage(false);
+    setIsLoading(true);
+
 
     setFormData((prev) => ({ ...prev, successMessage: null, errorMessage: null }));
 
@@ -119,7 +134,7 @@ export default function PengaduanMasyarakatForm() {
       !formData.complaint_title ||
       !formData.complaint_content ||
       !formData.proof ||
-      !formData.complaint_date 
+      !formData.complaint_date
     ) {
       setFormData((prev) => ({
         ...prev,
@@ -130,7 +145,7 @@ export default function PengaduanMasyarakatForm() {
 
     try {
       const payload = {
-        user_id : userId,
+        user_id: userId,
         complainant_name: formData.complainant_name,
         contact: formData.contact,
         complainant_address: formData.complainant_address,
@@ -146,28 +161,42 @@ export default function PengaduanMasyarakatForm() {
       const response = await axios.post(apiReportsUrl, payload);
 
       if (response.status === 200 || response.status === 201) {
-        setFormData((prev) => ({
-          ...prev,
-          successMessage: "SIK application submitted successfully!",
-          errorMessage: null,
-        }));
-        console.log("SIK application submitted:", response.data);
+        console.log("API response SUCCESS (200 or 201):", response.data);
+        setShowSuccessMessage(true);
+
+        setSuccessDetails({
+          title: response.data?.message || "Pengaduan Masyarakat berhasil diedit!",
+          description: "Terima kasih telah membuat Informasi yang berguna.",
+          farewell: "Semoga harimu Menyenangkan!",
+          backLinkHref: "/layanan/pengaduan",
+          backLinkText: "KEMBALI"
+        });
+        setFormData({
+          complainant_name: "",
+          contact: "",
+          complainant_address: "",
+          complaint_category: "",
+          complaint_title: "",
+          complaint_content: "",
+          proof: "",
+          complaint_date: "",
+          complaint_status: "diterima",
+        });
       } else {
-        setFormData((prev) => ({
-          ...prev,
-          errorMessage: response.data?.message || "Unexpected server response during submission.",
-          successMessage: null,
-        }));
+        const serverMessage = response.data?.message || `Server returned status ${response.status}.`;
+        setErrorMessage(`Respon server tidak terduga: ${serverMessage}`);
+        console.log("API response NOT SUCCESS:", response.status, response.data);
       }
     } catch (error: any) {
-      console.error("SLK submission error:", error);
-      setFormData((prev) => ({
-        ...prev,
-        errorMessage: "Server error: " + (error.response?.data?.message || error.message || "An unknown error occurred."),
-        successMessage: null,
-      }));
+      console.error("Submission error:", error);
+      setErrorMessage("Terjadi kesalahan: " + (error.response?.data?.message || error.message || "Gagal membuat artikel."));
     }
   };
+
+  if (showSuccessMessage && successDetails) {
+    console.log("Rendering SuccessMessage component.");
+    return <SuccessMessage {...successDetails} />;
+  }
 
   return (
     <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
@@ -220,23 +249,23 @@ export default function PengaduanMasyarakatForm() {
         </div>
 
         <label htmlFor="complaint_category" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Pilih Kategori
-              </label>
-              <select
-                id="complaint_category"
-                name="complaint_category"
-                value={formData.complaint_category}
-                onChange={handleChange}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+          Pilih Kategori
+        </label>
+        <select
+          id="complaint_category"
+          name="complaint_category"
+          value={formData.complaint_category}
+          onChange={handleChange}
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
              focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
              dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
              dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              >
-                <option value="">Pilih Kategori</option>
-                <option value="Pengaduan Informatif">Pengaduan Informatif</option>
-                <option value="Pengaduan Penyimpangan">Pengaduan Penyimpangan</option>
-                <option value="Pengaduan terkait Pelayanan Publik">Pengaduan terkait Pelayanan Publik</option>
-              </select>
+        >
+          <option value="">Pilih Kategori</option>
+          <option value="Pengaduan Informatif">Pengaduan Informatif</option>
+          <option value="Pengaduan Penyimpangan">Pengaduan Penyimpangan</option>
+          <option value="Pengaduan terkait Pelayanan Publik">Pengaduan terkait Pelayanan Publik</option>
+        </select>
 
         {/* Jenis Barang  */}
         <div>
@@ -307,16 +336,13 @@ export default function PengaduanMasyarakatForm() {
           />
         </div>
 
-
-        {formData.errorMessage && <p className="text-red-600 mb-4">{formData.errorMessage}</p>}
-        {formData.successMessage && <p className="text-green-600 mb-4">{formData.successMessage}</p>}
-
         <div>
           <button
             type="submit"
-            className="w-full bg-yellow-700 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded"
+            className="bg-[#00BFFF] text-white px-6 py-3 rounded-xl font-semibold"
+            disabled={isLoading}
           >
-            Kirim Permohonan
+            {isLoading ? 'Edited...' : 'Edited Pengaduan Masyarakat Post'}
           </button>
         </div>
       </form>

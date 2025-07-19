@@ -4,6 +4,7 @@ import axios from "axios";
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from 'next/navigation';
+import SuccessMessage from "../../../components/successMessageAdmin";
 
 interface EditedSik {
     organizer_name: string;
@@ -16,8 +17,6 @@ interface EditedSik {
     levy_fees: string;
     status_handling: string;
     form_creation: string;
-    successMessage: string | null;
-    errorMessage: string | null;
 }
 
 export default function OrderEditSik() {
@@ -30,9 +29,7 @@ export default function OrderEditSik() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    const redirectToSuccessMessage = () => {
-        router.push(`/admin/articles/success-message`);
-    };
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
@@ -47,16 +44,22 @@ export default function OrderEditSik() {
         levy_fees: "",
         status_handling: "",
         form_creation: "",
-        successMessage: null,
-        errorMessage: null,
     });
 
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+
+    const [showSuccessMessage, setShowSuccessMessage] = useState<boolean>(false);
+    const [successDetails, setSuccessDetails] = useState<{
+        title: string;
+        description: string;
+        farewell: string;
+        backLinkHref: string;
+        backLinkText: string;
+    } | null>(null);
+
     useEffect(() => {
-        if (!token) {
-            setError("Authentication token not found. Please log in.");
-            setLoading(false);
-            return;
-        }
         if (!sikId) {
             setError("Skck ID not found in URL.");
             setLoading(false);
@@ -67,7 +70,9 @@ export default function OrderEditSik() {
             setLoading(true);
             setError(null);
             try {
-                const response = await axios.get(`https://striking-vision-production-4ee1.up.railway.app/api/skck/${sikId}`, {
+                const apiSikUrl = `${baseUrl}sik/${sikId}`;
+
+                const response = await axios.get(apiSikUrl, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json',
@@ -89,8 +94,6 @@ export default function OrderEditSik() {
                     levy_fees: sikRes.levy_fees,
                     status_handling: sikRes.status_handling,
                     form_creation: sikRes.form_creation,
-                    successMessage: null,
-                    errorMessage: null,
                 });
             } catch (err) {
                 console.error(`Error fetching article ${sikId}:`, err);
@@ -120,7 +123,7 @@ export default function OrderEditSik() {
             ...prev,
             [name]: value,
         }));
-        setFormError(null);
+        setErrorMessage(null);
     };
 
     const handleFilePictureChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -160,8 +163,12 @@ export default function OrderEditSik() {
             const cloudinaryFormData = new FormData();
             cloudinaryFormData.append('image', file);
 
+            const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+            const apiCloudinaryUrl = `${baseUrl}upload`;
+
             const response = await axios.post(
-                'https://striking-vision-production-4ee1.up.railway.app/api/upload',
+                apiCloudinaryUrl,
                 cloudinaryFormData,
                 {
                     headers: {
@@ -186,6 +193,9 @@ export default function OrderEditSik() {
     };
     const handleSubmitClick = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setErrorMessage(null);
+        setShowSuccessMessage(false);
+        setIsLoading(true);
 
         setFormData((prev: any) => ({ ...prev, successMessage: null, errorMessage: null }));
 
@@ -227,12 +237,35 @@ export default function OrderEditSik() {
                 status_handling: formData.status_handling,
                 form_creation: formData.form_creation
             };
+            const apiSikUrl = `${baseUrl}sik/${sikId}`;
 
-            const response = await axios.put(`https://striking-vision-production-4ee1.up.railway.app/api/sik/${sikId}`, payload);
+            const response = await axios.put(apiSikUrl, payload);
 
             if (response.status === 200 || response.status === 201) {
-                response.data?.message || "Skck post created successfully"
-                router.push("/admin/skck/success-message");
+                console.log("API response SUCCESS (200 or 201):", response.data);
+                setShowSuccessMessage(true);
+                console.log("showSuccessMessage set to true.");
+
+                setSuccessDetails({
+                    title: response.data?.message || "Artikel berhasil dipublikasikan!",
+                    description: "Terima kasih telah membuat Informasi yang berguna.",
+                    farewell: "Semoga harimu Menyenangkan!",
+                    backLinkHref: "/order",
+                    backLinkText: "KEMBALI"
+                });
+                console.log("successDetails set to:", successDetails);
+                setFormData({
+                    organizer_name: "",
+                    event_name: "",
+                    event_description: "",
+                    event_start: "",
+                    event_end: "",
+                    location: "s",
+                    guest_estimate: "",
+                    levy_fees: "",
+                    status_handling: "",
+                    form_creation: "",
+                });
             } else {
                 response.data?.message || "Unexpected server response during registration.";
             }
@@ -269,6 +302,11 @@ export default function OrderEditSik() {
                 </div>
             </div>
         );
+    }
+
+    if (showSuccessMessage && successDetails) {
+        console.log("Rendering SuccessMessage component.");
+        return <SuccessMessage {...successDetails} />;
     }
 
     return (
@@ -411,16 +449,13 @@ export default function OrderEditSik() {
                                 />
                             </div>
 
-                            {formData.errorMessage && <p className="text-red-600 mb-4">{formData.errorMessage}</p>}
-                            {formData.successMessage && <p className="text-green-600 mb-4">{formData.successMessage}</p>}
-
                             <div>
                                 <button
                                     type="submit"
-                                    className="w-full bg-yellow-700 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded"
-                                    disabled={imageLoading}
+                                    className="bg-[#00BFFF] text-white px-6 py-3 rounded-xl font-semibold"
+                                    disabled={isLoading}
                                 >
-                                    Ubah Datamu
+                                    {isLoading ? 'Edit...' : 'Edited Surat Izin Keramaian Post'}
                                 </button>
                             </div>
                         </form>
