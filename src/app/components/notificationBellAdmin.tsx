@@ -6,6 +6,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import getUserId  from '../utils/auth/page';
 import { useRouter } from "next/navigation";
+import { Suspense } from 'react';
 
 export default function NotificationBell() {
   const userId = getUserId();
@@ -107,6 +108,7 @@ export default function NotificationBell() {
   };
 
     return (
+        <Suspense>
         <div
         className="relative"
         onMouseEnter={handleMouseEnter}
@@ -143,6 +145,7 @@ export default function NotificationBell() {
             )}
             </div>
         )}
-        </div>
+        </div>    
+      </Suspense>
     );
 }

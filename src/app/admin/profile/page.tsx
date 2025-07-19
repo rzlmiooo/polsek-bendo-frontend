@@ -1,8 +1,6 @@
 import AdminNavbar from "@/app/components/adminnavbar"
 
 export default function AdminProfile() {
-    
-
     return (
         <div>
             <AdminNavbar />

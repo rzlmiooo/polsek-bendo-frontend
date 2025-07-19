@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import Link from 'next/link';
 import Path from './pathname';
-// import { Bars3Icon, XMarkIcon } from '@heroicons/react/224/solid';
 import UserGreeting from './greetings'
 import UserProfile from './foto'
 import { usePathname } from 'next/navigation'
@@ -30,6 +29,7 @@ export default function AdminNavbar() {
 
   return (
     <>
+    <Suspense>
       <header className="sticky top-0 inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-48 w-full bg-white border-b border-gray-200 text-sm py-2.5 lg:ps-65">
         <nav className="px-4 sm:px-6 flex basis-full items-center w-full mx-auto">
           <div className="me-5 lg:me-0 lg:hidden">
@@ -150,6 +150,7 @@ export default function AdminNavbar() {
         </div>
       </div>
       {/* End Sidebar */}
+    </Suspense>
     </>
   );
 }
