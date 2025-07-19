@@ -1,10 +1,11 @@
 import { Suspense } from "react";
-import dynamic from "next/dynamic";
 import CreateArticle from "../../suspense/article/create-article-suspense";
+import PathWrapper from "@/app/components/pathWrapper";
 
 export default function CreateArticlePage() {
   return (
-    <Suspense fallback={<div>Loading  article...</div>}>
+    <Suspense fallback={<div>Loading  create article...</div>}>
+      <PathWrapper />
       <CreateArticle />
     </Suspense>
   );

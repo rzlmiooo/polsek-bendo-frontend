@@ -24,6 +24,7 @@ export default function SkckForm() {
   const userId = getUserId();
   const [isClient, setIsClient] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+  
   const baseApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const [formData, setFormData] = useState<SkckFormState>({

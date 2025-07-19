@@ -1,7 +1,7 @@
 'use client';
 
 import { BellIcon } from '@heroicons/react/24/outline';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, Suspense } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
 import getUserId from '../utils/auth/page';
@@ -112,6 +112,7 @@ export default function NotificationBell() {
   };
 
   return (
+    <Suspense>
     <div
       className="relative"
       onMouseEnter={handleMouseEnter}
@@ -149,5 +150,6 @@ export default function NotificationBell() {
         </div>
       )}
     </div>
+  </Suspense>
   );
 }

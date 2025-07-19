@@ -2,7 +2,6 @@
 
 import { Suspense, useEffect } from 'react';
 import Link from 'next/link';
-import Path from './pathname';
 import UserGreeting from './greetings'
 import UserProfile from './foto'
 import { usePathname } from 'next/navigation'

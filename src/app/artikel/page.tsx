@@ -1,10 +1,12 @@
 import { Suspense } from "react";
-import dynamic from "next/dynamic";
 import Article from "../suspense/article/article-suspense";
+import PathWrapper from "../components/pathWrapper";
+
 
 export default function ArticlePage() {
   return (
     <Suspense fallback={<div>Loading  article...</div>}>
+      <PathWrapper />
       <Article />
     </Suspense>
   );

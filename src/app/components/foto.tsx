@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState , Suspense } from 'react';
 import axios from 'axios';
 import getUserId  from '../utils/auth/page';
 import Image from 'next/image';
@@ -44,6 +44,8 @@ export default function UserProfile() {
   if (loading) return <Image src="/profile.png" alt="Profil" height={50} width={50} className="p-0.5 bg-sky-50 dark:bg-sky-50 rounded-full w-10 h-10 object-cover"/>
 
   return (
-    <Image src={ userPicture ? userPicture : "/profile.png" } alt="Profil" height={50} width={50} className="p-0.5 bg-sky-50 dark:bg-sky-50 rounded-full w-10 h-10 object-cover"></Image>
+    <Suspense>
+      <Image src={ userPicture ? userPicture : "/profile.png" } alt="Profil" height={50} width={50} className="p-0.5 bg-sky-50 dark:bg-sky-50 rounded-full w-10 h-10 object-cover"></Image>
+    </Suspense>
   )
 }

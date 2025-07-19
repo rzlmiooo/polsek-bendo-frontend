@@ -1,5 +1,5 @@
 import AdminNavbar from "@/app/components/adminnavbar";
-import React from "react"; 
+import React, { Suspense } from "react"; 
 
 interface SuccessMessageProps {
   title?: string; 
@@ -17,6 +17,7 @@ export default function SuccessMessageAdmin({
   backLinkText,
 }: SuccessMessageProps) {
   return (
+    <Suspense>
     <div>
       <AdminNavbar />
       <div className="bg-gray-100 h-screen">
@@ -50,5 +51,6 @@ export default function SuccessMessageAdmin({
         </div>
       </div>
     </div>
+    </Suspense>
   );
 }

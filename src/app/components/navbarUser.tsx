@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import Link from 'next/link';
-import Path from './pathname';
 // import { Bars3Icon, XMarkIcon } from '@heroicons/react/224/solid';
 import UserGreeting from './greetings'
 import UserProfile from './foto'
@@ -23,6 +22,7 @@ export default function NavbarUser() {
     }, []);
 
     return (
+        <Suspense>
         <div>
             {/* navbar */}
             <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-lg border-b border-[#996515] text-black">
@@ -147,5 +147,6 @@ export default function NavbarUser() {
                 </div>
             </nav>
         </div>
+    </Suspense>
     )
 }
