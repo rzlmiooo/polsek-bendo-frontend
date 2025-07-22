@@ -17,6 +17,7 @@
     "@heroicons/react": "^2.2.0",
     "@iconify/react": "^6.0.0",
     "@react-icons/all-files": "^4.1.0",
+    "@vercel/analytics": "^1.5.0",
     "axios": "^1.10.0",
     "flowbite": "^3.1.2",
     "heroicons": "^2.2.0",
@@ -27,7 +28,8 @@
     "next-cloudinary": "^6.16.0",
     "preline": "^3.1.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "swiper": "^11.2.10"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

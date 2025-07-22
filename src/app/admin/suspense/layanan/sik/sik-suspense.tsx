@@ -4,7 +4,7 @@ import axios from "axios";
 import AdminNavbar from "@/app/components/adminnavbar";
 import Footer from "../../../../components/footer";
 import Navbar from "../../../../components/navbar";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
@@ -22,17 +22,18 @@ interface Sik {
     levy_fees: string;
     status_handling: string;
     form_creation: string;
-    verification_status: string;
 }
 
 export default function KelolaIzinKeramaian() {
     const router = useRouter();
     const [sikData, setSik] = useState<Sik[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const searchParams = useSearchParams();
     const [isClient, setIsClient] = useState(false);
     const [token, setToken] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -60,40 +61,85 @@ export default function KelolaIzinKeramaian() {
 
             if (storedToken) {
                 setToken(storedToken);
+                setLoading(false);
             }
         }
     }, [router]);
 
-    useEffect(() => {
-        if (!sikData) {
-            setError("Surat Izin Keramaian not found in URL.");
-            setLoading(false);
+    const fetchData = useCallback(async () => {
+        if (!token) {
+            setIsLoading(false);
             return;
         }
 
-        const fetchData = async () => {
-            try {
-                const apiSikUrl = `${baseUrl}sik`;
+        setIsLoading(true);
+        setError(null);
+        setMessage(null);
 
-                const sikRes = await axios.get(apiSikUrl, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
-                const sik = sikRes.data || [];
+        try {
+            const apiSlkUrl = `${baseUrl}sik`;
+            const sikRes = await axios.get<Sik[]>(apiSlkUrl, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            setSik(sikRes.data || []);
+        } catch (err: any) {
+            console.error('Error fetching data:', err);
+            setError(err.response?.data?.message || 'Failed to fetch SLK data.');
+        } finally {
+            setIsLoading(false);
+        }
+    }, [token, baseUrl]);
 
-                setSik(sik);
-            }
-            catch (err) {
-                console.error('Error fetching data:', err);
-            } finally {
-                setLoading(false);
-            }
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
+    const handleSubmitStatus = async (sikId: string, status: Sik['status_handling']) => {
+        if (!token || isLoading) {
+            console.warn('Attempted submit without token or while loading.');
+            return;
         }
 
-        fetchData();
-    }, [searchParams]);
+        setIsLoading(true);
+        setMessage(null);
+
+        const payload = {
+            id: sikId,
+            status_handling: status,
+        };
+
+        try {
+            const apiSlkUrl = `${baseUrl}sik/${sikId}`;
+            await axios.patch(apiSlkUrl, payload, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (status === 'diterima') {
+                setMessage({ type: 'success', text: 'Laporan diterima!' });
+            } else if (status === 'selesai') {
+                setMessage({ type: 'error', text: 'Laporan ditolak!' });
+            } else if (status === 'diproses') {
+                setMessage({ type: 'success', text: 'Laporan diproses!' });
+            }
+
+            fetchData();
+        } catch (err: any) {
+            console.error('Error updating status:', err);
+            setError(err.response?.data?.message || 'Gagal memperbarui status laporan.');
+            setMessage({ type: 'error', text: err.response?.data?.message || 'Gagal memperbarui status laporan.' });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    function capitalize(text: string | null | undefined) {
+        return text ? text.charAt(0).toUpperCase() + text.slice(1) : 'Tidak ada status';
+    }
 
     if (loading) {
         return (
@@ -151,7 +197,7 @@ export default function KelolaIzinKeramaian() {
                                 <div className="divide-y divide-gray-200 dark:divide-gray-700">
                                     <div className="flex flex-wrap items-center gap-y-4 py-6">
                                         <dl className="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
-                                            <dt className="text-base font-medium text-gray-500 dark:text-gray-400">sik ID:</dt>
+                                            <dt className="text-base font-medium text-gray-500 dark:text-gray-400">SIK ID:</dt>
                                             <dd className="mt-1.5 text-base font-semibold text-gray-900 dark:text-white">
                                                 <a href="#" className="hover:underline">{sik.id}</a>
                                             </dd>
@@ -176,43 +222,50 @@ export default function KelolaIzinKeramaian() {
                                             <dd className="mt-1.5 text-base font-semibold text-gray-900 dark:text-white">{new Date(sik.event_start).toLocaleDateString()}</dd>
                                         </dl>
 
-                                        {sik.status_handling === "diterima" && (
-                                            <dl className="col-span-1">
-                                                <dt className="text-base font-medium text-gray-500 dark:text-gray-400">Status:</dt>
-                                                <dd className="me-2 mt-1.5 inline-flex items-center rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-300">
+                                        {/* Status Handling */}
+                                        <dl className="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
+                                            <dt className="text-base font-medium text-gray-500 dark:text-gray-400">Status:</dt>
+                                            <dd
+                                                className={`me-2 mt-1.5 inline-flex items-center rounded px-2.5 py-0.5 text-xs font-medium 
+                                                        ${sik.status_handling === "diterima"
+                                                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+                                                        : sik.status_handling === "diproses"
+                                                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
+                                                        : sik.status_handling === "selesai"
+                                                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                                                        : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+                                                    }`}
+                                            >
+                                                {sik.status_handling === "selesai" ? (
                                                     <svg className="me-1 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.5 4h-13m13 16h-13M8 20v-3.333a2 2 0 0 1 .4-1.2L10 12.6a1 1 0 0 0 0-1.2L8.4 8.533a2 2 0 0 1-.4-1.2V4h8v3.333a2 2 0 0 1-.4 1.2L13.957 11.4a1 1 0 0 0 0 1.2l1.643 2.867a2 2 0 0 1 .4 1.2V20H8Z" />
+                                                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 11.917 9.724 16.5 19 7.5" />
                                                     </svg>
-                                                    Diterima
-                                                </dd>
-                                            </dl>
-                                        )}
-
-                                        {sik.status_handling === "invesitgasi" && (
-                                            <dl className="col-span-1">
-                                                <dt className="text-base font-medium text-gray-500 dark:text-gray-400">Status:</dt>
-                                                <dd className="me-2 mt-1.5 inline-flex items-center rounded bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                                                ) : (
                                                     <svg className="me-1 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h6l2 4m-8-4v8m0-8V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v9h2m8 0H9m4 0h2m4 0h2v-4m0 0h-5m3.5 5.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Zm-10 0a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z" />
+                                                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.5 4h-13m13 16h-13M8 20v-3.333a2 2 0 0 1 .4-1.2L10 12.6a1 1 0 0 0 0-1.2L8.4 8.533a2 2 0 0 1-.4-1.2V4h8v3.333a2 2 0 0 1-.4 1.2L13.957 11.4a1 1 0 0 0 0 1.2l1.643 2.867a2 2 0 0 1 .4 1.2V20H8Z" />
                                                     </svg>
-                                                    Invesitgasi
-                                                </dd>
-                                            </dl>
-                                        )}
+                                                )}
+                                                {capitalize(sik.status_handling)}
+                                            </dd>
+                                        </dl>
 
-                                        {sik.status_handling === "selesai" && (
-                                            <dl className="col-span-1">
-                                                <dt className="text-base font-medium text-gray-500 dark:text-gray-400">Status:</dt>
-                                                <dd className="me-2 mt-1.5 inline-flex items-center rounded bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
-                                                    <svg className="me-1 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5" />
-                                                    </svg>
-                                                    Selesai
-                                                </dd>
-                                            </dl>
-                                        )}
-
-                                        <div className="w-full grid sm:grid-cols-2 lg:flex lg:w-64 lg:items-center lg:justify-end gap-4">
+                                        <div className="mt-auto flex w-full flex-col gap-4 border-t border-gray-200 pt-4 dark:border-neutral-700 sm:flex-row sm:justify-end sm:pt-0">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleSubmitStatus(sik.id, 'diproses')}
+                                                disabled={isLoading}
+                                                className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-medium text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'}`}
+                                            >
+                                                {isLoading ? 'Processing...' : 'Terima & Proses'}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleSubmitStatus(sik.id, 'selesai')}
+                                                disabled={isLoading}
+                                                className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-medium text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-red-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'}`}
+                                            >
+                                                {isLoading ? 'Processing...' : 'Selesai'}
+                                            </button>
                                             <Link href={`/admin/layanan/izin_keramaian/edit-sik?sik_id=${sik.id}`} legacyBehavior>
                                                 <button type="button" className="w-full rounded-lg border border-blue-700 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900 lg:w-auto">Catatan</button>
                                             </Link>

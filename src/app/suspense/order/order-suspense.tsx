@@ -42,34 +42,39 @@ export default function Order() {
         }
     }, [router]);
     return (
-        <div className="flex flex-col h-screen">
+        <div className="flex flex-col min-h-screen">
             <NavbarUser />
-            <div className="flex flex-1 overflow-hidden">
-                <main className="flex flex-col flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-900">
-                    <div className="p-6">
-                        <div className="flex justify-end mb-6">
+            <div className="flex flex-1 flex-col overflow-hidden">
+                <main className="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-900">
+                    <div className="px-4 py-6 sm:px-6 lg:px-8">
+                        {/* Header Button */}
+                        <div className="flex justify-end mb-12 pt-20 relative z-40">
                             <a href="./layanan">
                                 <button
                                     type="button"
-                                    className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                    className="text-white bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 focus:ring-4 focus:ring-green-300 font-semibold rounded-full text-base px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-300 dark:from-green-500 dark:to-green-400 dark:hover:from-green-600 dark:hover:to-green-500"
                                 >
-                                    Create
+                                    + Buat Surat Baru
                                 </button>
                             </a>
                         </div>
-                        <section className="bg-white py-12 antialiased dark:bg-gray-900 md:py-16 rounded-lg shadow-md"> {/* Added rounded corners and shadow */}
-                            <div className="sm:flex sm:justify-center m-8">
-                                <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">List Surat Yang Sedang Dibuat</h2>
+
+                        {/* Section Card */}
+                        <section className="bg-white py-8 px-4 sm:px-6 md:px-8 rounded-lg shadow-md dark:bg-gray-900">
+                            <div className="text-center mb-6">
+                                <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">
+                                    List Surat Yang Sedang Dibuat
+                                </h2>
                             </div>
-                            <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
-                                <div className="mx-auto max-w-5xl">
-                                    <div className="mt-6 flow-root sm:mt-8">
-                                        <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                                            <OrderSkck />
-                                            <OrderSik />
-                                            <OrderPm />
-                                            <OrderSlk />
-                                        </div>
+
+                            {/* Orders Container */}
+                            <div className="mx-auto w-full max-w-6xl">
+                                <div className="mt-6 flow-root sm:mt-8">
+                                    <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                                        <OrderSkck />
+                                        <OrderSik />
+                                        <OrderPm />
+                                        <OrderSlk />
                                     </div>
                                 </div>
                             </div>
@@ -79,5 +84,6 @@ export default function Order() {
                 </main>
             </div>
         </div>
+
     )
 }

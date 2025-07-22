@@ -4,7 +4,7 @@ import axios from "axios";
 import AdminNavbar from "@/app/components/adminnavbar";
 import Footer from "../../../../components/footer";
 import Navbar from "../../../../components/navbar";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
@@ -21,12 +21,14 @@ interface Skck {
 export default function KelolaSkck() {
     const router = useRouter();
     const [skckData, setSkck] = useState<Skck[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
     const searchParams = useSearchParams();
     const [isClient, setIsClient] = useState(false);
     const [token, setToken] = useState<string | null>(null);
-    const userId = getUserId();    
+    const [loading, setLoading] = useState<boolean>(true); 
+    const [isLoading, setIsLoading] = useState<boolean>(true); 
+    const [error, setError] = useState<string | null>(null);
+    const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -38,11 +40,8 @@ export default function KelolaSkck() {
     const totalPages = Math.ceil(skckData.length / itemsPerPage);
 
     useEffect(() => {
-        setIsClient(true);
         if (typeof window !== 'undefined') {
-
             const storedToken = localStorage.getItem('token');
-            console.log("Token", storedToken);
             const role = localStorage.getItem('role');
 
             if (role !== 'admin') {
@@ -52,40 +51,84 @@ export default function KelolaSkck() {
 
             if (storedToken) {
                 setToken(storedToken);
+                setLoading(false);
+            } else {
+                router.replace('/login');
             }
         }
     }, [router]);
 
-    useEffect(() => {
-        if (!skckData) {
-            setError("SKCK not found in URL.");
-            setLoading(false);
+    const fetchData = useCallback(async () => {
+        if (!token) {
+            setIsLoading(false);
             return;
         }
 
-        const fetchData = async () => {
-            try {    
-                const apiSkckUrl = `${baseUrl}skck`;
+        setIsLoading(true);
+        setError(null);
+        setMessage(null);
 
-                const skckRes = await axios.get(apiSkckUrl, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
-                const skck = skckRes.data || [];
+        try {
+            const apiSlkUrl = `${baseUrl}skck`;
+            const skckRes = await axios.get<Skck[]>(apiSlkUrl, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            setSkck(skckRes.data || []);
+        } catch (err: any) {
+            console.error('Error fetching data:', err);
+            setError(err.response?.data?.message || 'Failed to fetch SLK data.');
+        } finally {
+            setIsLoading(false);
+        }
+    }, [token, baseUrl]);
 
-                setSkck(skck);
-            }
-            catch (err) {
-                console.error('Error fetching data:', err);
-            } finally {
-                setLoading(false);
-            }
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
+    const handleSubmitStatus = async (skckId: string, status: Skck['verification_status']) => {
+        if (!token || isLoading) {
+            console.warn('Attempted submit without token or while loading.');
+            return;
         }
 
-        fetchData();
-    }, [searchParams]);
+        setIsLoading(true);
+        setMessage(null);
+
+        const payload = {
+            id: skckId,
+            verification_status: status,
+        };
+
+        try {
+            const apiSlkUrl = `${baseUrl}skck/officer/${skckId}`;
+            await axios.patch(apiSlkUrl, payload, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (status === 'diterima') {
+                setMessage({ type: 'success', text: 'Laporan diterima!' });
+            } else if (status === 'selesai') {
+                setMessage({ type: 'error', text: 'Laporan ditolak!' });
+            } else if (status === 'diprose') {
+                setMessage({ type: 'success', text: 'Laporan sedang diproses!' });
+            }
+
+            fetchData();
+        } catch (err: any) {
+            console.error('Error updating status:', err);
+            setError(err.response?.data?.message || 'Gagal memperbarui status laporan.');
+            setMessage({ type: 'error', text: err.response?.data?.message || 'Gagal memperbarui status laporan.' });
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -105,8 +148,10 @@ export default function KelolaSkck() {
 
     return (
         <div>
-            <AdminNavbar />
-            <section className="bg-white py-24 antialiased dark:bg-gray-900 md:py-18">
+            <header className="fixed top-0 left-0 w-full z-50">
+                <AdminNavbar />
+            </header>
+            <section className="pt-20 bg-white py-24 antialiased dark:bg-gray-900 md:py-18">
                 <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
                     <div className="mx-auto max-w-5xl">
                         <div className="gap-4 sm:flex sm:items-center sm:justify-between">
@@ -168,52 +213,61 @@ export default function KelolaSkck() {
                                             <dd className="mt-1.5 text-base font-semibold text-gray-900 dark:text-white">{new Date(skck.submission_date).toLocaleDateString()}</dd>
                                         </dl>
 
-                                        {skck.verification_status === "pending" && (
-                                            <dl className="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
-                                                <dt className="text-base font-medium text-gray-500 dark:text-gray-400">Status:</dt>
-                                                <dd className="me-2 mt-1.5 inline-flex items-center rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-300">
+                                        {/* Status Handling */}
+                                        <dl className="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
+                                            <dt className="text-base font-medium text-gray-500 dark:text-gray-400">Status:</dt>
+                                            <dd
+                                                className={`me-2 mt-1.5 inline-flex items-center rounded px-2.5 py-0.5 text-xs font-medium 
+                                                    ${skck.verification_status === "pending"
+                                                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+                                                        : skck.verification_status === "proses"
+                                                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
+                                                        : skck.verification_status === "selesai"
+                                                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                                                        : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+                                                    }`}
+                                            >
+                                                {skck.verification_status === "selesai" ? (
                                                     <svg className="me-1 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.5 4h-13m13 16h-13M8 20v-3.333a2 2 0 0 1 .4-1.2L10 12.6a1 1 0 0 0 0-1.2L8.4 8.533a2 2 0 0 1-.4-1.2V4h8v3.333a2 2 0 0 1-.4 1.2L13.957 11.4a1 1 0 0 0 0 1.2l1.643 2.867a2 2 0 0 1 .4 1.2V20H8Z" />
+                                                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 11.917 9.724 16.5 19 7.5" />
                                                     </svg>
-                                                    Pending
-                                                </dd>
-                                            </dl>
-                                        )}
-
-                                        {skck.verification_status === "diproses" && (
-                                            <dl className="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
-                                                <dt className="text-base font-medium text-gray-500 dark:text-gray-400">Status:</dt>
-                                                <dd className="me-2 mt-1.5 inline-flex items-center rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-300">
+                                                ) : (
                                                     <svg className="me-1 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.5 4h-13m13 16h-13M8 20v-3.333a2 2 0 0 1 .4-1.2L10 12.6a1 1 0 0 0 0-1.2L8.4 8.533a2 2 0 0 1-.4-1.2V4h8v3.333a2 2 0 0 1-.4 1.2L13.957 11.4a1 1 0 0 0 0 1.2l1.643 2.867a2 2 0 0 1 .4 1.2V20H8Z" />
+                                                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.5 4h-13m13 16h-13M8 20v-3.333a2 2 0 0 1 .4-1.2L10 12.6a1 1 0 0 0 0-1.2L8.4 8.533a2 2 0 0 1-.4-1.2V4h8v3.333a2 2 0 0 1-.4 1.2L13.957 11.4a1 1 0 0 0 0 1.2l1.643 2.867a2 2 0 0 1 .4 1.2V20H8Z" />
                                                     </svg>
-                                                    Diproses
-                                                </dd>
-                                            </dl>
-                                        )}
+                                                )}
+                                                {skck.verification_status.charAt(0).toUpperCase() + skck.verification_status.slice(1)}
+                                            </dd>
+                                        </dl>
 
-                                        {skck.verification_status === "selesai" && (
-                                            <dl className="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
-                                                <dt className="text-base font-medium text-gray-500 dark:text-gray-400">Status:</dt>
-                                                <dd className="me-2 mt-1.5 inline-flex items-center rounded bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
-                                                    <svg className="me-1 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5" />
-                                                    </svg>
-                                                    Selesai
-                                                </dd>
-                                            </dl>
-                                        )}
-
-                                        <div className="w-full grid sm:grid-cols-2 lg:flex lg:w-64 lg:items-center lg:justify-end gap-4">
+                                        <div className="mt-auto flex w-full flex-col gap-4 border-t border-gray-200 pt-4 dark:border-neutral-700 sm:flex-row sm:justify-end sm:pt-0">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleSubmitStatus(skck.id, 'proses')}
+                                                disabled={isLoading}
+                                                className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-medium text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'}`}
+                                            >
+                                                {isLoading ? 'Processing...' : 'Terima & Proses'}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleSubmitStatus(skck.id, 'selesai')}
+                                                disabled={isLoading}
+                                                className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-medium text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-red-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'}`}
+                                            >
+                                                {isLoading ? 'Processing...' : 'Selesai'}
+                                            </button>
                                             <Link href={`/admin/layanan/skck/edit-skck?skck_id=${skck.id}`} legacyBehavior>
-                                                <button type="button" className="w-full rounded-lg border border-blue-700 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900 lg:w-auto">Catatan</button>
+                                                <a className="flex-1 rounded-lg border border-blue-700 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900 sm:flex-none">
+                                                    Catatan
+                                                </a>
                                             </Link>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         ))}
-                        
+
                         <div className="mt-6 mb-10 flex items-center justify-center sm:mt-8" aria-label="Page navigation">
                             <ul className="flex h-8 items-center -space-x-px text-sm">
                                 {/* Prev Button */}
@@ -236,8 +290,8 @@ export default function KelolaSkck() {
                                         <button
                                             onClick={() => setCurrentPage(index + 1)}
                                             className={`flex h-8 items-center justify-center border px-3 leading-tight ${currentPage === index + 1
-                                                    ? "z-10 border-primary-300 bg-primary-50 text-primary-600 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-                                                    : "border-gray-300 bg-white text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                                                ? "z-10 border-primary-300 bg-primary-50 text-primary-600 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                                                : "border-gray-300 bg-white text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                                                 }`}
                                         >
                                             {index + 1}
@@ -262,7 +316,7 @@ export default function KelolaSkck() {
                         </div>
                     </div>
                 </div>
-            </section>
-        </div>
+            </section >
+        </div >
     )
 }

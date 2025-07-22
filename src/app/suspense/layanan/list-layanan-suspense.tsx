@@ -4,7 +4,7 @@ import Link from 'next/link';
 import getUserId from '../../utils/auth/page';
 import ReactDOM from 'react-dom';
 import Navbar from '../../components/navbar';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileAlt, faExclamationTriangle, faBullhorn, faInfoCircle, faUsers } from '@fortawesome/free-solid-svg-icons'
 import Footer from '../../components/footer';
 

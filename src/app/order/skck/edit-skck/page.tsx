@@ -5,8 +5,8 @@ import PathWrapper from "@/app/components/pathWrapper";
 
 export default function SkckPage() {
   return (
-    <Suspense fallback={<div>Loading  article...</div>}>
-      <PathWrapper/>
+    <Suspense fallback={<div>Loading  edit skck...</div>}>
+      {/* <PathWrapper/> */}
       <EditSkckNotes/>
     </Suspense>
   );

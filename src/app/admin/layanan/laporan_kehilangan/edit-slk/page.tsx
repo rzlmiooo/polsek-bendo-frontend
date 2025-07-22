@@ -5,7 +5,7 @@ import PathWrapper from "@/app/components/pathWrapper";
 export default function SIKPage() {
   return (
     <Suspense fallback={<div>Loading  sik...</div>}>
-      <PathWrapper/>
+      {/* <PathWrapper/> */}
       <EditSlk />
     </Suspense>
   );

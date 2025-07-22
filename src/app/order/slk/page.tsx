@@ -6,7 +6,7 @@ import PathWrapper from "@/app/components/pathWrapper";
 export default function SlkPage() {
   return (
     <Suspense fallback={<div>Loading  surat laporan kehilangan...</div>}>
-      <PathWrapper />
+      {/* <PathWrapper /> */}
       <OrderSlk />
     </Suspense>
   );

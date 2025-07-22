@@ -6,7 +6,7 @@ import PathWrapper from "@/app/components/pathWrapper";
 export default function ArticlePage() {
   return (
     <Suspense fallback={<div>Loading  article...</div>}>
-      < PathWrapper />
+      {/* < PathWrapper /> */}
       <Article />
     </Suspense>
   );

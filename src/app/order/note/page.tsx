@@ -5,7 +5,7 @@ import PathWrapper from "@/app/components/pathWrapper";
 export default function NotePage() {
   return (
     <Suspense fallback={<div>Loading  Notes...</div>}>
-      <PathWrapper />
+      {/* <PathWrapper /> */}
       <Note/>
     </Suspense>
   );

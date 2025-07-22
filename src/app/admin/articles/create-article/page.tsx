@@ -5,7 +5,7 @@ import PathWrapper from "@/app/components/pathWrapper";
 export default function CreateArticlePage() {
   return (
     <Suspense fallback={<div>Loading  create article...</div>}>
-      <PathWrapper />
+      {/* <PathWrapper /> */}
       <CreateArticle />
     </Suspense>
   );

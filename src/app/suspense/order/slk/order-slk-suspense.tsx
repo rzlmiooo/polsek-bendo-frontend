@@ -149,7 +149,7 @@ export default function OrderSlk() {
                     </dl>
 
                     <div className="w-full grid sm:grid-cols-1 lg:flex lg:w-36 lg:items-center lg:justify-end gap-4">
-                        <Link href={`/order/slk/edit-slk?slk_id=${slk.id}?reporter_name=${slk.reporter_name}`} legacyBehavior>
+                        <Link href={`/order/slk/edit-slk?slk_id=${slk.id}&reporter_name=${slk.reporter_name}`} legacyBehavior>
                             <button type="button" className="w-full rounded-lg border border-blue-700 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900 lg:w-auto">Edit</button>
                         </Link>
                     </div>

@@ -5,8 +5,8 @@ import PathWrapper from "../components/pathWrapper";
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div>Loading  edit sik...</div>}>
-      <PathWrapper />
+    <Suspense fallback={<div>Loading  login page...</div>}>
+      {/* <PathWrapper /> */}
       <Login />
     </Suspense>
   );

@@ -5,7 +5,7 @@ import PathWrapper from "@/app/components/pathWrapper";
 export default function EditPmPage() {
   return (
     <Suspense fallback={<div>Loading  edit pengaduan masyarakat...</div>}>
-      <PathWrapper />
+      {/* <PathWrapper /> */}
       <EditPm />
     </Suspense>
   );

@@ -27,14 +27,7 @@ export default function ReadArticle() {
   
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-
   useEffect(() => {
-    if (!token) {
-      setError("Authentication token not found. Please log in.");
-      setLoading(false);
-      return;
-    }
     if (!articleId) {
       setError("Article ID not found in URL.");
       setLoading(false);
@@ -47,10 +40,6 @@ export default function ReadArticle() {
       try {
         const apiNewsUrl = `${baseUrl}news/${articleId}`;
         const response = await axios.get(apiNewsUrl, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
         });
 
         const articleRes = response.data || [];;
@@ -69,7 +58,7 @@ export default function ReadArticle() {
     };
 
     fetchArticleDetail();
-  }, [articleId, token]); 
+  }, [articleId]); 
 
   if (loading) {
     return (

@@ -5,7 +5,7 @@ import PathWrapper from "@/app/components/pathWrapper";
 export default function OrderPmPage() {
   return (
     <Suspense fallback={<div>Loading  Notes...</div>}>
-      <PathWrapper />
+      {/* <PathWrapper /> */}
       <OrderPm/>
     </Suspense>
   );

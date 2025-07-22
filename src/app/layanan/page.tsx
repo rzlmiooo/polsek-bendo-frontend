@@ -5,7 +5,7 @@ import PathWrapper from "@/app/components/pathWrapper";
 export default function LayananPage() {
   return (
     <Suspense fallback={<div>Loading  list layanan...</div>}>
-      <PathWrapper />
+      {/* <PathWrapper /> */}
       <ListLayanan/>
     </Suspense>
   );

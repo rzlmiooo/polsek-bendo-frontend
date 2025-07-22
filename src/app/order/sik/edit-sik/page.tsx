@@ -6,7 +6,7 @@ import PathWrapper from "@/app/components/pathWrapper";
 export default function EditSikPage() {
   return (
     <Suspense fallback={<div>Loading  edit surat izin kehilangan..</div>}>
-      <PathWrapper/>
+      {/* <PathWrapper/> */}
       <OrderEditSik />
     </Suspense>
   );

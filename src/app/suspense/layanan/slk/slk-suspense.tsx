@@ -2,7 +2,7 @@
 "use client";
 
 import axios from 'axios';
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import getUserId from '@/app/utils/auth/page';
 
@@ -21,9 +21,10 @@ interface LPFormState {
 export default function LaporanKehilanganForm() {
   const router = useRouter();
   const userId = getUserId();
+  const [isClient, setIsClient] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+
   const baseApiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-
 
   const [formData, setFormData] = useState<LPFormState>({
     reporter_name: "",
@@ -35,6 +36,24 @@ export default function LaporanKehilanganForm() {
     successMessage: null,
     errorMessage: null,
   });
+
+  useEffect(() => {
+            setIsClient(true);
+            if (typeof window !== 'undefined') {
+    
+                const storedToken = localStorage.getItem('token');
+                const role = localStorage.getItem('role');
+    
+                if (role !== 'user') {
+                    router.replace('/unauthorized');
+                    return;
+                }
+    
+                if (storedToken) {
+                    setToken(storedToken);
+                }
+            }
+        }, [router]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

@@ -16,6 +16,7 @@ interface SIKFormState {
   guest_estimate: string;
   levy_fees: string;
   form_creation: string;
+  status_handling:string;
   successMessage: string | null;
   errorMessage: string | null;
 }
@@ -35,6 +36,7 @@ export default function IzinKeramaianForm() {
     guest_estimate: "",
     levy_fees: "",
     form_creation: "",
+    status_handling:"dipending",
     successMessage: null,
     errorMessage: null,
   });

@@ -6,7 +6,7 @@ import PathWrapper from "@/app/components/pathWrapper";
 export default function EditArticlePage() {
   return (
     <Suspense fallback={<div>Loading edit form...</div>}>
-      < PathWrapper />
+      {/* < PathWrapper /> */}
       <EditArticle />
     </Suspense>
   );

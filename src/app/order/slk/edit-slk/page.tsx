@@ -6,7 +6,7 @@ import PathWrapper from "@/app/components/pathWrapper";
 export default function EditSlkPage() {
   return (
     <Suspense fallback={<div>Loading  edit surat laporan kehilangan...</div>}>
-      <PathWrapper />
+      {/* <PathWrapper /> */}
       <EditSlk />
     </Suspense>
   );

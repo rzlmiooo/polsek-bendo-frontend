@@ -61,7 +61,7 @@ export default function OrderSkck() {
 
     useEffect(() => {
         const fetchData = async () => {
-            try {    
+            try {
                 const apiSkckUrl = `${baseUrl}skck`;
 
                 const skckRes = await axios.get(apiSkckUrl, {
@@ -169,11 +169,17 @@ export default function OrderSkck() {
                         </dd>
                     </dl>
 
-                    <div className="w-full grid sm:grid-cols-1 lg:flex lg:w-36 lg:items-center lg:justify-end gap-4">
-                        <Link href={`/order/skck/edit-skck?skck_id=${skck.id}?applicant_name=${skck.applicant_name}`} legacyBehavior>
-                            <button type="button" className="w-full rounded-lg border border-blue-700 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900 lg:w-auto">Edit</button>
+                    <div className="col-span-full flex justify-center lg:justify-end">
+                        <Link href={`/order/skck/edit-skck?skck_id=${skck.id}&applicant_name=${skck.applicant_name}`} legacyBehavior>
+                            <button
+                                type="button"
+                                className="px-4 py-2 rounded-lg border border-blue-700 text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white transition dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white"
+                            >
+                                Edit
+                            </button>
                         </Link>
                     </div>
+
 
                     <nav className="mt-6 flex items-center justify-center sm:mt-8" aria-label="Page navigation example">
                         <div className="mt-6 mb-10 flex items-center justify-center sm:mt-8" aria-label="Page navigation">
@@ -198,8 +204,8 @@ export default function OrderSkck() {
                                         <button
                                             onClick={() => setCurrentPage(index + 1)}
                                             className={`flex h-8 items-center justify-center border px-3 leading-tight ${currentPage === index + 1
-                                                    ? "z-10 border-primary-300 bg-primary-50 text-primary-600 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-                                                    : "border-gray-300 bg-white text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                                                ? "z-10 border-primary-300 bg-primary-50 text-primary-600 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                                                : "border-gray-300 bg-white text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                                                 }`}
                                         >
                                             {index + 1}

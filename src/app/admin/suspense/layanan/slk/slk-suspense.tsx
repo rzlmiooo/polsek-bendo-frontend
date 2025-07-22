@@ -4,7 +4,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from 'next/link';
-
 import AdminNavbar from "@/app/components/adminnavbar";
 import Footer from "../../../../components/footer";
 import Navbar from "../../../../components/navbar";
@@ -21,17 +20,18 @@ interface Slk {
 
 export default function KelolaLaporanKehilangan() {
   const router = useRouter();
-  const searchParams = useSearchParams(); 
-  const [slkData, setSlkData] = useState<Slk[]>([]); 
+  const searchParams = useSearchParams();
+  const [slkData, setSlkData] = useState<Slk[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null); 
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage: number = 5;
 
-  const baseUrl: string = process.env.NEXT_PUBLIC_API_URL || ''; 
+  const baseUrl: string = process.env.NEXT_PUBLIC_API_URL || '';
 
   const refreshCurrentPage = () => router.push('/admin/layanan/laporan_kehilangan');
 
@@ -46,17 +46,18 @@ export default function KelolaLaporanKehilangan() {
       const role = localStorage.getItem('role');
 
       if (role !== 'admin') {
-        router.replace('/unauthorized'); 
+        router.replace('/unauthorized');
         return;
       }
 
       if (storedToken) {
         setToken(storedToken);
+        setLoading(false);
       } else {
         router.replace('/auth/login');
       }
     }
-  }, [router]); 
+  }, [router]);
 
   const fetchData = useCallback(async () => {
     if (!token) {
@@ -65,8 +66,8 @@ export default function KelolaLaporanKehilangan() {
     }
 
     setIsLoading(true);
-    setError(null); 
-    setMessage(null); 
+    setError(null);
+    setMessage(null);
 
     try {
       const apiSlkUrl = `${baseUrl}slk`;
@@ -77,7 +78,7 @@ export default function KelolaLaporanKehilangan() {
         },
       });
       setSlkData(slkRes.data || []);
-    } catch (err: any) { 
+    } catch (err: any) {
       console.error('Error fetching data:', err);
       setError(err.response?.data?.message || 'Failed to fetch SLK data.');
     } finally {
@@ -96,7 +97,7 @@ export default function KelolaLaporanKehilangan() {
     }
 
     setIsLoading(true);
-    setMessage(null); 
+    setMessage(null);
 
     const payload = {
       id: slkId,
@@ -114,9 +115,9 @@ export default function KelolaLaporanKehilangan() {
 
       if (status === 'diterima') {
         setMessage({ type: 'success', text: 'Laporan diterima!' });
-      } else if (status === 'selesai') { 
+      } else if (status === 'selesai') {
         setMessage({ type: 'error', text: 'Laporan ditolak!' });
-      } else if (status === 'investigasi') { 
+      } else if (status === 'investigasi') {
         setMessage({ type: 'success', text: 'Laporan dalam investigasi!' });
       }
 
@@ -130,6 +131,21 @@ export default function KelolaLaporanKehilangan() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-xl dark:text-white">Loading Kelola Slk...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-xl text-red-500 dark:text-red-400">{error}</p>
+      </div>
+    );
+  }
   return (
     <div>
       <AdminNavbar />
@@ -155,7 +171,7 @@ export default function KelolaLaporanKehilangan() {
                     id="order-type"
                     className="block w-full min-w-[8rem] rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
                   >
-                    <option value="">All orders</option> 
+                    <option value="">All orders</option>
                     <option value="pre-order">Pre-order</option>
                     <option value="transit">In transit</option>
                     <option value="confirmed">Confirmed</option>
@@ -173,7 +189,7 @@ export default function KelolaLaporanKehilangan() {
                     id="duration"
                     className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
                   >
-                    <option value="this week">this week</option> 
+                    <option value="this week">this week</option>
                     <option value="this month">this month</option>
                     <option value="last 3 months">the last 3 months</option>
                     <option value="lats 6 months">the last 6 months</option>
@@ -231,13 +247,13 @@ export default function KelolaLaporanKehilangan() {
                           <dd
                             className={`me-2 mt-1.5 inline-flex items-center rounded px-2.5 py-0.5 text-xs font-medium 
                             ${slk.status_handling === "diterima"
-                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' 
+                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
                                 : slk.status_handling === "investigasi"
-                                ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' 
-                                : slk.status_handling === "selesai"
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                                : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300' 
-                            }`}
+                                  ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
+                                  : slk.status_handling === "selesai"
+                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                                    : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+                              }`}
                           >
                             {slk.status_handling === "selesai" ? (
                               <svg className="me-1 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -248,14 +264,14 @@ export default function KelolaLaporanKehilangan() {
                                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.5 4h-13m13 16h-13M8 20v-3.333a2 2 0 0 1 .4-1.2L10 12.6a1 1 0 0 0 0-1.2L8.4 8.533a2 2 0 0 1-.4-1.2V4h8v3.333a2 2 0 0 1-.4 1.2L13.957 11.4a1 1 0 0 0 0 1.2l1.643 2.867a2 2 0 0 1 .4 1.2V20H8Z" />
                               </svg>
                             )}
-                            {slk.status_handling.charAt(0).toUpperCase() + slk.status_handling.slice(1)} 
+                            {slk.status_handling.charAt(0).toUpperCase() + slk.status_handling.slice(1)}
                           </dd>
                         </dl>
 
                         <div className="mt-auto flex w-full flex-col gap-4 border-t border-gray-200 pt-4 dark:border-neutral-700 sm:flex-row sm:justify-end sm:pt-0">
                           <button
                             type="button"
-                            onClick={() => handleSubmitStatus(slk.id, 'investigasi')} 
+                            onClick={() => handleSubmitStatus(slk.id, 'investigasi')}
                             disabled={isLoading}
                             className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-medium text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'}`}
                           >
@@ -263,7 +279,7 @@ export default function KelolaLaporanKehilangan() {
                           </button>
                           <button
                             type="button"
-                            onClick={() => handleSubmitStatus(slk.id, 'selesai')} 
+                            onClick={() => handleSubmitStatus(slk.id, 'selesai')}
                             disabled={isLoading}
                             className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-medium text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-red-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'}`}
                           >
@@ -305,7 +321,7 @@ export default function KelolaLaporanKehilangan() {
                         className={`flex h-8 items-center justify-center border px-3 leading-tight ${currentPage === index + 1
                           ? "z-10 border-primary-300 bg-primary-50 text-primary-600 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
                           : "border-gray-300 bg-white text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                        }`}
+                          }`}
                       >
                         {index + 1}
                       </button>
