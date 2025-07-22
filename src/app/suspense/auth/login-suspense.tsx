@@ -97,7 +97,7 @@ export default function Login() {
                     </form>
                     <footer>
                         <a className="text-yellow-700 hover:text-yellow-500 text-sm float-left" href="#">Forgot Password?</a>
-                        <a className="text-yellow-700 hover:text-yellow-500 text-sm float-right" href="/admin/register">Buat Akun</a>
+                        <a className="text-yellow-700 hover:text-yellow-500 text-sm float-right" href="/register">Buat Akun</a>
                     </footer>
                 </div>
             </div>

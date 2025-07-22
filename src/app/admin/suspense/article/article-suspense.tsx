@@ -28,6 +28,7 @@ export default function Article() {
     const [error, setError] = useState<string | null>(null);
     const [isClient, setIsClient] = useState(false);
     const [token, setToken] = useState<string | null>(null);
+    
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
     const [currentPage, setCurrentPage] = useState(1);

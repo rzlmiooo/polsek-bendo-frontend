@@ -82,7 +82,7 @@ export default function AdminNavbar() {
                   <div className="flex justify-center items-center gap-6">
                     <NotificationBell />
                     <Link href={profile} className="flex justify-center items-center gap-3">
-                      <h1 className="hidden sm:block font-bold text-sky-50 dark:text-sky-50">Hi, <UserGreeting /></h1>
+                         <h1 className="hidden sm:block font-bold text-gray-800 dark:text-sky-50">Hi, <UserGreeting /></h1>
                       <UserProfile />
                     </Link>
                   </div>

@@ -18,8 +18,8 @@ interface RegisterFormState {
 export default function Registration() {
     const router = useRouter();
 
-    const baseApiUrl = process.env.NEXT_PUBLIC_API_URL;
     const baseAuthUrl = process.env.NEXT_PUBLIC_AUTH_URL;
+    const baseApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     const [formData, setFormData] = useState<RegisterFormState>({
         email: "",
@@ -71,11 +71,11 @@ export default function Registration() {
             for (const pair of cloudinaryFormData.entries()) {
                 console.log(`${pair[0]}:`, pair[1]);
             }
-
-            const apiCloudinaryUrl = `${baseApiUrl}upload`;
+            
+            const apiUrl = `${baseApiUrl}upload`;
 
             const response = await axios.post(
-                apiCloudinaryUrl,
+                apiUrl,
                 cloudinaryFormData,
                 {
                     headers: {
@@ -151,14 +151,14 @@ export default function Registration() {
                 role: formData.role,
                 profile_picture: formData.profile_picture
             };
-            
-            const apiAuthUrl = `${baseAuthUrl}signup`;
 
-            const response = await axios.post(apiAuthUrl, payload);
+            const authUrl = `${baseAuthUrl}signup`;
 
-            if (response.status === 200 ) {
+            const response = await axios.post(authUrl, payload);
+
+            if (response.status === 200 || response.status === 201) {
                 localStorage.setItem(ACCESS_TOKEN_NAME, response.data.token);
-                router.push("/admin/login");
+                router.push("/login");
             } else {
                  response.data?.message || "Unexpected server response during registration.";
             }

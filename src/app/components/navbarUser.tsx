@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import UserGreeting from './greetings';
+import UserGreeting from './clientGreetings';
 import UserProfile from './foto';
 import NotificationBell from './notificationBellUser';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid';
