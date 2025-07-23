@@ -15,6 +15,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
+import Image from "next/image";
 
 interface NewsArticle {
   id: string;
@@ -64,10 +65,12 @@ export default function Home() {
       <div className="w-full">
         {/* Hero Image */}
         <div className="w-full">
-          <img
+          <Image
             src="/images/depan_ada_tugu_polsek.jpg"
-            className="w-full h-[300px] md:h-[500px] object-cover"
-            alt="slide1"
+            alt="Background Landing Page"
+            width={500}
+            height={300}
+            priority
           />
         </div>
 

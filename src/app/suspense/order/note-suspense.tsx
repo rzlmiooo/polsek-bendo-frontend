@@ -7,7 +7,6 @@ import NavbarUser from "../../components/navbarUser";
 import { useEffect, useState } from "react";
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from "next/navigation";
-import Link from 'next/link';
 import getUserId from './../../utils/auth/page';
 import React from 'react';
 import Head from "next/head";
@@ -85,7 +84,7 @@ export default function Note() {
          {/* SEO */}
             <Head>
                 <title>Catatan Polisi</title>
-                <meta name="description" content="Lihat catatan resmi dari pihak kepolisian mengenai layanan Anda." />
+                <meta name="description" content="Daftar surat dan layanan yang telah Anda ajukan." />
                 <meta name="keywords" content="Polsek Bendo, SKCK Online, Kepolisian Bendo, Pelayanan Kepolisian, Magetan" />
                 <meta name="author" content="Polsek Bendo" />
                 <link rel="canonical" href="https://polsek-bendo.my.id/order/note" />
