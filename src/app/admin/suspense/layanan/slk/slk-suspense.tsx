@@ -154,8 +154,9 @@ export default function KelolaLaporanKehilangan() {
           {message.text}
         </div>
       )}
-      <section className="pt-20 bg-white py-24 antialiased dark:bg-gray-900 md:py-18 **lg:ps-65**">
-        <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
+    <main className="lg:ml-[260px]">
+      <section className="pt-20 bg-white py-24 antialiased dark:bg-gray-900 md:py-18">
+        <div className="mx-auto max-w-screen-xl px-4 2xl:px-0 **lg:ml-[260px]**">        
           <div className="mx-auto max-w-5xl">
             <div className="gap-4 sm:flex sm:items-center sm:justify-between">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
@@ -346,6 +347,7 @@ export default function KelolaLaporanKehilangan() {
           </div>
         </div>
       </section>
+    </main>
     </div>
   );
 }
