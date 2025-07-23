@@ -8,7 +8,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   other: {
-    'google-site-verification': 'google8d73e2f35b758c41.html',
+    'google-site-verification': 'kPptZ5boJ9QHlGWamNOX1TXLEPZruxtoGj-WHwaT-JI',
   },
 };
 
