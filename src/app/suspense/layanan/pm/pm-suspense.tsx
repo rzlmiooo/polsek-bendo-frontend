@@ -6,6 +6,7 @@ import { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import getUserId from '@/app/utils/auth/page';
 import SuccessMessage from "../../../components/successMessageAdmin";
+import Head from 'next/head';
 
 
 interface PMFormState {
@@ -199,9 +200,17 @@ export default function PengaduanMasyarakatForm() {
   }
 
   return (
+    <>
+    <Head>
+        <title>Pengaduan Masyarakat</title>
+        <meta name="description" content="Sampaikan pengaduan Anda ke Polsek Bendo secara langsung dan aman." />
+        <meta name="keywords" content="Polsek Bendo, SKCK Online, Kepolisian Bendo, Pelayanan Kepolisian, Magetan" />
+        <meta name="author" content="Polsek Bendo" />
+        <link rel="canonical" href="https://polsek-bendo.my.id/layanan/pm" />
+    </Head>
     <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
       <h2 className="text-xl font-bold mb-4">Form Pengaduan Masyarakat</h2>
-
+       
       <form onSubmit={handleSubmitClick} className="space-y-5">
         {/* Nama Pelapor */}
         <div>
@@ -347,5 +356,6 @@ export default function PengaduanMasyarakatForm() {
         </div>
       </form>
     </div>
+    </>
   );
 }

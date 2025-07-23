@@ -4,6 +4,7 @@ import axios from "axios";
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import SuccessMessage from "../../../components/successMessageAdmin";
+import Head from "next/head";
 
 interface SlkDetail {
     reporter_name: string;
@@ -149,6 +150,14 @@ export default function EditSlk() {
     }
 
     return (
+        <>
+         <Head>
+                <title>Edit Surat Laporan Kehilangan Saya</title>
+                <meta name="description" content="Sunting surat laporan kehilangan yang telah Anda buat." />
+                <meta name="keywords" content="Polsek Bendo, SKCK Online, Kepolisian Bendo, Pelayanan Kepolisian, Magetan" />
+                <meta name="author" content="Polsek Bendo" />
+                <link rel="canonical" href="https://polsek-bendo.my.id/order/sik/edit-slk" />
+        </Head>
         <div className="bg-white text-black min-h-screen p-8">
             <div className="max-w-3xl mx-auto">
                 <h1 className="text-3xl font-bold mb-6">Edit Surat Laporan Kehilangan</h1>
@@ -228,5 +237,6 @@ export default function EditSlk() {
                 </form>
             </div>
         </div>
+    </>
     );
 }

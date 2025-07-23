@@ -7,10 +7,20 @@ import Navbar from '../../components/navbar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileAlt, faExclamationTriangle, faBullhorn, faInfoCircle, faUsers } from '@fortawesome/free-solid-svg-icons'
 import Footer from '../../components/footer';
+import Head from 'next/head';
 
 
 export default function ListLayanan() {
     return (
+        <>
+         {/* SEO */}
+            <Head>
+                <title>Layanan Publik</title>
+                <meta name="description" content="Lihat semua layanan publik yang tersedia di Polsek Bendo." />
+                <meta name="keywords" content="Polsek Bendo, SKCK Online, Kepolisian Bendo, Pelayanan Kepolisian, Magetan" />
+                <meta name="author" content="Polsek Bendo" />
+                <link rel="canonical" href="https://polsek-bendo.my.id/layanan" />
+            </Head>
         <div>
             <Navbar />
             <div className="bg-gray-500 min-h-screen flex items-center justify-center p-4">
@@ -60,5 +70,6 @@ export default function ListLayanan() {
             </div>
             <Footer />
         </div>
+    </>
     )
 }

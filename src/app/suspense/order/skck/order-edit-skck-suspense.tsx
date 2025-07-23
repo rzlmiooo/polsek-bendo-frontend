@@ -5,6 +5,7 @@ import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from 'next/navigation';
 import SuccessMessage from "../../../components/successMessageAdmin";
+import Head from "next/head";
 
 interface EditedSkck {
     applicant_name: string;
@@ -317,6 +318,14 @@ export default function EditSkck() {
     }
 
     return (
+        <>
+        <Head>
+                <title>Edit SKCK Saya</title>
+                <meta name="description" content="Sunting Skck yang telah Anda buat." />
+                <meta name="keywords" content="Polsek Bendo, SKCK Online, Kepolisian Bendo, Pelayanan Kepolisian, Magetan" />
+                <meta name="author" content="Polsek Bendo" />
+                <link rel="canonical" href="https://polsek-bendo.my.id/order/sik/edit-skck" />
+        </Head>
         <div>
             <div className="bg-white text-black min-h-screen p-8">
                 {loading && <p>Loading SKCK details...</p>}
@@ -456,5 +465,6 @@ export default function EditSkck() {
                 )}
             </div>
         </div>
+    </>
     )
 }

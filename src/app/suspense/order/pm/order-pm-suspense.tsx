@@ -10,6 +10,7 @@ import { useSearchParams } from 'next/navigation';
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import getUserId from '../../../utils/auth/page';
+import Head from "next/head";
 
 interface PmDetail {
     id:string;
@@ -79,6 +80,15 @@ export default function OrderPm() {
         fetchData();
     }, [searchParams]);
     return (
+        <>
+        {/* SEO */}
+            <Head>
+                <title>Pengaduan Saya</title>
+                <meta name="description" content="Riwayat pengaduan masyarakat yang telah Anda buat." />
+                <meta name="keywords" content="Polsek Bendo, SKCK Online, Kepolisian Bendo, Pelayanan Kepolisian, Magetan" />
+                <meta name="author" content="Polsek Bendo" />
+                <link rel="canonical" href="https://polsek-bendo.my.id/order/pm" />
+            </Head>
         <div>
             <div className="sm:flex sm:justify-left">
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-yellow-500 sm:text-2x1 m-4">Pengaduan Masyarakat</h3>
@@ -163,5 +173,6 @@ export default function OrderPm() {
                 </div>
             ))}
         </div>
+    </>
     )
 }

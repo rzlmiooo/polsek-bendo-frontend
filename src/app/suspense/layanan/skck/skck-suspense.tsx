@@ -1,9 +1,10 @@
 "use client";
 
 import axios from 'axios';
-import { useState, ChangeEvent, FormEvent , useEffect } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import getUserId from '@/app/utils/auth/page';
+import Head from 'next/head';
 
 interface SkckFormState {
   applicant_name: string;
@@ -13,10 +14,10 @@ interface SkckFormState {
   id_number: string;
   submission_date: string;
   officer_notes: string;
-  passport_photo: string; 
-  verification_status: string; 
-  successMessage: string | null; 
-  errorMessage: string | null;   
+  passport_photo: string;
+  verification_status: string;
+  successMessage: string | null;
+  errorMessage: string | null;
 }
 
 export default function SkckForm() {
@@ -24,7 +25,7 @@ export default function SkckForm() {
   const userId = getUserId();
   const [isClient, setIsClient] = useState(false);
   const [token, setToken] = useState<string | null>(null);
-  
+
   const baseApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const [formData, setFormData] = useState<SkckFormState>({
@@ -35,30 +36,30 @@ export default function SkckForm() {
     id_number: "",
     submission_date: "",
     verification_status: "pending",
-    officer_notes: "null", 
-    passport_photo: "", 
+    officer_notes: "null",
+    passport_photo: "",
     successMessage: null,
     errorMessage: null,
   });
 
-  
-      useEffect(() => {
-          setIsClient(true);
-          if (typeof window !== 'undefined') {
-  
-              const storedToken = localStorage.getItem('token');
-              const role = localStorage.getItem('role');
-  
-              if (role !== 'user') {
-                  router.replace('/unauthorized');
-                  return;
-              }
-  
-              if (storedToken) {
-                  setToken(storedToken);
-              }
-          }
-      }, [router]);
+
+  useEffect(() => {
+    setIsClient(true);
+    if (typeof window !== 'undefined') {
+
+      const storedToken = localStorage.getItem('token');
+      const role = localStorage.getItem('role');
+
+      if (role !== 'user') {
+        router.replace('/unauthorized');
+        return;
+      }
+
+      if (storedToken) {
+        setToken(storedToken);
+      }
+    }
+  }, [router]);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imageLoading, setImageLoading] = useState<boolean>(false);
@@ -70,13 +71,13 @@ export default function SkckForm() {
       ...prev,
       [name]: value,
       errorMessage: null,
-      successMessage: null, 
+      successMessage: null,
     }));
   };
 
   const handleFilePictureChange = async (e: ChangeEvent<HTMLInputElement>) => {
     setImageError("");
-    setFormData((prev) => ({ ...prev, passport_photo: "" })); 
+    setFormData((prev) => ({ ...prev, passport_photo: "" }));
 
     const file = e.target.files ? e.target.files[0] : null;
 
@@ -170,7 +171,7 @@ export default function SkckForm() {
 
     try {
       const payload = {
-        user_id : userId,
+        user_id: userId,
         applicant_name: formData.applicant_name,
         place_date_birth: formData.place_date_birth,
         complete_address: formData.complete_address,
@@ -184,7 +185,7 @@ export default function SkckForm() {
       const apiSkckUrl = `${baseApiUrl}skck`;
 
 
-      const response = await axios.post(apiSkckUrl, payload); 
+      const response = await axios.post(apiSkckUrl, payload);
 
       if (response.status === 200 || response.status === 201) {
         setFormData((prev) => ({
@@ -211,144 +212,154 @@ export default function SkckForm() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
-      <h1 className="text-2xl font-bold mb-6">Formulir Pengajuan SKCK Online - WNI</h1>
-      <form onSubmit={handleSubmitClick} className="space-y-5">
-        {/* Nama Lengkap */}
-        <div>
-          <label htmlFor="applicant_name" className="block font-medium">Nama Lengkap</label>
-          <input
-            type="text"
-            id="applicant_name"
-            name="applicant_name"
-            value={formData.applicant_name}
-            onChange={handleChange}
-            className="w-full mt-1 border p-2 rounded"
-            placeholder="Muhammad Rokiaten"
-            required
-          />
-        </div>
-
-        {/* Alamat Lengkap */}
-        <div>
-          <label htmlFor="complete_address" className="block font-medium">Alamat Lengkap</label>
-          <input
-            type="text"
-            id="complete_address"
-            name="complete_address"
-            value={formData.complete_address}
-            onChange={handleChange}
-            className="w-full mt-1 border p-2 rounded"
-            placeholder="Madiun , Jln.Kemuning No.5"
-            required
-          />
-        </div>
-
-        {/* Nomor KTP */}
-        <div>
-          <label htmlFor="id_number" className="block font-medium">Nomor KTP</label>
-          <input
-            type="text"
-            id="id_number"
-            name="id_number"
-            value={formData.id_number}
-            onChange={handleChange}
-            className="w-full mt-1 border p-2 rounded"
-            placeholder="35202513062007002"
-            pattern="[0-9]{16}"
-            title="Nomor KTP harus 16 digit angka"
-            required
-          />
-        </div>
-
-        {/* submission_date */}
-        <div>
-          <label htmlFor="submission_date" className="block font-medium">Tanggal Pengajuan SKCK</label>
-          <input
-            type="date"
-            id="submission_date"
-            name="submission_date"
-            value={formData.submission_date}
-            onChange={handleChange}
-            className="w-full mt-1 border p-2 rounded"
-            required
-          />
-        </div>
-
-        {/* Kebutuhan */}
-        <div>
-          <label htmlFor="needs" className="block font-medium">Kebutuhan</label>
-          <input
-            type="text"
-            id="needs"
-            name="needs"
-            value={formData.needs}
-            onChange={handleChange}
-            className="w-full mt-1 border p-2 rounded"
-            placeholder="Keperluan melamar CPNS"
-            required
-          />
-        </div>
-
-        {/* Tempat Tanggal Lahir */}
-        <div>
-          <label htmlFor="place_date_birth" className="block font-medium">Tempat Tanggal Lahir</label>
-          <input
-            type="text"
-            id="place_date_birth"
-            name="place_date_birth"
-            value={formData.place_date_birth}
-            onChange={handleChange}
-            className="w-full mt-1 border p-2 rounded"
-            placeholder="Surabaya, 17 Januari 2000"
-            required
-          />
-        </div>
-
-        {/* Pas Foto */}
-        <div className="mb-4">
-          <label htmlFor="passport_photo_upload" className="block font-medium mb-1">
-            Pas Foto 4x6 (6 lembar, latar belakang merah)
-          </label>
-          <div className="flex items-center space-x-3">
+    <>
+      {/* SEO */}
+      <Head>
+        <title>Pengajuan SKCK</title>
+        <meta name="description" content="Ajukan pembuatan SKCK secara online dengan mudah dan cepat." />
+        <meta name="keywords" content="Polsek Bendo, SKCK Online, Kepolisian Bendo, Pelayanan Kepolisian, Magetan" />
+        <meta name="author" content="Polsek Bendo" />
+        <link rel="canonical" href="https://polsek-bendo.my.id/layanan/skck" />
+      </Head>
+      <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
+        <h1 className="text-2xl font-bold mb-6">Formulir Pengajuan SKCK Online - WNI</h1>
+        <form onSubmit={handleSubmitClick} className="space-y-5">
+          {/* Nama Lengkap */}
+          <div>
+            <label htmlFor="applicant_name" className="block font-medium">Nama Lengkap</label>
             <input
-              className="inline-block px-4 py-2 text-sm font-medium text-black bg-gray-200 border border-gray-400 rounded cursor-pointer hover:bg-gray-300"
-              type="file"
-              id="passport_photo_upload"
-              accept="image/*"
-              onChange={handleFilePictureChange}
-              disabled={imageLoading}
+              type="text"
+              id="applicant_name"
+              name="applicant_name"
+              value={formData.applicant_name}
+              onChange={handleChange}
+              className="w-full mt-1 border p-2 rounded"
+              placeholder="Muhammad Rokiaten"
               required
             />
           </div>
-          <p className="text-sm text-gray-600 mt-1">
-            Foto harus berpakaian sopan, tidak menggunakan aksesoris wajah, dan tampak muka utuh.
-          </p>
-          {imageLoading && <p className="text-blue-600 mt-2">Uploading image...</p>}
-          {imageError && <p className="text-red-600 mt-2">{imageError}</p>}
-          {formData.passport_photo && !imageLoading && (
-            <div className="text-green-600 mt-2">
-              <p>Image uploaded successfully!</p>
+
+          {/* Alamat Lengkap */}
+          <div>
+            <label htmlFor="complete_address" className="block font-medium">Alamat Lengkap</label>
+            <input
+              type="text"
+              id="complete_address"
+              name="complete_address"
+              value={formData.complete_address}
+              onChange={handleChange}
+              className="w-full mt-1 border p-2 rounded"
+              placeholder="Madiun , Jln.Kemuning No.5"
+              required
+            />
+          </div>
+
+          {/* Nomor KTP */}
+          <div>
+            <label htmlFor="id_number" className="block font-medium">Nomor KTP</label>
+            <input
+              type="text"
+              id="id_number"
+              name="id_number"
+              value={formData.id_number}
+              onChange={handleChange}
+              className="w-full mt-1 border p-2 rounded"
+              placeholder="35202513062007002"
+              pattern="[0-9]{16}"
+              title="Nomor KTP harus 16 digit angka"
+              required
+            />
+          </div>
+
+          {/* submission_date */}
+          <div>
+            <label htmlFor="submission_date" className="block font-medium">Tanggal Pengajuan SKCK</label>
+            <input
+              type="date"
+              id="submission_date"
+              name="submission_date"
+              value={formData.submission_date}
+              onChange={handleChange}
+              className="w-full mt-1 border p-2 rounded"
+              required
+            />
+          </div>
+
+          {/* Kebutuhan */}
+          <div>
+            <label htmlFor="needs" className="block font-medium">Kebutuhan</label>
+            <input
+              type="text"
+              id="needs"
+              name="needs"
+              value={formData.needs}
+              onChange={handleChange}
+              className="w-full mt-1 border p-2 rounded"
+              placeholder="Keperluan melamar CPNS"
+              required
+            />
+          </div>
+
+          {/* Tempat Tanggal Lahir */}
+          <div>
+            <label htmlFor="place_date_birth" className="block font-medium">Tempat Tanggal Lahir</label>
+            <input
+              type="text"
+              id="place_date_birth"
+              name="place_date_birth"
+              value={formData.place_date_birth}
+              onChange={handleChange}
+              className="w-full mt-1 border p-2 rounded"
+              placeholder="Surabaya, 17 Januari 2000"
+              required
+            />
+          </div>
+
+          {/* Pas Foto */}
+          <div className="mb-4">
+            <label htmlFor="passport_photo_upload" className="block font-medium mb-1">
+              Pas Foto 4x6 (6 lembar, latar belakang merah)
+            </label>
+            <div className="flex items-center space-x-3">
+              <input
+                className="inline-block px-4 py-2 text-sm font-medium text-black bg-gray-200 border border-gray-400 rounded cursor-pointer hover:bg-gray-300"
+                type="file"
+                id="passport_photo_upload"
+                accept="image/*"
+                onChange={handleFilePictureChange}
+                disabled={imageLoading}
+                required
+              />
             </div>
-          )}
-          {selectedFile && !imageLoading && !formData.passport_photo && !imageError && (
-            <p className="text-gray-600 mt-2">Ready to upload: {selectedFile.name}</p>
-          )}
-        </div>
+            <p className="text-sm text-gray-600 mt-1">
+              Foto harus berpakaian sopan, tidak menggunakan aksesoris wajah, dan tampak muka utuh.
+            </p>
+            {imageLoading && <p className="text-blue-600 mt-2">Uploading image...</p>}
+            {imageError && <p className="text-red-600 mt-2">{imageError}</p>}
+            {formData.passport_photo && !imageLoading && (
+              <div className="text-green-600 mt-2">
+                <p>Image uploaded successfully!</p>
+              </div>
+            )}
+            {selectedFile && !imageLoading && !formData.passport_photo && !imageError && (
+              <p className="text-gray-600 mt-2">Ready to upload: {selectedFile.name}</p>
+            )}
+          </div>
 
-        {formData.errorMessage && <p className="text-red-600 mb-4">{formData.errorMessage}</p>}
-        {formData.successMessage && <p className="text-green-600 mb-4">{formData.successMessage}</p>}
+          {formData.errorMessage && <p className="text-red-600 mb-4">{formData.errorMessage}</p>}
+          {formData.successMessage && <p className="text-green-600 mb-4">{formData.successMessage}</p>}
 
-        <div>
-          <button
-            type="submit"
-            className="w-full bg-yellow-700 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded"
-            disabled={imageLoading}
-          >
-            Kirim Permohonan
-          </button>
-        </div>
-      </form>
-    </div>
+          <div>
+            <button
+              type="submit"
+              className="w-full bg-yellow-700 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded"
+              disabled={imageLoading}
+            >
+              Kirim Permohonan
+            </button>
+          </div>
+        </form>
+      </div>
+    </>
   );
 }

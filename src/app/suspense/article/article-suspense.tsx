@@ -91,7 +91,7 @@ export default function Article() {
                 <meta name="description" content="Website resmi Polsek Bendo. Informasi SKCK Online, laporan kehilangan, kontak, dan pelayanan masyarakat." />
                 <meta name="keywords" content="Polsek Bendo, SKCK Online, Kepolisian Bendo, Pelayanan Kepolisian, Madiun" />
                 <meta name="author" content="Polsek Bendo" />
-                <link rel="canonical" href="https://polsek-bendo.my.id/" />
+                <link rel="canonical" href="https://polsek-bendo.my.id/article" />
             </Head>
 
             <div className="bg-white text-black min-h-screen">

@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import getUserId from './../../utils/auth/page';
 import React from 'react';
+import Head from "next/head";
 
 interface Note {
     id: string;
@@ -80,6 +81,15 @@ export default function Note() {
         fetchData();
     }, [searchParams]);
     return (
+        <>
+         {/* SEO */}
+            <Head>
+                <title>Catatan Polisi</title>
+                <meta name="description" content="Lihat catatan resmi dari pihak kepolisian mengenai layanan Anda." />
+                <meta name="keywords" content="Polsek Bendo, SKCK Online, Kepolisian Bendo, Pelayanan Kepolisian, Magetan" />
+                <meta name="author" content="Polsek Bendo" />
+                <link rel="canonical" href="https://polsek-bendo.my.id/order/note" />
+            </Head>
         <div>
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 font-inter">
                 <NavbarUser />
@@ -145,5 +155,6 @@ export default function Note() {
                 <Footer />
             </div>
         </div>
+    </>
     )
 }

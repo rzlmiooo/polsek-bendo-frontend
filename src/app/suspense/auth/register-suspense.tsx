@@ -3,6 +3,7 @@ import axios from "axios";
 import { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { ACCESS_TOKEN_NAME } from '../../constants/apiConstants';
+import Head from "next/head";
 
 interface RegisterFormState {
     email: string;
@@ -173,6 +174,15 @@ export default function Registration() {
     };
 
     return (
+        <>
+        {/* SEO */}
+            <Head>
+                <title>Register</title>
+                <meta name="description" content="Daftar untuk menggunakan layanan digital dari Polsek Bendo." />
+                <meta name="keywords" content="Polsek Bendo, SKCK Online, Kepolisian Bendo, Pelayanan Kepolisian, Magetan" />
+                <meta name="author" content="Polsek Bendo" />
+                <link rel="canonical" href="https://polsek-bendo.my.id/register" />
+            </Head>
         <div>
             <div>
                 <div className="flex h-screen bg-yellow-700">
@@ -269,5 +279,6 @@ export default function Registration() {
                 </div>
             </div>
         </div>
+    </>
     );
 }

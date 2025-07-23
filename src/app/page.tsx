@@ -7,7 +7,6 @@ import Script from 'next/script';
 import { Metadata } from 'next';
 import Head from "next/head";
 
-
 export default function MainPage() {
   return (
     <Suspense fallback={<div>Redirect Home Page...</div>}>

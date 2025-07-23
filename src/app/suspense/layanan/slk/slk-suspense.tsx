@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import getUserId from '@/app/utils/auth/page';
+import Head from 'next/head';
 
 
 interface LPFormState {
@@ -124,6 +125,14 @@ export default function LaporanKehilanganForm() {
   };
 
   return (
+    <>
+    <Head>
+        <title>Laporan Kehilangan</title>
+        <meta name="description" content="Laporkan kehilangan barang secara resmi ke Polsek Bendo." />
+        <meta name="keywords" content="Polsek Bendo, SKCK Online, Kepolisian Bendo, Pelayanan Kepolisian, Magetan" />
+        <meta name="author" content="Polsek Bendo" />
+        <link rel="canonical" href="https://polsek-bendo.my.id/layanan/sik" />
+    </Head>
     <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
       <h2 className="text-xl font-bold mb-4">Form Laporan Kehilangan</h2>
       <form onSubmit={handleSubmitClick} className="space-y-5">
@@ -213,5 +222,6 @@ export default function LaporanKehilanganForm() {
         </div>
       </form>
     </div>
+    </>
   );
 }

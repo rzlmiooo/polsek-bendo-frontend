@@ -7,6 +7,7 @@ import axios from 'axios';
 import Navbar from '../../components/navbar';
 import Footer from '../../components/footer';
 import Image from 'next/image';
+import Head from 'next/head';
 
 interface DetailedNewsArticle {
   id: string;
@@ -86,36 +87,46 @@ export default function ReadArticle() {
   }
 
   return (
-    <div className="bg-white text-black min-h-screen">
-      <Navbar />
-      {article.map((article, index) => (
-        <div key={index} className="max-w-4xl mt-14 mx-auto py-10 px-4 sm:px-6 lg:px-8">
-          <Image
-            src={article.url_gambar_unggulan} 
-            alt={article.title || "Article featured image"}
-            width={800}
-            height={400}
-            priority
-          />
-          <h1 className="text-4xl font-bold mb-4">{article.title}</h1>
-          <p className="text-gray-600 text-sm mb-6">
-            Published: {new Date(article.published_at).toLocaleDateString()}
-          </p>
-          <div className="prose lg:prose-lg text-gray-800 leading-relaxed">
-            {/* It's crucial to be careful when rendering raw HTML content.
+    <>
+      {/* SEO */}
+      <Head>
+        <title>Detail Artikel</title>
+        <meta name="description" content="Baca artikel lengkap dan berita terbaru dari Polsek Bendo." />
+        <meta name="keywords" content="Polsek Bendo, SKCK Online, Kepolisian Bendo, Pelayanan Kepolisian, Magetan" />
+        <meta name="author" content="Polsek Bendo" />
+        <link rel="canonical" href="https://polsek-bendo.my.id/artikel/read-article" />
+      </Head>
+      <div className="bg-white text-black min-h-screen">
+        <Navbar />
+        {article.map((article, index) => (
+          <div key={index} className="max-w-4xl mt-14 mx-auto py-10 px-4 sm:px-6 lg:px-8">
+            <Image
+              src={article.url_gambar_unggulan}
+              alt={article.title || "Article featured image"}
+              width={800}
+              height={400}
+              priority
+            />
+            <h1 className="text-4xl font-bold mb-4">{article.title}</h1>
+            <p className="text-gray-600 text-sm mb-6">
+              Published: {new Date(article.published_at).toLocaleDateString()}
+            </p>
+            <div className="prose lg:prose-lg text-gray-800 leading-relaxed">
+              {/* It's crucial to be careful when rendering raw HTML content.
               If `article.content` contains HTML tags, use dangerouslySetInnerHTML,
               but ensure the content is sanitized to prevent XSS attacks.
               For plain text, just render directly.
           */}
-            <p>{article.content}</p> {/* If content is plain text */}
-            {/* <div dangerouslySetInnerHTML={{ __html: article.content }} /> */} {/* If content is HTML */}
+              <p>{article.content}</p> {/* If content is plain text */}
+              {/* <div dangerouslySetInnerHTML={{ __html: article.content }} /> */} {/* If content is HTML */}
+            </div>
+            {article.excerpt && (
+              <p className="mt-8 text-sm text-gray-500">Source/Excerpt: {article.excerpt}</p>
+            )}
           </div>
-          {article.excerpt && (
-            <p className="mt-8 text-sm text-gray-500">Source/Excerpt: {article.excerpt}</p>
-          )}
-        </div>
-      ))}
-      <Footer />
-    </div>
+        ))}
+        <Footer />
+      </div>
+    </>
   );
 }

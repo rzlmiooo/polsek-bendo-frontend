@@ -5,6 +5,7 @@ import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from 'next/navigation';
 import SuccessMessage from "../../../components/successMessageAdmin";
+import Head from "next/head";
 
 interface EditedSik {
     organizer_name: string;
@@ -310,6 +311,14 @@ export default function OrderEditSik() {
     }
 
     return (
+        <>
+        <Head>
+                <title>Edit Surat Izin Keramaian Saya</title>
+                <meta name="description" content="Sunting  surat izin keramaian yang telah Anda buat." />
+                <meta name="keywords" content="Polsek Bendo, SKCK Online, Kepolisian Bendo, Pelayanan Kepolisian, Magetan" />
+                <meta name="author" content="Polsek Bendo" />
+                <link rel="canonical" href="https://polsek-bendo.my.id/order/sik/edit-sik" />
+        </Head>
         <div>
             <div className="bg-white text-black min-h-screen p-8">
                 {loading && <p>Loading SKCK details...</p>}
@@ -463,5 +472,6 @@ export default function OrderEditSik() {
                 )}
             </div>
         </div>
+    </>
     )
 }

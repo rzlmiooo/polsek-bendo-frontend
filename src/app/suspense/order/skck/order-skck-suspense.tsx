@@ -9,6 +9,7 @@ import { useSearchParams } from 'next/navigation';
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import getUserId from './../../../utils/auth/page';
+import Head from "next/head";
 
 interface SkckDetail {
     id: string;
@@ -86,6 +87,14 @@ export default function OrderSkck() {
         fetchData();
     }, [searchParams]);
     return (
+        <>
+        <Head>
+                <title>SKCK Saya</title>
+                <meta name="description" content="Riwayat pengajuan SKCK Anda." />
+                <meta name="keywords" content="Polsek Bendo, SKCK Online, Kepolisian Bendo, Pelayanan Kepolisian, Magetan" />
+                <meta name="author" content="Polsek Bendo" />
+                <link rel="canonical" href="https://polsek-bendo.my.id/order/skck" />
+        </Head>
         <div>
             <div className="sm:flex sm:justify-left">
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-yellow-500 sm:text-2x1 m-4">Skck</h3>
@@ -232,5 +241,6 @@ export default function OrderSkck() {
                 </div>
             ))}
         </div>
+    </>
     )
 }
