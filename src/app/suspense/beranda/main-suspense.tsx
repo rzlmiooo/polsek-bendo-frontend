@@ -80,7 +80,7 @@ export default function Home() {
               <div>
                 <h2 className="text-2xl font-semibold mb-4">Tentang Kami</h2>
                 <p className="text-gray-700 text-base leading-relaxed">
-                  Polsek Bendo adalah bagian dari Polres Madiun yang bertugas menjaga keamanan dan ketertiban di wilayah Kecamatan Bendo. Kami berkomitmen memberikan pelayanan yang cepat, profesional, dan humanis kepada masyarakat. Bersama warga, kami membangun lingkungan yang aman, damai, dan tertib.
+                  Polsek Bendo adalah bagian dari Polres Magetan yang bertugas menjaga keamanan dan ketertiban di wilayah Kecamatan Bendo. Kami berkomitmen memberikan pelayanan yang cepat, profesional, dan humanis kepada masyarakat. Bersama warga, kami membangun lingkungan yang aman, damai, dan tertib.
                 </p>
               </div>
 
