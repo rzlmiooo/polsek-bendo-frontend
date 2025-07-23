@@ -17,6 +17,8 @@ export default function Login() {
     const [password, setPassword] = useState<string>("");
     const [error, setError] = useState<string>("");
 
+    const baseUrl = process.env.NEXT_PUBLIC_AUTH_URL;
+
     const handleSubmitClick = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("");
@@ -38,7 +40,6 @@ export default function Login() {
                     <header>
                         <img className="w-20 mx-auto mb-5" src="/images/Polri_Logo.png" />
                     </header>
-                    <h1>Ini Login Admin</h1>
                     <form onSubmit={handleSubmitClick}>
                         <div>
                             <label className="block mb-2 text-yellow-700" htmlFor="email">email</label>

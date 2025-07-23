@@ -18,6 +18,9 @@ interface RegisterFormState {
 export default function Registration() {
     const router = useRouter();
 
+    const baseApiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const baseAuthUrl = process.env.NEXT_PUBLIC_AUTH_URL;
+
     const [formData, setFormData] = useState<RegisterFormState>({
         email: "",
         password: "",
@@ -68,9 +71,10 @@ export default function Registration() {
             for (const pair of cloudinaryFormData.entries()) {
                 console.log(`${pair[0]}:`, pair[1]);
             }
+            const apiUrl = `${baseApiUrl}upload`;
 
             const response = await axios.post(
-                'https://striking-vision-production-4ee1.up.railway.app/api/upload',
+                apiUrl,
                 cloudinaryFormData,
                 {
                     headers: {
@@ -147,7 +151,9 @@ export default function Registration() {
                 profile_picture: formData.profile_picture
             };
 
-            const response = await axios.post('https://striking-vision-production-4ee1.up.railway.app/auth/signup', payload);
+            const authUrl = `${baseAuthUrl}signup`;
+
+            const response = await axios.post(authUrl, payload);
 
             if (response.status === 200 ) {
                 localStorage.setItem(ACCESS_TOKEN_NAME, response.data.token);
