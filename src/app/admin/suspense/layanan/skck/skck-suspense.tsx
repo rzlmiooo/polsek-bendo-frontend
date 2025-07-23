@@ -2,13 +2,11 @@
 
 import axios from "axios";
 import AdminNavbar from "@/app/components/adminnavbar";
-import Footer from "../../../../components/footer";
-import Navbar from "../../../../components/navbar";
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
-import getUserId from "../../../../utils/auth/page";
+import Image from 'next/image';
 
 interface Skck {
     id: string;
@@ -205,7 +203,14 @@ export default function KelolaSkck() {
                                             <dl className="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
                                                 <dt className="text-base font-medium text-gray-500 dark:text-gray-400">Pas Foto:</dt>
                                                 <dd className="mt-1.5 text-base font-semibold text-gray-900 dark:text-white">
-                                                    <img src={skck.passport_photo} alt="" className="w-auto h-32 w-4 mr-12" />
+
+                                                    <Image
+                                                        src={skck.passport_photo}
+                                                        alt="Profile User Picture"
+                                                        width={400}
+                                                        height={200}
+                                                        priority
+                                                    />
                                                 </dd>
                                             </dl>
 
