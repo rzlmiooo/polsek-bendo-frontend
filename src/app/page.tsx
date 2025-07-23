@@ -4,6 +4,13 @@ import PathWrapper from "./components/pathWrapper";
 import { Analytics } from "@vercel/analytics/next";
 import Home from "./suspense/beranda/main-suspense";
 import Script from 'next/script';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  other: {
+    'google-site-verification': 'google8d73e2f35b758c41.html',
+  },
+};
 
 export default function MainPage() {
   return (
