@@ -68,8 +68,8 @@ export default function Home() {
           <Image
             src="/images/depan_ada_tugu_polsek.jpg"
             alt="Background Landing Page"
-            width={500}
-            height={300}
+            width={2100}
+            height={1100}
             priority
           />
         </div>
