@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Polsek Bendo - Biografi",
+    description: "Biografi dari para anggota Polsek Bendo/",
+};
+
 export default function Biografi() {
     return (
         <div>

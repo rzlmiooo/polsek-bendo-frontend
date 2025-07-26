@@ -1,5 +1,11 @@
 import Navbar from "@/app/components/navbar"
 import React from 'react';
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Struktur Organisasi Polsek Bendo",
+    description: "Polisi daerah sekitar Kecamatan Bendo",
+};
 
 const VerticalConnector = () => <div className="w-px bg-gray-400 h-8"></div>;
 const HorizontalConnector = () => <div className="h-px bg-gray-400 w-full"></div>;

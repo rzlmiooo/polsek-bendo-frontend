@@ -1,4 +1,10 @@
 import AdminNavbar from '@/app/components/adminnavbar';
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Admin - Dashboard",
+    description: "Polisi daerah sekitar Kecamatan Bendo",
+};
 
 export default function Admin() {
   return (
