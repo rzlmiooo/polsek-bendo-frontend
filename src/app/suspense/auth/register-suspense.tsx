@@ -192,57 +192,57 @@ export default function Registration() {
                         </header>
                         <form onSubmit={handleSubmitClick}>
                             <div>
-                                <label className="block mb-2 text-yellow-700" htmlFor="username">username</label>
+                                <label className="block mb-2 text-yellow-800 text-sm" htmlFor="username">Username</label>
                                 <input
-                                    className="w-full p-2 mb-6 text-yellow-700 border-b-2 border-yellow-500 outline-none focus:bg-gray-300 rounded-md"
+                                    className="w-full p-2 mb-4 text-yellow-700 border-b-2 text-sm border-yellow-500 outline-none focus:bg-gray-300 rounded-md"
                                     type="text"
                                     name="username"
-                                    placeholder="Enter Username"
+                                    placeholder="Buat Username"
                                     value={formData.username}
                                     onChange={handleChange}
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block mb-2 text-yellow-700" htmlFor="email">email</label>
+                                <label className="block mb-2 text-yellow-800 text-sm" htmlFor="email">Email</label>
                                 <input
-                                    className="w-full p-2 mb-6 text-yellow-700 border-b-2 border-yellow-500 outline-none focus:bg-gray-300 rounded-md"
+                                    className="w-full p-2 mb-4 text-yellow-700 border-b-2 text-sm border-yellow-500 outline-none focus:bg-gray-300 rounded-md"
                                     type="email" 
                                     name="email"
-                                    placeholder="Enter Email"
+                                    placeholder="Masukkan Email"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block mb-2 text-yellow-700" htmlFor="password">Password</label>
+                                <label className="block mb-2 text-yellow-800 text-sm" htmlFor="password">Password</label>
                                 <input
-                                    className="w-full p-2 mb-6 text-yellow-700 border-b-2 border-yellow-500 outline-none focus:bg-gray-300 rounded-md"
+                                    className="w-full p-2 mb-4 text-yellow-700 border-b-2 text-sm border-yellow-500 outline-none focus:bg-gray-300 rounded-md"
                                     type="password"
                                     name="password"
-                                    placeholder="Enter Password"
+                                    placeholder="Buat Password"
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block mb-2 text-yellow-700" htmlFor="confirmPassword">Confirm Password</label>
+                                <label className="block mb-2 text-yellow-800 text-sm" htmlFor="confirmPassword">Confirm Password</label>
                                 <input
-                                    className="w-full p-2 mb-6 text-yellow-700 border-b-2 border-yellow-500 outline-none focus:bg-gray-300 rounded-md"
+                                    className="w-full p-2 mb-4 text-yellow-700 border-b-2 text-sm border-yellow-500 outline-none focus:bg-gray-300 rounded-md"
                                     type="password"
                                     name="confirmPassword" 
-                                    placeholder="Enter Confirm Password"
+                                    placeholder="Konfirmasi Password"
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block mb-2 text-yellow-700" htmlFor="profile_picture">Your Profile Picture</label>
+                                <label className="block mb-2 text-yellow-800 text-sm" htmlFor="profile_picture">Your Profile Picture</label>
                                 <input
-                                    className="w-full p-2 mb-6 text-yellow-700 border-b-2 border-yellow-500 outline-none focus:bg-gray-300 rounded-md"
+                                    className="w-full p-2 mb-4 text-yellow-700 border-b-2 text-sm border-yellow-500 outline-none focus:bg-gray-300 rounded-md"
                                     type="file"
                                     accept="image/*"
                                     onChange={handleFilePictureChange} 
@@ -265,7 +265,7 @@ export default function Registration() {
                            
                             <div>
                                 <input
-                                    className="w-full bg-yellow-700 hover:bg-yellow-500 text-white font-bold py-2 px-4 mb-6 rounded-md"
+                                    className="w-full bg-yellow-700 hover:bg-yellow-500 text-white font-bold py-2 px-4 mb-4 rounded-md"
                                     type="submit"
                                     value={imageLoading ? "Uploading Image..." : "Register"} 
                                     disabled={imageLoading} 
