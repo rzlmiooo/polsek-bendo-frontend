@@ -1,6 +1,6 @@
+import "./globals.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import Script from 'next/script';
 
 const geistSans = Geist({
@@ -15,7 +15,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Polsek Bendo",
-  description: "Polisi daerah sekitar Kecamatan Bendo",
+  description: "Website Layanan Masyarakat dari Kepolisian Sektor Kecamatan Bendo",
+  verification: {
+    google: 'kPptZ5boJ9QHlGWamNOX1TXLEPZruxtoGj-WHwaT-JI'
+  }
 };
 
 export default function RootLayout({
