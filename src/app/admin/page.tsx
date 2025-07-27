@@ -10,7 +10,7 @@ export default function Admin() {
   return (
     <>
       <AdminNavbar />
-      <main className="pt-20 px-4">
+      <main className="pt-20 py-10 px-4 bg-white dark:bg-gray-900">
         <h1 className="text-2xl font-bold">Dashboard Admin</h1>
       </main>
     </>

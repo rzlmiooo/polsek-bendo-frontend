@@ -85,19 +85,9 @@ export default function Footer() {
                     <span>
                         © 2025 <a href="/" className="hover:underline">Polsek Bendo™</a>. All Rights Reserved.
                     </span>
-                    <div className="flex flex-wrap justify-center gap-4">
-                        {/* Social icons */}
-                        {/* You can insert your SVG icons here like before */}
-                        <a href="https://www.instagram.com/polsekbendo31?igsh=MWc2N3V4NHB5amZ2OA==" className="hover:text-gray-900 dark:hover:text-white">
-                            <span className="sr-only">Instagram</span>
-                            <svg className="w-4 h-4" />
-                        </a>
-                        <a href="https://wa.me/6281234619123" className="hover:text-gray-900 dark:hover:text-white">
-                            <span className="sr-only">WhatsApp</span>
-                            <svg className="w-4 h-4" />
-                        </a>
-                        {/* Add more icons as needed */}
-                    </div>
+                    <span>
+                        Website by <a href="https://lawu-digital.vercel.app" target="_blank" rel="noopener noreferrer" className="font-bold">Lawu Digital</a>
+                    </span>
                 </div>
             </div>
         </footer>

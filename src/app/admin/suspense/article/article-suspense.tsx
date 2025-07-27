@@ -87,51 +87,24 @@ export default function Article() {
     return (
         <div>
             <AdminNavbar />
-
-            <div className="absolute right-6 top-24 z-10 sm:top-18">
-                <Link href="./articles/create-article">
-                    <button
-                        type="button"
-                        className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-                    >
-                        Create Article
-                    </button>
-                </Link>
-            </div>
-
             <main className="lg:ml-[260px]">
-                <section className="pt-20 bg-white py-24 antialiased dark:bg-gray-900 md:py-18">
+                <section className="p-2 pt-4 bg-white antialiased dark:bg-gray-900 py-24 md:py-4">
                     <div className="mx-auto max-w-screen-xl px-4 2xl:px-0 **lg:ml-[260px]**">
                         <div className="mx-auto max-w-5xl">
-                            <div className="gap-4 sm:flex sm:items-center sm:justify-between">
+                            <div className="gap-4 flex items-center justify-between">
                                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">List Artikel</h2>
-
-                                <div className="mt-6 gap-4 space-y-4 sm:mt-0 sm:flex sm:items-center sm:justify-end sm:space-y-0">
-                                    <div>
-                                        <label htmlFor="order-type" className="sr-only mb-2 block text-sm font-medium text-gray-900 dark:text-white">Select order type</label>
-                                        <select id="order-type" className="block w-full min-w-[8rem] rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
-                                            <option selected>All orders</option>
-                                            <option value="pre-order">Pre-order</option>
-                                            <option value="transit">In transit</option>
-                                            <option value="confirmed">Confirmed</option>
-                                            <option value="cancelled">Cancelled</option>
-                                        </select>
-                                    </div>
-
-                                    <span className="inline-block text-gray-500 dark:text-gray-400"> from </span>
-
-                                    <div>
-                                        <label htmlFor="duration" className="sr-only mb-2 block text-sm font-medium text-gray-900 dark:text-white">Select duration</label>
-                                        <select id="duration" className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
-                                            <option selected>this week</option>
-                                            <option value="this month">this month</option>
-                                            <option value="last 3 months">the last 3 months</option>
-                                            <option value="lats 6 months">the last 6 months</option>
-                                            <option value="this year">this year</option>
-                                        </select>
-                                    </div>
+                                <div className="">
+                                    <Link href="./articles/create-article">
+                                        <button
+                                            type="button"
+                                            className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                        >
+                                            Buat Artikel
+                                        </button>
+                                    </Link>
                                 </div>
                             </div>
+                            
                             {news.map((blog, index) => (
                                 <div key={index} className="mt-6 flow-root sm:mt-8">
                                     <div className="divide-y divide-gray-200 dark:divide-gray-700">
