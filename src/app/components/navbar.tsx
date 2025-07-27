@@ -1,16 +1,27 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isNavbarOpen, setIsNavbarOpen] = useState(false);
+  const hideTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const showDropdown = () => {
+    clearTimeout(hideTimeout.current!);
+    setIsNavbarOpen(true);
+  };
+
+  const scheduleHide = () => {
+    hideTimeout.current = setTimeout(() => setIsNavbarOpen(false), 300); // delay biar gak ke-close langsung
+  };
 
   return (
-    <div>
+    <div className="relative inline-block">
       <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-lg border-b border-[#996515] text-black">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           {/* Logo */}
           <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
             <img
-              src="/images/Lambang_Polda_Jatim.png"
+              src="/images/polda_jatim.png"
               className="h-8"
               alt="Logo"
             />
@@ -78,7 +89,10 @@ export default function Navbar() {
                 </a>
               </li>
               <li>
-                <a href="/layanan/skck" className="block py-2 px-3 hover:text-[#996515]">
+                <button onClick={() => setIsNavbarOpen(!isNavbarOpen)} className="hidden py-2 px-3 md:block hover:text-[#996515]" onMouseEnter={showDropdown} onMouseLeave={scheduleHide}>
+                  Layanan
+                </button>
+                <a href="/layanan" className="block md:hidden py-2 px-3 hover:text-[#996515]">
                   Layanan
                 </a>
               </li>
@@ -103,6 +117,29 @@ export default function Navbar() {
           </div>
         </div>
       </nav>
+
+      <section className={`fixed flex justify-center z-50 top-20 py-4 w-full bg-white shadow-lg transition-all duration-200 ${isNavbarOpen ? 'opacity-100 pointer-events-auto visible' : 'opacity-0 pointer-events-none invisible'}`} onMouseEnter={showDropdown} onMouseLeave={scheduleHide}>
+        <div className="flex flex-wrap justify-center gap-8">
+          {[
+            { href: "./layanan/skck", icon: "icon-skck", label: "SKCK ONLINE" },
+            { href: "./layanan/laporan_kehilangan", icon: "icon-laporan", label: "Laporan Kehilangan" },
+            { href: "./layanan/pengaduan", icon: "icon-pengaduan", label: "Pengaduan Masyarakat" },
+            { href: "./layanan/rencana", icon: "icon-rencana", label: "Rencana Acara" },
+            { href: "./layanan/izin_keramaian", icon: "icon-izin", label: "Izin Keramaian" },
+          ].map((layanan, idx) => (
+            <a
+              key={idx}
+              href={layanan.href}
+              className="flex items-center gap-3 hover:text-yellow-700 transition-colors"
+            >
+              <div className="w-12 h-12 flex items-center justify-center border border-gray-300 rounded-sm">
+                <img src={`/icons/${layanan.icon}.svg`} alt={layanan.label} className="w-6 h-6" />
+              </div>
+              <span className="text-base font-semibold text-gray-700">{layanan.label}</span>
+            </a>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

@@ -79,25 +79,19 @@ export default function Home() {
           <div className="max-w-screen-xl mx-auto">
 
             {/* Tentang Kami & Info */}
-            <section className="grid grid-cols-1 md:grid-cols-2 gap-8 py-12">
+            <section className="grid grid-cols-1 md:grid-cols-2 justify-center py-12 px-10 md:px-40">
+              <Image src="/images/polda_jatim.png" alt="Polda Jatim" height={300} width={300} className="size-50 object-contain mb-10 md:mb-0"></Image>
               <div>
-                <h2 className="text-2xl font-semibold mb-4">Tentang Kami</h2>
+                <h2 className="text-2xl font-semibold mb-4">Tentang POLSEK BENDO</h2>
                 <p className="text-gray-700 text-base leading-relaxed">
                   Polsek Bendo adalah bagian dari Polres Magetan yang bertugas menjaga keamanan dan ketertiban di wilayah Kecamatan Bendo. Kami berkomitmen memberikan pelayanan yang cepat, profesional, dan humanis kepada masyarakat. Bersama warga, kami membangun lingkungan yang aman, damai, dan tertib.
                 </p>
-              </div>
-
-              <div className="bg-white shadow-md p-6 rounded-lg">
-                <h2 className="text-2xl font-semibold mb-4">Info</h2>
-                <div className="overflow-x-auto">
-                  {/* Info content goes here */}
-                </div>
               </div>
             </section>
 
             {/* Trending Carousel */}
             <section className="py-12">
-              <h4 className="text-2xl font-bold mb-6 text-gray-800">Ikuti Topik yang Sedang Tren</h4>
+              <h4 className="px-10 md:px-16 text-2xl font-bold mb-6 text-gray-800">Ikuti Topik yang Sedang Tren</h4>
               <div className="w-full px-4 md:px-8 lg:px-16 py-6">
                 <Swiper
                   spaceBetween={20}
@@ -109,7 +103,14 @@ export default function Home() {
                     1280: { slidesPerView: 4 },
                   }}
                   navigation
-                  pagination={{ clickable: true }}
+                  pagination={{
+                    el: '.custom-swiper-pagination',
+                    clickable: true,
+                    renderBullet: (index, className) => {
+                      return `<span class="${className} w-3 h-3 bg-gray-300 rounded-full inline-block mx-1 transition-all duration-300"></span>`;
+                    },
+                  }}
+                  
                   loop={news.length > 4}
                   modules={[Pagination, Navigation]}
                   className="mySwiper"
@@ -126,11 +127,11 @@ export default function Home() {
                         </a>
                         <div className="p-4 flex flex-col flex-grow">
                           <Link href={`/artikel/read-article?blog_id=${blog.id}`}>
-                            <h5 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                            <h5 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
                               {blog.title}
                             </h5>
                           </Link>
-                          <p className="text-gray-700 dark:text-gray-400 mb-4 flex-grow line-clamp-3">
+                          <p className="text-gray-700 mb-4 flex-grow line-clamp-3">
                             {blog.content.slice(0, 100)}...
                           </p>
                           <Link
@@ -158,6 +159,7 @@ export default function Home() {
                     </SwiperSlide>
                   ))}
                 </Swiper>
+                <div className="custom-swiper-pagination mt-4 flex justify-center" />
               </div>
 
             </section>
