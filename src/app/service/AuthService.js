@@ -24,8 +24,8 @@ export const AuthService = {
   },
 
   logout: () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
     window.location.href = '/';
   },
 

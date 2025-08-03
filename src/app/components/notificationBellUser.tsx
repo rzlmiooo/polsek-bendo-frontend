@@ -121,7 +121,7 @@ export default function NotificationBell() {
       <div className="cursor-pointer">
         <BellIcon className="h-7 w-7 text-gray-600" />
         {count > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-600 text-black text-xs w-5 h-5 rounded-full flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 bg-red-600 text-black dark:text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
             {count}
           </span>
         )}
@@ -131,7 +131,7 @@ export default function NotificationBell() {
         <div className="absolute right-0 mt-2 w-56 rounded-lg bg-white dark:bg-gray-800 shadow-xl z-50 p-4 text-sm">
           {count > 0 ? (
             <>
-              <p className="mb-2 font-medium">{count} Pesan dari Polisi terbaru</p>
+              <p className="mb-2 font-medium text-black dark:text-white">{count} Pesan dari Polisi terbaru</p>
               <Link
                 href="/order/note"
                 className="text-sky-500 hover:underline"
