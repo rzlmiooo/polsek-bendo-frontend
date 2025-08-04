@@ -1,12 +1,13 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState, FormEvent } from 'react';
 import Link from 'next/link';
 import UserGreeting from './greetings';
 import UserProfile from './foto';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import NotificationBell from './notificationBellAdmin';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid';
+import { AuthService } from '../service/AuthService';
 
 declare global {
   interface Window {
@@ -20,12 +21,27 @@ export default function AdminNavbar() {
   const href = isAdminPage ? '/admin' : '/';
   const profile = isAdminPage ? '/admin/profile' : '/settings/profile';
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const router = useRouter();
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.HSStaticMethods) {
       window.HSStaticMethods.autoInit();
     }
   }, []);
+
+  const logout = async (e: FormEvent) => {
+    e.preventDefault();
+    setError("");
+    try {
+        await AuthService.logout(); 
+        console.log("Logout Successful");
+        await router.push("/"); 
+    } catch (err: any) {
+        console.error("Logout error:", err?.response?.data || err.message);
+        setError(err?.response?.data?.message || "Logout failed");
+    }
+  }
 
   return (
     <>
@@ -80,11 +96,17 @@ export default function AdminNavbar() {
                 {/* Dropdown */}
                 <div className="hs-dropdown [--placement:bottom-right] relative inline-flex">
                   <div className="flex justify-center items-center gap-6">
-                    <NotificationBell />
+                    <NotificationBell/>
                     <Link href={profile} className="flex justify-center items-center gap-3">
                          <h1 className="hidden sm:block font-bold text-gray-800 dark:text-sky-50">Hi, <UserGreeting /></h1>
                       <UserProfile />
                     </Link>
+                    <button onClick={logout} className="flex justify-center gap-2 items-center md:py-2 md:px-6 hover:text-[#996515] md:border-l-1 border-black dark:border-white text-black dark:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+                    </svg>
+                    <h2 className="font-bold">Logout</h2>
+                    </button>
                   </div>
                 </div>
                 {/* End Dropdown */}
