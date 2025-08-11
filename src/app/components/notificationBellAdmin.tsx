@@ -20,23 +20,22 @@ export default function NotificationBell() {
   
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   
-      useEffect(() => {
-          setIsClient(true);
-          if (typeof window !== 'undefined') {
-  
-              const storedToken = localStorage.getItem('token');
-              console.log("Token", storedToken);
-              const role = localStorage.getItem('role');
-  
-              if (role !== 'admin') {
-                  router.replace('/unauthorized');
-                  return;
-              }
-  
-              if (storedToken) {
-                  setToken(storedToken);
-              }
+  useEffect(() => {
+      setIsClient(true);
+      if (typeof window !== 'undefined') {
+          const storedToken = localStorage.getItem('token');
+   
+          const role = localStorage.getItem('role');
+
+          if (role !== 'admin') {
+              router.replace('/unauthorized');
+              return;
           }
+
+          if (storedToken) {
+              setToken(storedToken);
+          }
+      }
   }, [router]);
 
   useEffect(() => {
@@ -62,15 +61,15 @@ export default function NotificationBell() {
 
         const users = usersRes.data || [];
         const allSkcks = skcksRes.data || [];
-  
+
         if (!userId) return;
   
         const pendingSkcks = allSkcks.filter(
           (b:any) =>
-            b.status === "pending" &&
-            b.counselor_id === userId
+            b.verification_status === "proses" &&
+            users.filter((user:any) => user.id === b.user_id)
         );
-  
+
         const combinedData = pendingSkcks.map((skck:any) => {
           const user = users.find((u:any) => u.id === skck.officer_in_charge);
           return {
@@ -90,9 +89,6 @@ export default function NotificationBell() {
     return () => clearInterval(interval);
   }, [token, role]);
 
-  if (role === null || token === null) return null;
-  if (role !== 'konselor') return null;
-  
 
   const handleMouseEnter = () => {
     if (timeoutRef.current) { 
@@ -115,7 +111,7 @@ export default function NotificationBell() {
         onMouseLeave={handleMouseLeave}
         >
         <div className="cursor-pointer">
-            <BellIcon className="h-7 w-7 text-sky-50" />
+            <BellIcon className="h-7 w-7 text-gray-900 dark:text-sky-50" />
             {count > 0 && (
             <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                 {count}
@@ -124,22 +120,22 @@ export default function NotificationBell() {
         </div>
 
         {open && (
-            <div className="absolute right-0 mt-2 w-56 rounded-lg bg-white dark:bg-gray-800 shadow-xl z-50 p-4 text-sm">
+            <div className="absolute right-0 mt-2 w-56 rounded-lg bg-white dark:bg-gray-800 shadow-xl z-50 p-4 text-sm text-gray-500 dark:text-gray-50">
             {count > 0 ? (
                 <>
-                <p className="mb-2 font-medium">{count} Booking terbaru</p>
+                <p className="mb-2 font-medium">{count} Permintaan SKCK</p>
                 <Link
-                    href="/admin/order"
+                    href="/admin/layanan/skck"
                     className="text-sky-500 hover:underline"
                 >
-                    Pergi ke Booking
+                    Pergi ke Kelola SKCK
                 </Link>
                 </>
             ) : (
                 <>
-                <p className="mb-2 text-gray-500">Belum ada Booking</p>
+                <p className="mb-2 text-gray-500 dark:text-gray-50">Belum ada Booking</p>
                 <span className="text-gray-400 cursor-not-allowed">
-                    Pergi ke Booking
+                    Pergi ke Kelola SKCK
                 </span>
                 </>
             )}

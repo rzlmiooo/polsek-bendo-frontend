@@ -2,8 +2,6 @@
 
 import axios from "axios";
 import AdminNavbar from "@/app/components/adminnavbar";
-import Footer from "../../../components/footer";
-import Navbar from "../../../components/navbar";
 import { useEffect, useState } from "react";
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from "next/navigation";
@@ -157,7 +155,7 @@ export default function Article() {
                                         )}
 
                                         <div className="w-full sm:w-auto lg:w-1/6 flex justify-end">
-                                        <Link href={`/admin/articles/edit-article?blog_id=${blog.id}`} legacyBehavior>
+                                        <Link href={`/admin/articles/edit-article?blog_id=${blog.id}`}>
                                             <button
                                             type="button"
                                             className="w-full sm:w-auto rounded-lg border border-blue-700 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900">

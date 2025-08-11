@@ -1,18 +1,20 @@
 import AdminNavbar from '@/app/components/adminnavbar';
+import { Suspense } from 'react';
 import type { Metadata } from "next";
+import Dashboard from './suspense/dashboard';
 
 export const metadata: Metadata = {
     title: "Admin - Dashboard",
     description: "Polisi daerah sekitar Kecamatan Bendo",
 };
 
-export default function Admin() {
-  return (
-    <>
-      <AdminNavbar />
-      <main className="pt-20 py-10 px-4 bg-white dark:bg-gray-900">
-        <h1 className="text-2xl font-bold">Dashboard Admin</h1>
-      </main>
-    </>
-  );
+export default function AdminDasboard(){
+    return(
+        <div className="bg-white dark:bg-gray-900 h-screen">
+            <AdminNavbar/>
+            <Suspense>
+                <Dashboard />
+            </Suspense>
+        </div>
+    )
 }
