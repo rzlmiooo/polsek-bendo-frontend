@@ -2,6 +2,10 @@
 
 import axios from 'axios';
 import { useState, ChangeEvent, FormEvent } from "react";
+<<<<<<< HEAD
+=======
+import { LucideUser, LucideCalendar, LucideGlobe, LucideHeart, LucideBriefcase, LucideMapPin } from 'lucide-react';
+>>>>>>> cd21765 (My changes)
 import { useRouter } from "next/navigation";
 import getUserId from '@/app/utils/auth/page';
 import Head from 'next/head';
@@ -18,6 +22,12 @@ interface SIKFormState {
   levy_fees: string;
   form_creation: string;
   status_handling: string;
+<<<<<<< HEAD
+=======
+  religion: string;
+  job: string;
+  address: string;
+>>>>>>> cd21765 (My changes)
   successMessage: string | null;
   errorMessage: string | null;
 }
@@ -38,6 +48,12 @@ export default function IzinKeramaianForm() {
     levy_fees: "",
     form_creation: "",
     status_handling: "dipending",
+<<<<<<< HEAD
+=======
+    religion: "",
+    job: "",
+    address: "",
+>>>>>>> cd21765 (My changes)
     successMessage: null,
     errorMessage: null,
   });
@@ -66,7 +82,14 @@ export default function IzinKeramaianForm() {
       !formData.location ||
       !formData.guest_estimate ||
       !formData.levy_fees ||
+<<<<<<< HEAD
       !formData.form_creation
+=======
+      !formData.form_creation ||
+      !formData.religion ||
+      !formData.job ||
+      !formData.address 
+>>>>>>> cd21765 (My changes)
     ) {
       setFormData((prev) => ({
         ...prev,
@@ -87,6 +110,12 @@ export default function IzinKeramaianForm() {
         guest_estimate: formData.guest_estimate,
         levy_fees: formData.levy_fees,
         form_creation: formData.form_creation,
+<<<<<<< HEAD
+=======
+        religion: formData.religion,
+        job: formData.job,
+        address: formData.address
+>>>>>>> cd21765 (My changes)
       };
 
       const apiSikUrl = `${baseApiUrl}sik`;
@@ -261,6 +290,89 @@ export default function IzinKeramaianForm() {
             />
           </div>
 
+<<<<<<< HEAD
+=======
+          <div>
+            <label htmlFor="religion" className="block text-sm font-medium text-gray-700 mb-1">
+              Agama
+            </label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <LucideHeart className="h-5 w-5 text-gray-400" />
+              </span>
+              <select
+                id="religion"
+                name="religion"
+                value={formData.religion}
+                onChange={handleChange}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer transition-colors"
+                required
+              >
+                <option value="" disabled>Pilih Agama</option>
+                <option value="Islam">Islam</option>
+                <option value="Kristen">Kristen</option>
+                <option value="Katolik">Katolik</option>
+                <option value="Hindu">Hindu</option>
+                <option value="Buddha">Buddha</option>
+                <option value="Konghucu">Konghucu</option>
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Pekerjaan Dropdown */}
+          <div>
+            <label htmlFor="job" className="block text-sm font-medium text-gray-700 mb-1">
+              Pekerjaan
+            </label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <LucideBriefcase className="h-5 w-5 text-gray-400" />
+              </span>
+              <select
+                id="job"
+                name="job"
+                value={formData.job}
+                onChange={handleChange}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer transition-colors"
+                required
+              >
+                <option value="" disabled>Pilih Pekerjaan</option>
+                <option value="Pegawai Negeri Sipil">Pegawai Negeri Sipil</option>
+                <option value="Karyawan Swasta">Karyawan Swasta</option>
+                <option value="Wiraswasta">Wiraswasta</option>
+                <option value="Pelajar/Mahasiswa">Pelajar/Mahasiswa</option>
+                <option value="Ibu Rumah Tangga">Ibu Rumah Tangga</option>
+                <option value="Lainnya">Lainnya</option>
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Jobs */}
+        <div>
+          <label htmlFor="address" className="block font-medium">Alamat</label>
+          <input
+            type="text"
+            id="address"
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
+            className="w-full mt-1 border p-2 rounded"
+            placeholder="Jln.Pegangsaan No.50"
+            required
+          />
+        </div>
+
+>>>>>>> cd21765 (My changes)
           {formData.errorMessage && <p className="text-red-600 mb-4">{formData.errorMessage}</p>}
           {formData.successMessage && <p className="text-green-600 mb-4">{formData.successMessage}</p>}
 

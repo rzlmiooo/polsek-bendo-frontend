@@ -29,6 +29,10 @@ interface EditedPm {
 }
 export default function KelolaPengaduanMasyarakat() {
     const router = useRouter();
+<<<<<<< HEAD
+=======
+    const officerId = getUserId();
+>>>>>>> cd21765 (My changes)
     const [pmData, setPm] = useState<Pm[]>([]);
     const [loading, setLoading] = useState<boolean>(true); 
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -80,8 +84,13 @@ export default function KelolaPengaduanMasyarakat() {
         setMessage(null);
 
         try {
+<<<<<<< HEAD
             const apiSlkUrl = `${baseUrl}pm`;
             const pmRes = await axios.get<Pm[]>(apiSlkUrl, {
+=======
+            const apiPmUrl = `${baseUrl}pm`;
+            const pmRes = await axios.get<Pm[]>(apiPmUrl, {
+>>>>>>> cd21765 (My changes)
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -90,7 +99,11 @@ export default function KelolaPengaduanMasyarakat() {
             setPm(pmRes.data || []);
         } catch (err: any) {
             console.error('Error fetching data:', err);
+<<<<<<< HEAD
             setError(err.response?.data?.message || 'Failed to fetch SLK data.');
+=======
+            setError(err.response?.data?.message || 'Failed to fetch PM data.');
+>>>>>>> cd21765 (My changes)
         } finally {
             setIsLoading(false);
         }
@@ -110,18 +123,33 @@ export default function KelolaPengaduanMasyarakat() {
         setMessage(null);
 
         const payload = {
+<<<<<<< HEAD
             id: pmId,
+=======
+            officer_in_charge : officerId,
+>>>>>>> cd21765 (My changes)
             complaint_status: status,
         };
 
         try {
+<<<<<<< HEAD
             const apiSlkUrl = `${baseUrl}pm/${pmId}`;
             await axios.patch(apiSlkUrl, payload, {
+=======
+            const apiSlkUrl = `${baseUrl}pm/status/${pmId}`;
+
+
+            await axios.put(apiSlkUrl, payload, {
+>>>>>>> cd21765 (My changes)
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
+<<<<<<< HEAD
+=======
+            
+>>>>>>> cd21765 (My changes)
 
             if (status === 'diterima') {
                 setMessage({ type: 'success', text: 'Laporan diterima!' });
@@ -204,10 +232,17 @@ export default function KelolaPengaduanMasyarakat() {
                                                 ${pm.complaint_status === "diterima"
                                                         ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
                                                         : pm.complaint_status === "investigasi"
+<<<<<<< HEAD
                                                             ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
                                                             : pm.complaint_status === "selesai"
                                                                 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
                                                                 : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+=======
+                                                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
+                                                        : pm.complaint_status === "selesai"
+                                                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                                                        : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+>>>>>>> cd21765 (My changes)
                                                     }`}
                                             >
                                                 {pm.complaint_status === "selesai" ? (
@@ -241,7 +276,11 @@ export default function KelolaPengaduanMasyarakat() {
                                                 {isLoading ? 'Processing...' : 'Selesai'}
                                             </button>
 
+<<<<<<< HEAD
                                             <Link href={`/admin/layanan/pengaduan/edit-pm?pm_id=${pm.id}`}>
+=======
+                                            <Link href={`/admin/layanan/pengaduan/edit-pm?pm_id=${pm.id}`} legacyBehavior>
+>>>>>>> cd21765 (My changes)
                                                 <button type="button" className="w-full rounded-lg border border-blue-700 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900 lg:w-auto">Catatan</button>
                                             </Link>
                                         </div>

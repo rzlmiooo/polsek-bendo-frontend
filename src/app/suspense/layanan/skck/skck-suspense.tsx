@@ -2,6 +2,10 @@
 
 import axios from 'axios';
 import { useState, ChangeEvent, FormEvent, useEffect } from "react";
+<<<<<<< HEAD
+=======
+import { LucideUser, LucideMail, LucideCalendar, LucideGlobe, LucideHeart , } from 'lucide-react';
+>>>>>>> cd21765 (My changes)
 import { useRouter } from "next/navigation";
 import getUserId from '@/app/utils/auth/page';
 import Head from 'next/head';
@@ -16,6 +20,12 @@ interface SkckFormState {
   officer_notes: string;
   passport_photo: string;
   verification_status: string;
+<<<<<<< HEAD
+=======
+  sex : string;
+  nationality : string;
+  religion : string;
+>>>>>>> cd21765 (My changes)
   successMessage: string | null;
   errorMessage: string | null;
 }
@@ -38,6 +48,12 @@ export default function SkckForm() {
     verification_status: "pending",
     officer_notes: "null",
     passport_photo: "",
+<<<<<<< HEAD
+=======
+    sex : "",
+    nationality : "",
+    religion : "",
+>>>>>>> cd21765 (My changes)
     successMessage: null,
     errorMessage: null,
   });
@@ -181,6 +197,12 @@ export default function SkckForm() {
         verification_status: formData.verification_status,
         officer_notes: formData.officer_notes,
         passport_photo: formData.passport_photo,
+<<<<<<< HEAD
+=======
+        sex : formData.sex,
+        nationality : formData.nationality,
+        religion : formData.religion,
+>>>>>>> cd21765 (My changes)
       };
       const apiSkckUrl = `${baseApiUrl}skck`;
 
@@ -315,6 +337,103 @@ export default function SkckForm() {
             />
           </div>
 
+<<<<<<< HEAD
+=======
+          {/* Jenis Kelamin Dropdown */}
+          <div>
+            <label htmlFor="sex" className="block text-sm font-medium text-gray-700 mb-1">
+              Jenis Kelamin
+            </label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <LucideUser className="h-5 w-5 text-gray-400" />
+              </span>
+              <select
+                id="sex"
+                name="sex"
+                value={formData.sex}
+                onChange={handleChange}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer transition-colors"
+                required
+              >
+                <option value="" disabled>Pilih Jenis Kelamin</option>
+                <option value="male">Laki-laki</option>
+                <option value="female">Perempuan</option>
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Kewarganegaraan Dropdown */}
+          <div>
+            <label htmlFor="nationality" className="block text-sm font-medium text-gray-700 mb-1">
+              Kewarganegaraan
+            </label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <LucideGlobe className="h-5 w-5 text-gray-400" />
+              </span>
+              <select
+                id="nationality"
+                name="nationality"
+                value={formData.nationality}
+                onChange={handleChange}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer transition-colors"
+                required
+              >
+                <option value="" disabled>Pilih Kewarganegaraan</option>
+                <option value="Indonesia">Indonesia</option>
+                <option value="Malaysia">Malaysia</option>
+                <option value="Singapura">Singapura</option>
+                <option value="Amerika Serikat">Amerika Serikat</option>
+                <option value="Jepang">Jepang</option>
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Agama Dropdown */}
+          <div>
+            <label htmlFor="religion" className="block text-sm font-medium text-gray-700 mb-1">
+              Agama
+            </label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <LucideHeart className="h-5 w-5 text-gray-400" />
+              </span>
+              <select
+                id="religion"
+                name="religion"
+                value={formData.religion}
+                onChange={handleChange}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer transition-colors"
+                required
+              >
+                <option value="" disabled>Pilih Agama</option>
+                <option value="Islam">Islam</option>
+                <option value="Kristen">Kristen</option>
+                <option value="Katolik">Katolik</option>
+                <option value="Hindu">Hindu</option>
+                <option value="Buddha">Buddha</option>
+                <option value="Konghucu">Konghucu</option>
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+>>>>>>> cd21765 (My changes)
           {/* Pas Foto */}
           <div className="mb-4">
             <label htmlFor="passport_photo_upload" className="block font-medium mb-1">
