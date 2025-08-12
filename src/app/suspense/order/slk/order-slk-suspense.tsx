@@ -162,8 +162,6 @@ export default function OrderSlk() {
                                 <button type="button" className="w-full rounded-lg border border-blue-700 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900 lg:w-auto">Edit</button>
                             </Link>
                         </div>
-<<<<<<< HEAD
-=======
 
                         {slk.status_handling === 'selesai' && (
                             <a
@@ -175,7 +173,6 @@ export default function OrderSlk() {
                                 Download PDF
                             </a>
                         )}
->>>>>>> cd21765 (My changes)
                     </div>
                 ))}
             </div>

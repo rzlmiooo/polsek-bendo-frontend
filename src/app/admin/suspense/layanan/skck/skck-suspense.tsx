@@ -7,17 +7,11 @@ import { useSearchParams } from 'next/navigation';
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import Image from 'next/image';
-<<<<<<< HEAD
-
-interface Skck {
-    id: string;
-=======
 import getUserId from "@/app/utils/auth/page";
 
 interface Skck {
     id: string;
     user_id : string;
->>>>>>> cd21765 (My changes)
     applicant_name: string;
     submission_date: string;
     passport_photo: string;
@@ -26,10 +20,7 @@ interface Skck {
 
 export default function KelolaSkck() {
     const router = useRouter();
-<<<<<<< HEAD
-=======
     const officerId = getUserId();
->>>>>>> cd21765 (My changes)
     const [skckData, setSkck] = useState<Skck[]>([]);
     const searchParams = useSearchParams();
     const [isClient, setIsClient] = useState(false);
@@ -109,24 +100,14 @@ export default function KelolaSkck() {
         setMessage(null);
 
         const payload = {
-<<<<<<< HEAD
-            id: skckId,
-=======
             officer_in_charge : officerId,
->>>>>>> cd21765 (My changes)
             verification_status: status,
         };
 
         try {
-<<<<<<< HEAD
             const apiSlkUrl = `${baseUrl}skck/officer/${skckId}`;
-            await axios.patch(apiSlkUrl, payload, {
-=======
-            const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-            const apiSkckUrl = `${baseUrl}skck/status/${skckId}`;
-
-            await axios.put(apiSkckUrl, payload, {
->>>>>>> cd21765 (My changes)
+    
+            await axios.put(apiSlkUrl, payload, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -151,17 +132,6 @@ export default function KelolaSkck() {
         }
     };
 
-<<<<<<< HEAD
-    // if (loading) {
-    //     return (
-    //         <div className="flex h-screen items-center justify-center">
-    //             <p className="text-xl dark:text-white">Loading Kelola Skck...</p>
-    //         </div>
-    //     );
-    // }
-
-=======
->>>>>>> cd21765 (My changes)
     if (error) {
         return (
             <div className="flex h-screen items-center justify-center">
@@ -224,7 +194,6 @@ export default function KelolaSkck() {
                                                 <dt className="text-base font-medium text-gray-500 dark:text-gray-400">Status:</dt>
                                                 <dd
                                                     className={`me-2 mt-1.5 inline-flex items-center rounded px-2.5 py-0.5 text-xs font-medium 
-<<<<<<< HEAD
                                                     ${skck.verification_status === "pending"
                                                             ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
                                                             : skck.verification_status === "proses"
@@ -233,16 +202,7 @@ export default function KelolaSkck() {
                                                                     ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
                                                                     : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
                                                         }`}
-=======
-                                                    ${      skck.verification_status === "pending"
-                                                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
-                                                            : skck.verification_status === "proses"
-                                                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
-                                                            : skck.verification_status === "selesai"
-                                                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                                                            : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
-                                                    }`}
->>>>>>> cd21765 (My changes)
+
                                                 >
                                                     {skck.verification_status === "selesai" ? (
                                                         <svg className="me-1 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -274,15 +234,10 @@ export default function KelolaSkck() {
                                                 >
                                                     {isLoading ? 'Processing...' : 'Selesai'}
                                                 </button>
-<<<<<<< HEAD
-                                                <Link href={`/admin/layanan/skck/edit-skck?skck_id=${skck.id}`} className="flex-1 rounded-lg border border-blue-700 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900 sm:flex-none">
-                                                    Catatan
-=======
                                                 <Link href={`/admin/layanan/skck/edit-skck?skck_id=${skck.id}`} legacyBehavior>
                                                     <a className="flex-1 rounded-lg border border-blue-700 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900 sm:flex-none">
                                                         Catatan
                                                     </a>
->>>>>>> cd21765 (My changes)
                                                 </Link>
                                             </div>
                                         </div>

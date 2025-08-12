@@ -171,7 +171,6 @@ export default function OrderSkck() {
                         </dd>
                     </dl>
 
-<<<<<<< HEAD
                     <dl className="col-span-1">
                         <dt className="text-base font-medium text-gray-500 dark:text-gray-400">Catatan Dari Polisi:</dt>
                         <dd className="mt-1.5 text-base font-semibold text-gray-900 dark:text-white">
@@ -179,8 +178,6 @@ export default function OrderSkck() {
                         </dd>
                     </dl>
 
-=======
->>>>>>> cd21765 (My changes)
                     <div className="col-span-full flex justify-center lg:justify-end">
                         <Link href={`/order/skck/edit-skck?skck_id=${skck.id}&applicant_name=${skck.applicant_name}`} legacyBehavior>
                             <button
@@ -191,9 +188,6 @@ export default function OrderSkck() {
                             </button>
                         </Link>
                     </div>
-
-<<<<<<< HEAD
-=======
                     {skck.verification_status === 'selesai' && (
                             <a
                                 href={`/api/skck/download?skck_id=${skck.id}`}
@@ -204,8 +198,6 @@ export default function OrderSkck() {
                                 Download PDF
                             </a>
                     )}
-
->>>>>>> cd21765 (My changes)
 
                     <nav className="mt-6 flex items-center justify-center sm:mt-8" aria-label="Page navigation example">
                         <div className="mt-6 mb-10 flex items-center justify-center sm:mt-8" aria-label="Page navigation">
