@@ -7,11 +7,9 @@ import { useSearchParams } from 'next/navigation';
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import Image from 'next/image';
-import getUserId from "@/app/utils/auth/page";
 
 interface Skck {
     id: string;
-    user_id : string;
     applicant_name: string;
     submission_date: string;
     passport_photo: string;
@@ -20,7 +18,6 @@ interface Skck {
 
 export default function KelolaSkck() {
     const router = useRouter();
-    const officerId = getUserId();
     const [skckData, setSkck] = useState<Skck[]>([]);
     const searchParams = useSearchParams();
     const [isClient, setIsClient] = useState(false);
@@ -100,14 +97,13 @@ export default function KelolaSkck() {
         setMessage(null);
 
         const payload = {
-            officer_in_charge : officerId,
+            id: skckId,
             verification_status: status,
         };
 
         try {
             const apiSlkUrl = `${baseUrl}skck/officer/${skckId}`;
-    
-            await axios.put(apiSlkUrl, payload, {
+            await axios.patch(apiSlkUrl, payload, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -131,6 +127,14 @@ export default function KelolaSkck() {
             setIsLoading(false);
         }
     };
+
+    // if (loading) {
+    //     return (
+    //         <div className="flex h-screen items-center justify-center">
+    //             <p className="text-xl dark:text-white">Loading Kelola Skck...</p>
+    //         </div>
+    //     );
+    // }
 
     if (error) {
         return (
@@ -202,7 +206,6 @@ export default function KelolaSkck() {
                                                                     ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
                                                                     : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
                                                         }`}
-
                                                 >
                                                     {skck.verification_status === "selesai" ? (
                                                         <svg className="me-1 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -234,10 +237,8 @@ export default function KelolaSkck() {
                                                 >
                                                     {isLoading ? 'Processing...' : 'Selesai'}
                                                 </button>
-                                                <Link href={`/admin/layanan/skck/edit-skck?skck_id=${skck.id}`} legacyBehavior>
-                                                    <a className="flex-1 rounded-lg border border-blue-700 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900 sm:flex-none">
-                                                        Catatan
-                                                    </a>
+                                                <Link href={`/admin/layanan/skck/edit-skck?skck_id=${skck.id}`} className="flex-1 rounded-lg border border-blue-700 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900 sm:flex-none">
+                                                    Catatan
                                                 </Link>
                                             </div>
                                         </div>

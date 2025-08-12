@@ -29,7 +29,6 @@ interface EditedPm {
 }
 export default function KelolaPengaduanMasyarakat() {
     const router = useRouter();
-    const officerId = getUserId();
     const [pmData, setPm] = useState<Pm[]>([]);
     const [loading, setLoading] = useState<boolean>(true); 
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -91,7 +90,7 @@ export default function KelolaPengaduanMasyarakat() {
             setPm(pmRes.data || []);
         } catch (err: any) {
             console.error('Error fetching data:', err);
-            setError(err.response?.data?.message || 'Failed to fetch PM data.');
+            setError(err.response?.data?.message || 'Failed to fetch SLK data.');
         } finally {
             setIsLoading(false);
         }
@@ -111,15 +110,13 @@ export default function KelolaPengaduanMasyarakat() {
         setMessage(null);
 
         const payload = {
-            officer_in_charge : officerId,
+            id: pmId,
             complaint_status: status,
         };
 
         try {
-            const apiSlkUrl = `${baseUrl}pm/status/${pmId}`;
-
-
-            await axios.put(apiSlkUrl, payload, {
+            const apiSlkUrl = `${baseUrl}pm/${pmId}`;
+            await axios.patch(apiSlkUrl, payload, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -207,10 +204,10 @@ export default function KelolaPengaduanMasyarakat() {
                                                 ${pm.complaint_status === "diterima"
                                                         ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
                                                         : pm.complaint_status === "investigasi"
-                                                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
-                                                        : pm.complaint_status === "selesai"
-                                                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                                                        : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+                                                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
+                                                            : pm.complaint_status === "selesai"
+                                                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                                                                : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
                                                     }`}
                                             >
                                                 {pm.complaint_status === "selesai" ? (
@@ -244,8 +241,7 @@ export default function KelolaPengaduanMasyarakat() {
                                                 {isLoading ? 'Processing...' : 'Selesai'}
                                             </button>
 
-
-                                            <Link href={`/admin/layanan/pengaduan/edit-pm?pm_id=${pm.id}`} legacyBehavior>
+                                            <Link href={`/admin/layanan/pengaduan/edit-pm?pm_id=${pm.id}`}>
                                                 <button type="button" className="w-full rounded-lg border border-blue-700 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900 lg:w-auto">Catatan</button>
                                             </Link>
                                         </div>

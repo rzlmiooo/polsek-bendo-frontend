@@ -188,16 +188,7 @@ export default function OrderSkck() {
                             </button>
                         </Link>
                     </div>
-                    {skck.verification_status === 'selesai' && (
-                            <a
-                                href={`/api/skck/download?skck_id=${skck.id}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-block mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                            >
-                                Download PDF
-                            </a>
-                    )}
+
 
                     <nav className="mt-6 flex items-center justify-center sm:mt-8" aria-label="Page navigation example">
                         <div className="mt-6 mb-10 flex items-center justify-center sm:mt-8" aria-label="Page navigation">

@@ -26,7 +26,6 @@ interface Sik {
 
 export default function KelolaIzinKeramaian() {
     const router = useRouter();
-    const officerId = getUserId();
     const [sikData, setSik] = useState<Sik[]>([]);
     const [error, setError] = useState<string | null>(null);
     const searchParams = useSearchParams();
@@ -108,13 +107,13 @@ export default function KelolaIzinKeramaian() {
         setMessage(null);
 
         const payload = {
-            officer_in_charge : officerId,
+            id: sikId,
             status_handling: status,
         };
 
         try {
-            const apiSlkUrl = `${baseUrl}sik/status/${sikId}`;
-            await axios.put(apiSlkUrl, payload, {
+            const apiSlkUrl = `${baseUrl}sik/${sikId}`;
+            await axios.patch(apiSlkUrl, payload, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -242,8 +241,7 @@ export default function KelolaIzinKeramaian() {
                                                 >
                                                     {isLoading ? 'Processing...' : 'Selesai'}
                                                 </button>
-
-                                                <Link href={`/admin/layanan/izin_keramaian/edit-sik?sik_id=${sik.id}`} legacyBehavior>
+                                                <Link href={`/admin/layanan/izin_keramaian/edit-sik?sik_id=${sik.id}`}>
                                                     <button type="button" className="w-full rounded-lg border border-blue-700 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900 lg:w-auto">Catatan</button>
                                                 </Link>
                                             </div>
