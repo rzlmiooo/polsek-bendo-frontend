@@ -35,11 +35,6 @@ export default function Login() {
 
             const role = decoded.role;
 
-            let username = decoded.username;
-            if (!username) {
-                username = generateUsernameFromEmail(email);
-            }
-
             if (!role) throw new Error("Role not found in token");
 
             localStorage.setItem("role", role);

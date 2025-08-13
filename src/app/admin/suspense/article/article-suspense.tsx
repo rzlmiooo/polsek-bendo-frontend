@@ -84,7 +84,7 @@ export default function Article() {
     }, [searchParams]);
     return (
         <div>
-            <AdminNavbar />
+            {/* <AdminNavbar /> */}
             <main className="lg:ml-[260px]">
                 <section className="p-2 pt-4 bg-white antialiased dark:bg-gray-900 py-24 md:py-4">
                     <div className="mx-auto max-w-screen-xl px-4 2xl:px-0 **lg:ml-[260px]**">

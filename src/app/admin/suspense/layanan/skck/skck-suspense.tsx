@@ -147,7 +147,7 @@ export default function KelolaSkck() {
     return (
         <div>
             <header className="fixed top-0 left-0 w-full z-50">
-                <AdminNavbar />
+                {/* <AdminNavbar /> */}
             </header>
             <main className="lg:ml-[260px]">
                 <section className="p-4 pt-20 bg-white py-24 antialiased dark:bg-gray-900 md:py-18">

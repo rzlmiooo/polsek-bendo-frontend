@@ -148,7 +148,7 @@ export default function KelolaLaporanKehilangan() {
   }
   return (
     <div>
-      <AdminNavbar />
+      {/* <AdminNavbar /> */}
       {message && (
         <div className={`fixed inset-x-0 top-0 z-50 p-4 transition-all duration-300 ease-in-out ${message.type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white text-center font-medium`}>
           {message.text}

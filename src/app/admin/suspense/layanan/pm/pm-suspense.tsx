@@ -164,7 +164,7 @@ export default function KelolaPengaduanMasyarakat() {
 
     return (
         <div>
-            <AdminNavbar />
+            {/* <AdminNavbar /> */}
 
             <main className="lg:ml-[260px]">
                 <section className="p-4 pt-6 bg-white py-24 md:py-4 antialiased dark:bg-gray-900">
