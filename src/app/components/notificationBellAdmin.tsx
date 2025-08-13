@@ -94,7 +94,7 @@ export default function NotificationBell() {
   
         const pendingSkcks = allSkcks.filter(
           (b:any) =>
-            b.verification_status === "proses" || b.verification_status === "pending" &&
+            b.verification_status === "pending" &&
             users.filter((user:any) => user.id === b.user_id)
         );
 
@@ -108,7 +108,7 @@ export default function NotificationBell() {
 
         const pendingSik = allSik.filter(
           (b:any) =>
-            b.status_handling === "diproses" || b.status_handling === "dipending" &&
+            b.status_handling === "dipending" &&
             users.filter((user:any) => user.id === b.user_id)
         );
 
@@ -122,7 +122,7 @@ export default function NotificationBell() {
 
         const pendingSlk = allSlk.filter(
           (b:any) =>
-            b.status_handling === "diterima" || b.status_handling === "investigasi" &&
+            b.status_handling === "investigasi" &&
             users.filter((user:any) => user.id === b.user_id)
         );
 
@@ -136,7 +136,7 @@ export default function NotificationBell() {
 
         const pendingPm = allPm.filter(
           (b:any) =>
-            b.complaint_status === "diterima" || b.complaint_status === "investigasi" &&
+            b.complaint_status === "diterima" &&
             users.filter((user:any) => user.id === b.user_id)
         );
 
