@@ -80,8 +80,8 @@ export default function KelolaPengaduanMasyarakat() {
         setMessage(null);
 
         try {
-            const apiSlkUrl = `${baseUrl}pm`;
-            const pmRes = await axios.get<Pm[]>(apiSlkUrl, {
+            const apipmUrl = `${baseUrl}pm`;
+            const pmRes = await axios.get<Pm[]>(apipmUrl, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ export default function KelolaPengaduanMasyarakat() {
             setPm(pmRes.data || []);
         } catch (err: any) {
             console.error('Error fetching data:', err);
-            setError(err.response?.data?.message || 'Failed to fetch SLK data.');
+            setError(err.response?.data?.message || 'Failed to fetch pm data.');
         } finally {
             setIsLoading(false);
         }
@@ -115,8 +115,8 @@ export default function KelolaPengaduanMasyarakat() {
         };
 
         try {
-            const apiSlkUrl = `${baseUrl}pm/${pmId}`;
-            await axios.patch(apiSlkUrl, payload, {
+            const apipmUrl = `${baseUrl}pm/${pmId}`;
+            await axios.patch(apipmUrl, payload, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -127,6 +127,7 @@ export default function KelolaPengaduanMasyarakat() {
                 setMessage({ type: 'success', text: 'Laporan diterima!' });
             } else if (status === 'selesai') {
                 setMessage({ type: 'error', text: 'Laporan ditolak!' });
+                router.push(`/api/pm/download?pm_id=${pmId}`)
             } else if (status === 'investigasi') {
                 setMessage({ type: 'success', text: 'Laporan dalam investigasi!' });
             }
@@ -224,7 +225,7 @@ export default function KelolaPengaduanMasyarakat() {
                                         </dl>
 
                                         <div className="mt-auto flex w-full flex-col gap-4 border-t border-gray-200 pt-4 dark:border-neutral-700 sm:flex-row sm:justify-end sm:pt-0">
-                                            <button
+                                            {/* <button
                                                 type="button"
                                                 onClick={() => handleSubmitStatus(pm.id, 'investigasi')}
                                                 disabled={isLoading}
@@ -243,6 +244,25 @@ export default function KelolaPengaduanMasyarakat() {
 
                                             <Link href={`/admin/layanan/pengaduan/edit-pm?pm_id=${pm.id}`}>
                                                 <button type="button" className="w-full rounded-lg border border-blue-700 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900 lg:w-auto">Catatan</button>
+                                            </Link> */}
+                                            <button
+                                                type="button"
+                                                onClick={() => handleSubmitStatus(pm.id, 'diterima')}
+                                                disabled={isLoading}
+                                                className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-bold text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'}`}
+                                            >
+                                                {isLoading ? 'Processing...' : 'Terima & Proses'}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleSubmitStatus(pm.id, 'selesai')}
+                                                disabled={pm.complaint_status == 'investigasi'}
+                                                className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-bold text-white } ${pm.complaint_status == 'investigasi' ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-red-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'}`}
+                                            >
+                                                {pm.complaint_status == 'selesai' ? 'Download PDF' : 'Konfirmasi Selesai & Download PDF'}
+                                            </button>
+                                            <Link href={`/admin/layanan/pengaduan/edit-pm?pm_id=${pm.id}`} className={`flex-1 rounded-lg  px-3 py-2 text-center text-sm font-bold text-white ${pm.complaint_status == 'diterima' ? 'bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800' : 'bg-gray-400 cursor-not-allowed'}`}>
+                                                Tolak Pengajuan
                                             </Link>
                                         </div>
                                     </div>

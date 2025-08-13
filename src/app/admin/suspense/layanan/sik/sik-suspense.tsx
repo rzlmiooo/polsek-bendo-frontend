@@ -124,6 +124,7 @@ export default function KelolaIzinKeramaian() {
                 setMessage({ type: 'success', text: 'Laporan diterima!' });
             } else if (status === 'selesai') {
                 setMessage({ type: 'error', text: 'Laporan ditolak!' });
+                router.push(`/api/sik/download?sik_id=${sikId}`)
             } else if (status === 'diproses') {
                 setMessage({ type: 'success', text: 'Laporan diproses!' });
             }
@@ -229,20 +230,20 @@ export default function KelolaIzinKeramaian() {
                                                     type="button"
                                                     onClick={() => handleSubmitStatus(sik.id, 'diproses')}
                                                     disabled={isLoading}
-                                                    className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-medium text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'}`}
+                                                    className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-bold text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'}`}
                                                 >
                                                     {isLoading ? 'Processing...' : 'Terima & Proses'}
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => handleSubmitStatus(sik.id, 'selesai')}
-                                                    disabled={isLoading}
-                                                    className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-medium text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-red-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'}`}
+                                                    disabled={sik.status_handling == 'dipending'}
+                                                    className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-bold text-white } ${sik.status_handling == 'dipending' ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-red-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'}`}
                                                 >
-                                                    {isLoading ? 'Processing...' : 'Selesai'}
+                                                    {sik.status_handling == 'selesai' ? 'Download PDF' : 'Konfirmasi Selesai & Download PDF'}
                                                 </button>
-                                                <Link href={`/admin/layanan/izin_keramaian/edit-sik?sik_id=${sik.id}`}>
-                                                    <button type="button" className="w-full rounded-lg border border-blue-700 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900 lg:w-auto">Catatan</button>
+                                                <Link href={`/admin/layanan/izin_keramaian/edit-sik?sik_id=${sik.id}`} className={`flex-1 rounded-lg  px-3 py-2 text-center text-sm font-bold text-white ${sik.status_handling == 'diproses' ? 'bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800' : 'bg-gray-400 cursor-not-allowed'}`}>
+                                                    Tolak Pengajuan
                                                 </Link>
                                             </div>
                                         </div>
