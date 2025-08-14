@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import PmDownload from "../../../suspense/api/pm/download/page";
+import PmDownload from "../../../suspense/api/pm/download/download-pm-suspense";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

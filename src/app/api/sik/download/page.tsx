@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import PmDownload from "../../../suspense/api/sik/download/page";
+import PmDownload from "../../../suspense/api/sik/download/download-sik-suspense";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

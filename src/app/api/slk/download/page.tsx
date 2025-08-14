@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import SlkDownloadPage from "../../../suspense/api/slk/download/page";
+import SlkDownloadPage from "../../../suspense/api/slk/download/download-slk-suspense";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
