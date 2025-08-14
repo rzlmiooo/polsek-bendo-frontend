@@ -1,10 +1,16 @@
-import DownloadPage from "./pm";
 import { Suspense } from "react";
+import PmDownload from "../../../suspense/api/pm/download/download-pm-suspense";
+import type { Metadata } from "next";
 
-export default function Pm(){
+export const metadata: Metadata = {
+    title: "Polsek Bendo - Cek Layanan Masyarakat",
+    description: "Cek proses pembuatan SKCK, laporan kehilangan, pengaduan masyarakat, rencana acara, dan izin keramaian.",
+};
+
+export default function PmDownloadPage() {
   return (
-    <Suspense>
-      <DownloadPage/>
+    <Suspense fallback={<div>Loading Downloads...</div>}>
+      <PmDownload/>
     </Suspense>
-  )
+  );
 }
