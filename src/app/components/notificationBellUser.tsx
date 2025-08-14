@@ -74,6 +74,9 @@ export default function NotificationBell() {
         const allPm = pmRes.data || [];
         const allSlk = slkRes.data || [];
 
+        console.log("pm", allPm);
+        
+
         const skckWithNotes = allSkck.filter((item: any) => item.officer_notes && item.officer_notes.trim() !== '');
         const sikWithNotes = allSik.filter((item: any) => item.officer_notes && item.officer_notes.trim() !== '');
         const pmWithNotes = allPm.filter((item: any) => item.officer_notes && item.officer_notes.trim() !== '');

@@ -127,6 +127,7 @@ export default function KelolaIzinKeramaian() {
                 router.push(`/api/sik/download?sik_id=${sikId}`)
             } else if (status === 'diproses') {
                 setMessage({ type: 'success', text: 'Laporan diproses!' });
+                router.push(`/admin/layanan/sik/proses?sik_id=${sikId}`)
             }
 
             fetchData();

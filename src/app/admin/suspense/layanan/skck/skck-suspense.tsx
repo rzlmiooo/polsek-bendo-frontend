@@ -14,11 +14,19 @@ interface Skck {
     submission_date: string;
     passport_photo: string;
     verification_status: string;
+    id_number: string;
+    complete_address: string;
+    place_date_birth: string;
+    sex: string;
+    needs: string;
+    nationality: string;
+    religion: string;
 }
 
 export default function KelolaSkck() {
     const router = useRouter();
     const [skckData, setSkck] = useState<Skck[]>([]);
+    const [skckEdit, setEdit] = useState<Skck[]>([]);
     const searchParams = useSearchParams();
     const [isClient, setIsClient] = useState(false);
     const [token, setToken] = useState<string | null>(null);
@@ -36,6 +44,8 @@ export default function KelolaSkck() {
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = skckData.slice(indexOfFirstItem, indexOfLastItem);
     const totalPages = Math.ceil(skckData.length / itemsPerPage);
+
+    const [step, setStep] = useState(0);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -67,14 +77,16 @@ export default function KelolaSkck() {
         setMessage(null);
 
         try {
-            const apiSlkUrl = `${baseUrl}skck`;
-            const skckRes = await axios.get<Skck[]>(apiSlkUrl, {
+            const apiSkckUrl = `${baseUrl}skck`;
+            const skckRes = await axios.get<Skck[]>(apiSkckUrl, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
             setSkck(skckRes.data || []);
+            console.log("skck: ", skckRes);
+            
         } catch (err: any) {
             console.error('Error fetching data:', err);
             setError(err.response?.data?.message || 'Failed to fetch SLK data.');
@@ -102,8 +114,8 @@ export default function KelolaSkck() {
         };
 
         try {
-            const apiSlkUrl = `${baseUrl}skck/officer/${skckId}`;
-            await axios.patch(apiSlkUrl, payload, {
+            const apiSkckUrl = `${baseUrl}skck/officer/${skckId}`;
+            await axios.patch(apiSkckUrl, payload, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -117,6 +129,8 @@ export default function KelolaSkck() {
                 router.push(`/api/skck/download?skck_id=${skckId}`)
             } else if (status === 'proses') {
                 setMessage({ type: 'success', text: 'Laporan sedang diproses!' });
+                // setStep(1);
+                router.push(`/admin/layanan/skck/proses?skck_id=${skckId}`)
             }
 
             fetchData();
@@ -147,11 +161,13 @@ export default function KelolaSkck() {
 
     return (
         <div>
+            {step === 0 && (
+            <>
             <header className="fixed top-0 left-0 w-full z-50">
                 {/* <AdminNavbar /> */}
             </header>
             <main className="lg:ml-[260px]">
-                <section className="p-4 pt-20 bg-white py-24 antialiased dark:bg-gray-900 md:py-18">
+                <section className="bg-white px-4 py-4 md:py-6 antialiased dark:bg-gray-900">
                     <div className="mx-auto max-w-screen-xl px-4 2xl:px-0 **lg:ml-[260px]**">
                         <div className="mx-auto max-w-5xl">
                             <div className="gap-4 sm:flex sm:items-center sm:justify-between">
@@ -206,8 +222,8 @@ export default function KelolaSkck() {
                                                                 : skck.verification_status === "selesai"
                                                                     ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
                                                                     : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
-                                                        }`}
-                                                >
+                                                                }`}
+                                                        >
                                                     {skck.verification_status === "selesai" ? (
                                                         <svg className="me-1 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 11.917 9.724 16.5 19 7.5" />
@@ -235,7 +251,7 @@ export default function KelolaSkck() {
                                                     onClick={() => handleSubmitStatus(skck.id, 'selesai')}
                                                     disabled={skck.verification_status == 'pending'}
                                                     className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-bold text-white } ${skck.verification_status == 'pending' ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-red-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'}`}
-                                                >
+                                                    >
                                                     {skck.verification_status == 'selesai' ? 'Download PDF' : 'Konfirmasi Selesai & Download PDF'}
                                                 </button>
                                                 <Link href={`/admin/layanan/skck/edit-skck?skck_id=${skck.id}`} className={`flex-1 rounded-lg  px-3 py-2 text-center text-sm font-bold text-white ${skck.verification_status == 'proses' ? 'bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800' : 'bg-gray-400 cursor-not-allowed'}`}>
@@ -295,8 +311,64 @@ export default function KelolaSkck() {
                             </div>
                         </div>
                     </div>
-                </section >
+                </section>
             </main>
-        </div >
+            </>
+            )}
+            {step === 1 && (
+                <>
+                <div className="lg:ml-[260px] p-6 overflow-x-auto">
+                    <table className="min-w-full border border-gray-300 text-sm">
+                        <thead className="bg-gray-100">
+                        <tr>
+                            <th className="border px-2 py-1">No.</th>
+                            <th className="border px-2 py-1">Nama</th>
+                            <th className="border px-2 py-1">Jenis Kelamin</th>
+                            <th className="border px-2 py-1">Kebangsaan</th>
+                            <th className="border px-2 py-1">Agama</th>
+                            <th className="border px-2 py-1">Tempat Tanggal Lahir</th>
+                            <th className="border px-2 py-1">Alamat</th>
+                            <th className="border px-2 py-1">Pekerjaan</th>
+                            <th className="border px-2 py-1">NIK</th>
+                            <th className="border px-2 py-1">Sidik Jari</th>
+                            <th className="border px-2 py-1">NIK</th>
+                            <th className="border px-2 py-1">NIK</th>
+                            <th className="border px-2 py-1">Kebutuhan</th>
+                            <th className="border px-2 py-1">NIK</th>
+                            <th className="border px-2 py-1">Berlaku Sampai</th>
+                            <th className="border px-2 py-1">Pas Foto</th>
+                            <th className="border px-2 py-1">Dikeluarkan di</th>
+                            <th className="border px-2 py-1">Tanggal Pengajuan</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {skckData.map((skck, index) => (
+                            <tr key={skck.id} className="hover:bg-gray-50">
+                            <td className="border px-2 py-1">{skck.id}</td>
+                            <td className="border px-2 py-1">{skck.applicant_name}</td>
+                            <td className="border px-2 py-1">{skck.sex}</td>
+                            <td className="border px-2 py-1">{skck.nationality}</td>
+                            <td className="border px-2 py-1">{skck.religion}</td>
+                            <td className="border px-2 py-1">{skck.place_date_birth}</td>
+                            <td className="border px-2 py-1">{skck.complete_address}</td>
+                            <td className="border px-2 py-1">job</td>
+                            <td className="border px-2 py-1">{skck.id_number}</td>
+                            <td className="border px-2 py-1">finger</td>
+                            <td className="border px-2 py-1">{skck.place_date_birth}</td>
+                            <td className="border px-2 py-1">{skck.submission_date}</td>
+                            <td className="border px-2 py-1">{skck.needs}</td>
+                            <td className="border px-2 py-1">{skck.submission_date}</td>
+                            <td className="border px-2 py-1">{}</td>
+                            <td className="border px-2 py-1">{skck.passport_photo}</td>
+                            <td className="border px-2 py-1">Bendo</td>
+                            <td className="border px-2 py-1">{skck.submission_date}</td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                    </div>
+                </>
+            )}
+        </div>
     )
 }
