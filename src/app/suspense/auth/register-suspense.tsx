@@ -136,6 +136,14 @@ export default function Registration() {
             return;
         }
 
+        // if (!formData.identity_card) {
+        //     setFormData((prev) => ({
+        //         ...prev,
+        //         errorMessage: "Please upload a profile picture.",
+        //     }));
+        //     return;
+        // }
+
         if (!formData.email || !formData.password || !formData.username || !formData.role) {
             setFormData((prev) => ({
                 ...prev,
@@ -198,6 +206,7 @@ export default function Registration() {
                                     type="text"
                                     name="username"
                                     placeholder="Buat Username"
+                                    autoComplete="off"
                                     value={formData.username}
                                     onChange={handleChange}
                                     required
@@ -210,6 +219,7 @@ export default function Registration() {
                                     type="email" 
                                     name="email"
                                     placeholder="Masukkan Email"
+                                    autoComplete="email"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
@@ -222,6 +232,7 @@ export default function Registration() {
                                     type="password"
                                     name="password"
                                     placeholder="Buat Password"
+                                    autoComplete="new-password"
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
@@ -234,13 +245,14 @@ export default function Registration() {
                                     type="password"
                                     name="confirmPassword" 
                                     placeholder="Konfirmasi Password"
+                                    autoComplete="new-password"
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block mb-2 text-yellow-800 text-sm" htmlFor="profile_picture">Your Profile Picture</label>
+                                <label className="block mb-2 text-yellow-800 text-sm" htmlFor="profile_picture">Upload Foto Profil</label>
                                 <input
                                     className="w-full p-2 mb-4 text-yellow-700 border-b-2 text-sm border-yellow-500 outline-none focus:bg-gray-300 rounded-md"
                                     type="file"
@@ -259,6 +271,26 @@ export default function Registration() {
                                     <p className="text-gray-600">Ready to upload: {selectedFile.name}</p>
                                 )}
                             </div>
+                            {/* <div>
+                                <label className="block mb-2 text-yellow-800 text-sm" htmlFor="profile_picture">Upload Foto KTP</label>
+                                <input
+                                    className="w-full p-2 mb-4 text-yellow-700 border-b-2 text-sm border-yellow-500 outline-none focus:bg-gray-300 rounded-md"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFilePictureChange} 
+                                    disabled={imageLoading} 
+                                />
+                                {imageLoading && <p className="text-blue-600">Uploading image...</p>}
+                                {imageError && <p style={{ color: 'red' }}>{imageError}</p>}
+                                {formData.profile_picture && (
+                                    <div className="text-green-600 mb-4">
+                                        <p>Image uploaded successfully!</p>
+                                    </div>
+                                )}
+                                {selectedFile && !imageLoading && !formData.profile_picture && !imageError && (
+                                    <p className="text-gray-600">Ready to upload: {selectedFile.name}</p>
+                                )}
+                            </div> */}
 
                             {formData.errorMessage && <p style={{ color: 'red' }} className="mb-4">{formData.errorMessage}</p>}
                             {formData.successMessage && <p style={{ color: 'green' }} className="mb-4">{formData.successMessage}</p>}

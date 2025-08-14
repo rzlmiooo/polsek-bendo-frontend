@@ -1,4 +1,3 @@
-import AdminNavbar from '@/app/components/adminnavbar';
 import { Suspense } from 'react';
 import type { Metadata } from "next";
 import Dashboard from './suspense/dashboard';
@@ -11,7 +10,6 @@ export const metadata: Metadata = {
 export default function AdminDasboard(){
     return(
         <div className="bg-white dark:bg-gray-900 h-screen">
-            <AdminNavbar/>
             <Suspense>
                 <Dashboard />
             </Suspense>

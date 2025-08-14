@@ -110,11 +110,12 @@ export default function KelolaSkck() {
                 },
             });
 
-            if (status === 'diterima') {
+            if (status === 'pending') {
                 setMessage({ type: 'success', text: 'Laporan diterima!' });
             } else if (status === 'selesai') {
                 setMessage({ type: 'error', text: 'Laporan ditolak!' });
-            } else if (status === 'diprose') {
+                router.push(`/api/skck/download?skck_id=${skckId}`)
+            } else if (status === 'proses') {
                 setMessage({ type: 'success', text: 'Laporan sedang diproses!' });
             }
 
@@ -147,7 +148,7 @@ export default function KelolaSkck() {
     return (
         <div>
             <header className="fixed top-0 left-0 w-full z-50">
-                <AdminNavbar />
+                {/* <AdminNavbar /> */}
             </header>
             <main className="lg:ml-[260px]">
                 <section className="p-4 pt-20 bg-white py-24 antialiased dark:bg-gray-900 md:py-18">
@@ -225,20 +226,20 @@ export default function KelolaSkck() {
                                                     type="button"
                                                     onClick={() => handleSubmitStatus(skck.id, 'proses')}
                                                     disabled={isLoading}
-                                                    className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-medium text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'}`}
+                                                    className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-bold text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'}`}
                                                 >
                                                     {isLoading ? 'Processing...' : 'Terima & Proses'}
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => handleSubmitStatus(skck.id, 'selesai')}
-                                                    disabled={isLoading}
-                                                    className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-medium text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-red-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'}`}
+                                                    disabled={skck.verification_status == 'pending'}
+                                                    className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-bold text-white } ${skck.verification_status == 'pending' ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-red-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'}`}
                                                 >
-                                                    {isLoading ? 'Processing...' : 'Selesai'}
+                                                    {skck.verification_status == 'selesai' ? 'Download PDF' : 'Konfirmasi Selesai & Download PDF'}
                                                 </button>
-                                                <Link href={`/admin/layanan/skck/edit-skck?skck_id=${skck.id}`} className="flex-1 rounded-lg border border-blue-700 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900 sm:flex-none">
-                                                    Catatan
+                                                <Link href={`/admin/layanan/skck/edit-skck?skck_id=${skck.id}`} className={`flex-1 rounded-lg  px-3 py-2 text-center text-sm font-bold text-white ${skck.verification_status == 'proses' ? 'bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800' : 'bg-gray-400 cursor-not-allowed'}`}>
+                                                    Tolak Pengajuan
                                                 </Link>
                                             </div>
                                         </div>

@@ -117,6 +117,7 @@ export default function KelolaLaporanKehilangan() {
         setMessage({ type: 'success', text: 'Laporan diterima!' });
       } else if (status === 'selesai') {
         setMessage({ type: 'error', text: 'Laporan ditolak!' });
+        router.push(`/api/slk/download?slk_id=${slkId}`)
       } else if (status === 'investigasi') {
         setMessage({ type: 'success', text: 'Laporan dalam investigasi!' });
       }
@@ -148,7 +149,7 @@ export default function KelolaLaporanKehilangan() {
   }
   return (
     <div>
-      <AdminNavbar />
+      {/* <AdminNavbar /> */}
       {message && (
         <div className={`fixed inset-x-0 top-0 z-50 p-4 transition-all duration-300 ease-in-out ${message.type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white text-center font-medium`}>
           {message.text}
@@ -184,7 +185,7 @@ export default function KelolaLaporanKehilangan() {
                   <div key={slk.id} className="mt-4 sm:mt-6 flow-root">
                     <div className="divide-y divide-gray-200 dark:divide-gray-700">
                       <div className="flex flex-wrap items-start gap-4 py-6">
-                        {/* SKCK ID */}
+                        {/* slk ID */}
                         <dl className="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
                           <dt className="text-base font-medium text-gray-500 dark:text-gray-400">ID Laporan:</dt>
                           <dd className="mt-1.5 text-base font-semibold text-gray-900 dark:text-white">
@@ -235,23 +236,23 @@ export default function KelolaLaporanKehilangan() {
 
                         <div className="mt-auto flex w-full flex-col gap-4 border-t border-gray-200 pt-4 dark:border-neutral-700 sm:flex-row sm:justify-end sm:pt-0">
                           <button
-                            type="button"
-                            onClick={() => handleSubmitStatus(slk.id, 'investigasi')}
-                            disabled={isLoading}
-                            className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-medium text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'}`}
+                              type="button"
+                              onClick={() => handleSubmitStatus(slk.id, 'diterima')}
+                              disabled={isLoading}
+                              className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-bold text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'}`}
                           >
-                            {isLoading ? 'Processing...' : 'Terima & Proses'}
+                              {isLoading ? 'Processing...' : 'Terima & Proses'}
                           </button>
                           <button
-                            type="button"
-                            onClick={() => handleSubmitStatus(slk.id, 'selesai')}
-                            disabled={isLoading}
-                            className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-medium text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-red-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'}`}
+                              type="button"
+                              onClick={() => handleSubmitStatus(slk.id, 'selesai')}
+                              disabled={slk.status_handling == 'investigasi'}
+                              className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-bold text-white } ${slk.status_handling == 'investigasi' ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-red-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'}`}
                           >
-                            {isLoading ? 'Processing...' : 'Selesai'}
+                              {slk.status_handling == 'selesai' ? 'Download PDF' : 'Konfirmasi Selesai & Download PDF'}
                           </button>
-                          <Link href={`/admin/layanan/skck/edit-skck?skck_id=${slk.id}`} className="flex-1 rounded-lg border border-blue-700 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900 sm:flex-none">
-                            Catatan
+                          <Link href={`/admin/layanan/laporan_kehilangan/edit-slk?slk_id=${slk.id}`} className={`flex-1 rounded-lg  px-3 py-2 text-center text-sm font-bold text-white ${slk.status_handling == 'diterima' ? 'bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800' : 'bg-gray-400 cursor-not-allowed'}`}>
+                              Tolak Pengajuan
                           </Link>
                         </div>
                       </div>
