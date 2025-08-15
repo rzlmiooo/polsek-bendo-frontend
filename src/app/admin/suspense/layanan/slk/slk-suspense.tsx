@@ -4,9 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from 'next/link';
-import AdminNavbar from "@/app/components/adminnavbar";
-import Footer from "../../../../components/footer";
-import Navbar from "../../../../components/navbar";
+import WhatsAppButton from "@/app/components/whatsappLink";
 
 interface Slk {
   id: string;
@@ -115,6 +113,7 @@ export default function KelolaLaporanKehilangan() {
 
       if (status === 'diterima') {
         setMessage({ type: 'success', text: 'Laporan diterima!' });
+        router.push(`/admin/layanan/laporan_kehilangan/proses?slk_id=${slkId}`)
       } else if (status === 'selesai') {
         setMessage({ type: 'error', text: 'Laporan ditolak!' });
         router.push(`/api/slk/download?slk_id=${slkId}`)
@@ -186,7 +185,7 @@ export default function KelolaLaporanKehilangan() {
                     <div className="divide-y divide-gray-200 dark:divide-gray-700">
                       <div className="flex flex-wrap items-start gap-4 py-6">
                         {/* slk ID */}
-                        <dl className="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
+                        <dl className="w-6 sm:w-8 lg:w-10 lg:flex-1">
                           <dt className="text-base font-medium text-gray-500 dark:text-gray-400">ID Laporan:</dt>
                           <dd className="mt-1.5 text-base font-semibold text-gray-900 dark:text-white">
                             <Link href={`#${slk.id}`} className="hover:underline">{slk.id}</Link>
@@ -198,6 +197,17 @@ export default function KelolaLaporanKehilangan() {
                           <dt className="text-base font-medium text-gray-500 dark:text-gray-400">Nama Pemohon:</dt>
                           <dd className="mt-1.5 text-base font-semibold text-gray-900 dark:text-white">
                             <Link href={`#${slk.id}`} className="hover:underline">{slk.reporter_name}</Link>
+                          </dd>
+                        </dl>
+                        
+                        {/* Reporter Contact */}
+                        <dl className="w-auto">
+                          <dt className="text-base font-medium text-gray-500 dark:text-gray-400">Nomor Telepon:</dt>
+                          <dd className="mt-1.5 text-base font-semibold text-gray-900 dark:text-white">
+                            <WhatsAppButton
+                              phone={slk.contact_reporter}
+                              message="Mohon melengkapi kekurangan data-data berikut:"
+                            />
                           </dd>
                         </dl>
 
