@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import getUserId from "@/app/utils/auth/page";
 import SuccessMessage from "../../../../components/successMessageAdmin";
+import Back from "@/app/components/back";
 
 
 interface PmDetail {
@@ -363,13 +364,15 @@ export default function EditedNotesPm() {
                         />
                     </div>
 
-                   <button
-                        type="submit"
-                        className="bg-[#00BFFF] text-white px-6 py-3 rounded-xl font-semibold"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? 'Sending...' : 'Sended Pengaduan Masyarakat Notes'}
-                    </button>
+                   <div className="flex items-center justify-between">
+                        <button
+                            type="submit"
+                            className="bg-red-500 hover:bg-red-700 cursor-auto text-white px-6 py-3 rounded-xl font-semibold"
+                        >
+                            Kirim Catatan ke Pemohon
+                        </button>
+                        <Back/>
+                    </div>
                 </form>
             </div>
         </div>

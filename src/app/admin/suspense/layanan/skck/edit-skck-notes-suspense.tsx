@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSearchParams } from 'next/navigation';
 import getUserId from '@/app/utils/auth/page';
 import SuccessMessage from "../../../../components/successMessageAdmin";
+import Back from "@/app/components/back";
 
 interface SkckDetail {
     id: string;
@@ -356,14 +357,15 @@ export default function EditSkckNotes() {
                         />
                     </div>
 
-                    
-                   <button
-                        type="submit"
-                        className="bg-[#00BFFF] text-white px-6 py-3 rounded-xl font-semibold"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? 'Sending...' : 'Sended Skck Notes'}
-                    </button>
+                    <div className="flex items-center justify-between">
+                        <button
+                            type="submit"
+                            className="bg-red-500 hover:bg-red-700 cursor-auto text-white px-6 py-3 rounded-xl font-semibold"
+                        >
+                            Kirim Catatan ke Pemohon
+                        </button>
+                        <Back/>
+                    </div>
                 </form>
             </div>
         </div>
