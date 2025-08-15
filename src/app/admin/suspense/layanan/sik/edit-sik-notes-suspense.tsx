@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useEffect, useState, ChangeEvent, FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import getUserId from '@/app/utils/auth/page'; 
+import Back from '@/app/components/back';
 
 interface SikDetail {
     id: string; 
@@ -348,12 +349,15 @@ export default function EditSikNotes() {
                         />
                     </div>
 
-                    <button
-                        type="submit"
-                        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                        Submit Notes
-                    </button>
+                    <div className="flex items-center justify-between">
+                        <button
+                            type="submit"
+                            className="bg-red-500 hover:bg-red-700 cursor-auto text-white px-6 py-3 rounded-xl font-semibold"
+                        >
+                            Kirim Catatan ke Pemohon
+                        </button>
+                        <Back/>
+                    </div>
                 </form>
             </div>
         </div>

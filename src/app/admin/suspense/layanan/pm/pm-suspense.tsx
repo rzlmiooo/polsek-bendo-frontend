@@ -1,9 +1,7 @@
 "use client";
 
 import axios from "axios";
-import AdminNavbar from "@/app/components/adminnavbar";
-import Footer from "../../../../components/footer";
-import Navbar from "../../../../components/navbar";
+import WhatsAppButton from "@/app/components/whatsappLink";
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from "next/navigation";
@@ -125,6 +123,7 @@ export default function KelolaPengaduanMasyarakat() {
 
             if (status === 'diterima') {
                 setMessage({ type: 'success', text: 'Laporan diterima!' });
+                router.push(`/admin/layanan/pengaduan/proses?pm_id=${pmId}`)
             } else if (status === 'selesai') {
                 setMessage({ type: 'error', text: 'Laporan ditolak!' });
                 router.push(`/api/pm/download?pm_id=${pmId}`)
@@ -192,6 +191,16 @@ export default function KelolaPengaduanMasyarakat() {
                                             </dd>
                                         </dl>
 
+                                        <dl className="w-auto">
+                                            <dt className="text-base font-medium text-gray-500 dark:text-gray-400">Nomor Telepon:</dt>
+                                            <dd className="mt-1.5 text-base font-semibold text-gray-900 dark:text-white">
+                                            <WhatsAppButton
+                                                phone={pm.contact}
+                                                message="Mohon melengkapi kekurangan data-data berikut:"
+                                            />
+                                            </dd>
+                                        </dl>
+
                                         <dl className="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
                                             <dt className="text-base font-medium text-gray-500 dark:text-gray-400">Tanggal Komplain:</dt>
                                             <dd className="mt-1.5 text-base font-semibold text-gray-900 dark:text-white">{new Date(pm.complaint_date).toLocaleDateString()}</dd>
@@ -225,26 +234,6 @@ export default function KelolaPengaduanMasyarakat() {
                                         </dl>
 
                                         <div className="mt-auto flex w-full flex-col gap-4 border-t border-gray-200 pt-4 dark:border-neutral-700 sm:flex-row sm:justify-end sm:pt-0">
-                                            {/* <button
-                                                type="button"
-                                                onClick={() => handleSubmitStatus(pm.id, 'investigasi')}
-                                                disabled={isLoading}
-                                                className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-medium text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'}`}
-                                            >
-                                                {isLoading ? 'Processing...' : 'Terima & Proses'}
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleSubmitStatus(pm.id, 'selesai')}
-                                                disabled={isLoading}
-                                                className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-medium text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-red-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'}`}
-                                            >
-                                                {isLoading ? 'Processing...' : 'Selesai'}
-                                            </button>
-
-                                            <Link href={`/admin/layanan/pengaduan/edit-pm?pm_id=${pm.id}`}>
-                                                <button type="button" className="w-full rounded-lg border border-blue-700 px-3 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-600 dark:hover:text-white dark:focus:ring-blue-900 lg:w-auto">Catatan</button>
-                                            </Link> */}
                                             <button
                                                 type="button"
                                                 onClick={() => handleSubmitStatus(pm.id, 'diterima')}
