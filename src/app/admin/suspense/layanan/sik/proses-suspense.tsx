@@ -6,9 +6,11 @@ import axios from "axios";
 import formatTanggalIndonesia from "@/app/components/formatTanggal";
 import formatJamIndonesia from "@/app/components/formatJamIndonesia";
 import Back from "@/app/components/back";
+import Image from "next/image";
 
 interface Sik {
     id: string;
+    user_id: string;
     organizer_name: string;
     event_name: string;
     event_description: string;
@@ -21,11 +23,17 @@ interface Sik {
     form_creation: string;
 }
 
+interface User {
+    id: string;
+    ktp: string;
+}
+
 export default function ProsesSik(){
     const searchParams = useSearchParams();
     const router = useRouter();
     const sikId = searchParams.get("sik_id");
     const [sikData, setsik] = useState<Sik[]>([]);
+    const [userData, setUser] = useState<User[]>([]);
     const [token, setToken] = useState<string | null>(null);
     
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -57,18 +65,25 @@ export default function ProsesSik(){
             }
             try {
                 const apisikUrl = `${baseUrl}sik`;
+                const apiUserUrl = `${baseUrl}users`;
                 const sikRes = await axios.get<Sik[]>(apisikUrl, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                 });
+                const userRes = await axios.get<User[]>(apiUserUrl, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json', 
+                    }
+                })
                 const filtered = sikRes.data.filter(item => String(item.id) === sikId);
-
+                const userKTP = userRes.data.filter(user => user.id === filtered[0].user_id)
                 setsik(filtered);
-
+                setUser(userKTP);
                 console.log("Filtered sik:", filtered); 
-                console.log("sik: ", sikRes);
+                console.log("user", userKTP);
                 
             } catch (err: any) {
                 console.error('Error fetching data:', err);
@@ -133,6 +148,21 @@ export default function ProsesSik(){
                         </tr>
                     </tbody>
                     </table>
+                </div>
+                <div className="flex flex-col justify-start mb-6">
+                    <div className="border border-black w-fit h-auto flex items-center justify-center">
+                    {userData[0] ? (
+                        <Image
+                            src={userData[0].ktp}
+                            alt="KTP"
+                            width={500}
+                            height={500}
+                        />
+                    ) : (
+                        <span className="text-xs">Foto KTP</span>
+                    )}
+                    </div>
+                    <span className="mt-2">Foto KTP</span>
                 </div>
                 </div>
             ))}

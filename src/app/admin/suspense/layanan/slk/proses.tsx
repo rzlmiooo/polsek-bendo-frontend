@@ -3,26 +3,51 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import formatTanggalIndonesia from "@/app/components/formatTanggal";
 import formatJamIndonesia from "@/app/components/formatJamIndonesia";
 import Back from "@/app/components/back";
 import WhatsAppButton from "@/app/components/whatsappLink";
+import Image from "next/image";
 
 interface Slk {
     id: string;
+    user_id: string;
     reporter_name: string;
     contact_reporter: string;
     item_type: string;
     date_lost: string;
     chronology: string;
     status_handling: 'diterima' | 'investigasi' | 'selesai' | 'ditolak';
-  }
+}
+
+interface User {
+    id: string;
+    ktp: string;
+}
+
+type ItemType =
+  | "stnk"
+  | "bpkb"
+  | "ijazah"
+  | "surat_nikah"
+  | "surat_lainnya"
+  | "kk";
+
+const itemTypeMap: Record<ItemType, string> = {
+  stnk: "STNK",
+  bpkb: "BPKB",
+  ijazah: "Ijazah",
+  surat_nikah: "Surat Nikah",
+  surat_lainnya: "Surat Lainnya",
+  kk: "Kartu Keluarga",
+};
+
 
 export default function ProsesSLK(){
     const searchParams = useSearchParams();
     const router = useRouter();
     const slkId = searchParams.get("slk_id");
     const [slkData, setslk] = useState<Slk[]>([]);
+    const [userData, setUser] = useState<User[]>([]);
     const [token, setToken] = useState<string | null>(null);
     
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -35,66 +60,140 @@ export default function ProsesSLK(){
     useEffect(() => {
         const hour = new Date().getHours();
 
-        if (hour >= 4 && hour < 10) setGreeting("Selamat Pagi,");
-        else if (hour >= 10 && hour < 15) setGreeting("Selamat Siang,");
-        else if (hour >= 15 && hour < 18) setGreeting("Selamat Sore,");
-        else setGreeting("Selamat Malam,");
+        if (hour >= 4 && hour < 10) setGreeting("Selamat Pagi.");
+        else if (hour >= 10 && hour < 15) setGreeting("Selamat Siang.");
+        else if (hour >= 15 && hour < 18) setGreeting("Selamat Sore.");
+        else setGreeting("Selamat Malam.");
     }, []);
 
     useEffect(() => {
-            if (typeof window !== 'undefined') {
-                const storedToken = localStorage.getItem('token');
-                const role = localStorage.getItem('role');
-    
-                if (role !== 'admin') {
-                    router.replace('/unauthorized');
-                    return;
-                }
-    
-                if (storedToken) {
-                    setToken(storedToken);
-                } else {
-                    router.replace('/login');
-                }
-            }
-        }, [router]);
+        if (typeof window !== 'undefined') {
+            const storedToken = localStorage.getItem('token');
+            const role = localStorage.getItem('role');
 
-        const fetchData = useCallback(async () => {
-            if (!token) {
+            if (role !== 'admin') {
+                router.replace('/unauthorized');
                 return;
             }
-            try {
-                const apislkUrl = `${baseUrl}slk`;
-                const slkRes = await axios.get<Slk[]>(apislkUrl, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
-                const filtered = slkRes.data.filter(item => String(item.id) === slkId);
 
-                setslk(filtered);
-
-                console.log("Filtered slk:", filtered); 
-                console.log("slk: ", slkRes);
-                
-            } catch (err: any) {
-                console.error('Error fetching data:', err);
+            if (storedToken) {
+                setToken(storedToken);
+            } else {
+                router.replace('/login');
             }
-        }, [token, baseUrl]);
+        }
+    }, [router]);
+
+    const fetchData = useCallback(async () => {
+        if (!token) {
+            return;
+        }
+        try {
+            const apislkUrl = `${baseUrl}slk`;
+            const apiUserUrl = `${baseUrl}users`;
+            const slkRes = await axios.get<Slk[]>(apislkUrl, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            const userRes = await axios.get<User[]>(apiUserUrl, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json', 
+                }
+            })
+            const filtered = slkRes.data.filter(item => String(item.id) === slkId);
+            const userKTP = userRes.data.filter(user => user.id === filtered[0].user_id)
+            setslk(filtered);
+            setUser(userKTP);
+            
+            console.log("Filtered slk:", filtered); 
+            console.log("user", userKTP);
+            
+        } catch (err: any) {
+            console.error('Error fetching data:', err);
+        }
+    }, [token, baseUrl]);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
     
-        useEffect(() => {
-            fetchData();
-        }, [fetchData]);
+    function formatItemType(item_type: string): string {
+        if (itemTypeMap[item_type as ItemType]) {
+          return itemTypeMap[item_type as ItemType];
+        }
+        return item_type
+          .split("_")
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
+    }
 
     function handleMessage(item_type:string) {
-        if (item_type == "Mouse") {
+        if (item_type == "ktp") {
             return `Halo, ${greeting}.\n\n
 
             Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
-            Tipe Barang Hilang = KTP, meminta persyaratan berikut:\n\n
+            Tipe Barang Hilang = KTP, kami meminta Anda untuk mengirim:\n\n
 
             1. Foto Surat Keterangan dari Desa\n
+            2. Foto Kartu Keluarga (fotokopi atau asli)\n\n
+            
+            Jika pesan tidak dibalas dalam 1 minggu kedepan, maka permohonan laporan kehilangan kami anggap hangus`;
+        } else if (item_type == "kk") {
+            return `Halo, ${greeting}.\n\n
+
+            Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
+            Tipe Barang Hilang = Kartu Keluarga, kami meminta Anda untuk mengirim:\n\n
+
+            1. Foto Surat Keterangan dari Desa\n
+            2. Foto KTP (fotokopi atau asli)\n\n
+            
+            Jika pesan tidak dibalas dalam 1 minggu kedepan, maka permohonan laporan kehilangan kami anggap hangus`;
+        } else if (item_type == "buku_rek_atm") {
+            return `Halo, ${greeting}.\n\n
+
+            Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
+            Tipe Barang Hilang = Buku Rekening / ATM, kami meminta Anda untuk mengirim:\n\n
+
+            1. Foto KTP (fotokopi atau asli)\n
+            2. Nomor rekening Bank yang hilang\n\n
+            
+            Jika pesan tidak dibalas dalam 1 minggu kedepan, maka permohonan laporan kehilangan kami anggap hangus`;
+        } else if (item_type == "sim") {
+            return `Halo, ${greeting}.\n\n
+
+            Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
+            Tipe Barang Hilang = SIM, kami meminta Anda untuk mengirim:\n\n
+
+            1. Foto KTP (fotokopi atau asli)\n
+            2. Nomor SIM jika ada (opsional)\n
+            
+            Jika pesan tidak dibalas dalam 1 minggu kedepan, maka permohonan laporan kehilangan kami anggap hangus`;
+        } else if (item_type == "sim_card") {
+            return `Halo, ${greeting}.\n\n
+
+            Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
+            Tipe Barang Hilang = SIM Card, kami meminta Anda untuk mengirim:\n\n
+
+            1. Foto Surat Keterangan dari Desa\n
+            2. Foto KTP (fotokopi atau asli)\n\n
+            
+            Jika pesan tidak dibalas dalam 1 minggu kedepan, maka permohonan laporan kehilangan kami anggap hangus`;
+        } else if (["stnk", "bpkb", "ijazah", "surat_nikah", "surat_lainnya", "kk"].includes(item_type)) {
+            const formattedType = formatItemType(item_type);
+            return `Halo, ${greeting}.\n\n
+
+            Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
+            Tipe Barang Hilang = ${formattedType}, menginformasikan untuk sekarang pelayanan atas kehilangan ${formattedType} dialihkan ke Polres Magetan`;
+        }  else {
+            return `Halo, ${greeting}.\n\n
+
+            Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
+            Tipe Barang Hilang = ${item_type}, kami meminta Anda untuk mengirim:\n\n
+
+            1. Foto struk/nota pembelian barang atau foto bukti kuat kepemilikan barang 
             2. Foto KTP (fotokopi atau asli)\n\n
             
             Jika pesan tidak dibalas dalam 1 minggu kedepan, maka permohonan laporan kehilangan kami anggap hangus`;
@@ -136,13 +235,30 @@ export default function ProsesSLK(){
                         <tr>
                         <td className="font-bold">Nomor Telepon</td>
                         <td>: {item.contact_reporter}</td>
+                        <td>
                         <WhatsAppButton
                             phone={item.contact_reporter}
                             message={handleMessage(item.item_type)}
-                        />
+                            />
+                        </td>
                         </tr>
                     </tbody>
                     </table>
+                </div>
+                <div className="flex flex-col justify-start mb-6">
+                    <div className="border border-black w-fit h-auto flex items-center justify-center">
+                    {userData[0] ? (
+                        <Image
+                            src={userData[0].ktp}
+                            alt="KTP"
+                            width={500}
+                            height={500}
+                        />
+                    ) : (
+                        <span className="text-xs">Foto KTP</span>
+                    )}
+                    </div>
+                    <span className="mt-2">Foto KTP</span>
                 </div>
                 </div>
             ))}

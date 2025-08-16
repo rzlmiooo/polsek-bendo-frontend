@@ -1,13 +1,21 @@
 import Image from "next/image";
 
 interface WhatsAppButtonProps {
-  phone: string; // contoh: "6281234567890"
-  message?: string; // pesan default
+  phone: string;
+  message?: string;
+}
+
+function changePrefix(nomor:string) {
+  nomor = nomor.replace(/[\s-]/g, '');
+  if (nomor.startsWith('+62')) return nomor;
+  if (nomor.startsWith('0')) return '+62' + nomor.slice(1);
+  return nomor;
 }
 
 export default function WhatsAppButton({ phone, message }: WhatsAppButtonProps) {
   const encodedMessage = encodeURIComponent(message || '');
-  const waLink = `https://wa.me/${phone}${encodedMessage ? `?text=${encodedMessage}` : ''}`;
+  const formatted = changePrefix(phone);
+  const waLink = `https://wa.me/${formatted}${encodedMessage ? `?text=${encodedMessage}` : ''}`;
 
   return (
     <a

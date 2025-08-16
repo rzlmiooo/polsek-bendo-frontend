@@ -22,11 +22,17 @@ interface Pm {
     complaint_status: string;
 }
 
+interface User {
+    id: string;
+    ktp: string;
+}
+
 export default function ProsesPM(){
     const searchParams = useSearchParams();
     const router = useRouter();
     const pmId = searchParams.get("pm_id");
     const [pmData, setpm] = useState<Pm[]>([]);
+    const [userData, setUser] = useState<User[]>([]);
     const [token, setToken] = useState<string | null>(null);
     
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -69,18 +75,25 @@ export default function ProsesPM(){
             }
             try {
                 const apipmUrl = `${baseUrl}pm`;
+                const apiUserUrl = `${baseUrl}users`;
                 const pmRes = await axios.get<Pm[]>(apipmUrl, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                 });
+                const userRes = await axios.get<User[]>(apiUserUrl, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json', 
+                    }
+                })
                 const filtered = pmRes.data.filter(item => String(item.id) === pmId);
-
+                const userKTP = userRes.data.filter(user => user.id === filtered[0].user_id)
                 setpm(filtered);
-
+                setUser(userKTP);
                 console.log("Filtered pm:", filtered); 
-                console.log("pm: ", pmRes);
+                console.log("user", userKTP);
                 
             } catch (err: any) {
                 console.error('Error fetching data:', err);
@@ -163,6 +176,21 @@ export default function ProsesPM(){
                         </tr>
                     </tbody>
                     </table>
+                </div>
+                <div className="flex flex-col justify-start mb-6">
+                    <div className="border border-black w-fit h-auto flex items-center justify-center">
+                    {userData[0] ? (
+                        <Image
+                            src={userData[0].ktp}
+                            alt="KTP"
+                            width={500}
+                            height={500}
+                        />
+                    ) : (
+                        <span className="text-xs">Foto KTP</span>
+                    )}
+                    </div>
+                    <span className="mt-2">Foto KTP</span>
                 </div>
                 </div>
             ))}

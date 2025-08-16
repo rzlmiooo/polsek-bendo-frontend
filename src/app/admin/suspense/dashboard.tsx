@@ -110,9 +110,6 @@ export default function Dashboard(){
             const allSik = sikRes.data || [];
             const allSlk = slkRes.data || [];
             const allPm = pmRes.data || [];
-
-            console.log("pm", allPm);
-            
       
             if (!userId) return;
       
