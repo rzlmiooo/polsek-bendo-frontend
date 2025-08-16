@@ -9,6 +9,7 @@ import Back from "@/app/components/back";
 
 interface Skck {
     id: string;
+    user_id: string;
     applicant_name: string;
     submission_date: string;
     passport_photo: string;
@@ -22,11 +23,17 @@ interface Skck {
     religion: string;
 }
 
+interface User {
+    id: string;
+    ktp: string;
+}
+
 export default function ProsesSKCK(){
     const searchParams = useSearchParams();
     const router = useRouter();
     const skckId = searchParams.get("skck_id");
     const [skckData, setSkck] = useState<Skck[]>([]);
+    const [userData, setUser] = useState<User[]>([]);
     const [token, setToken] = useState<string | null>(null);
     
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -58,18 +65,27 @@ export default function ProsesSKCK(){
             }
             try {
                 const apiSkckUrl = `${baseUrl}skck`;
+                const apiUserUrl = `${baseUrl}users`;
                 const skckRes = await axios.get<Skck[]>(apiSkckUrl, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                 });
+                const userRes = await axios.get<User[]>(apiUserUrl, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json', 
+                    }
+                })
                 const filtered = skckRes.data.filter(item => String(item.id) === skckId);
-
+                const userKTP = userRes.data.filter(user => user.id === filtered[0].user_id)
                 setSkck(filtered);
-
-                console.log("Filtered SKCK:", filtered); 
-                console.log("skck: ", skckRes);
+                setUser(userKTP);
+                
+                console.log("Filtered SKCK:", filtered);
+                console.log("user", userKTP);
+                
                 
             } catch (err: any) {
                 console.error('Error fetching data:', err);
@@ -78,7 +94,7 @@ export default function ProsesSKCK(){
     
         useEffect(() => {
             fetchData();
-        }, [fetchData]);
+        }, [fetchData]);        
 
     return (
         <div className="lg:ml-[260px]">
@@ -160,6 +176,21 @@ export default function ProsesSKCK(){
                     )}
                     </div>
                     <span className="mt-2">Pas Foto</span>
+                </div>
+                <div className="flex flex-col justify-start mb-6">
+                    <div className="border border-black w-fit h-auto flex items-center justify-center">
+                    {userData[0] ? (
+                        <Image
+                            src={userData[0].ktp}
+                            alt="KTP"
+                            width={500}
+                            height={500}
+                        />
+                    ) : (
+                        <span className="text-xs">Foto KTP</span>
+                    )}
+                    </div>
+                    <span className="mt-2">Foto KTP</span>
                 </div>
                 </div>
             ))}

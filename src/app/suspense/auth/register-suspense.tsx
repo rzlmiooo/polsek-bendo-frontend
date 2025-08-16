@@ -12,6 +12,7 @@ interface RegisterFormState {
     username: string;
     role: string;
     profile_picture: string; 
+    ktp: string
     successMessage: string | null;
     errorMessage: string | null;
 }
@@ -29,6 +30,7 @@ export default function Registration() {
         username: "",
         role: "user", 
         profile_picture: "", 
+        ktp: "",
         successMessage: null,
         errorMessage: null,
     });
@@ -37,6 +39,21 @@ export default function Registration() {
     const [imageLoading, setImageLoading] = useState<boolean>(false); 
     const [imageError, setImageError] = useState<string>(""); 
 
+    const [loading, setLoading] = useState({
+        profile_picture: false,
+        ktp: false
+    });
+    
+    const [error, setError] = useState({
+        profile_picture: "",
+        ktp: ""
+    });
+
+    const [preview, setPreview] = useState({
+        profile_picture: "",
+        ktp: ""
+    });
+    
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
@@ -45,59 +62,79 @@ export default function Registration() {
             errorMessage: null, 
         }));
     };
-
     
     const handleFilePictureChange = async (e: ChangeEvent<HTMLInputElement>) => {
-        setImageError("");
-        setFormData((prev) => ({ ...prev, profile_picture: "" })); 
-
-        const file = e.target.files ? e.target.files[0] : null;
-
+        setError((prev) => ({ ...prev, profile_picture: "" }));
+        setFormData((prev) => ({ ...prev, profile_picture: "" }));
+    
+        const file = e.target.files?.[0];
         if (!file) {
-            setImageError("No file selected.");
-            setSelectedFile(null);
+            setError((prev) => ({ ...prev, profile_picture: "No file selected." }));
             return;
         }
-
-        setSelectedFile(file);
-        setImageLoading(true); 
-
-        console.log('Value of selectedFile (from event) before FormData:', file);
-
+    
+        // bikin preview dari file lokal
+        setPreview((prev) => ({ ...prev, profile_picture: URL.createObjectURL(file) }));
+    
+        setLoading((prev) => ({ ...prev, profile_picture: true }));
+    
         try {
             const cloudinaryFormData = new FormData();
-            cloudinaryFormData.append('image', file); 
-
-            console.log('Contents of FormData for Cloudinary:');
-            for (const pair of cloudinaryFormData.entries()) {
-                console.log(`${pair[0]}:`, pair[1]);
-            }
-            
+            cloudinaryFormData.append("image", file);
+    
             const apiUrl = `${baseApiUrl}upload`;
-
-            const response = await axios.post(
-                apiUrl,
-                cloudinaryFormData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data', 
-                    },
-                }
-            );
-
-            const resData = response.data;
-            setFormData((prev) => ({ ...prev, profile_picture: resData.url }));
-            console.log("Upload successful:", resData);
-
+            const response = await axios.post(apiUrl, cloudinaryFormData, {
+                headers: { "Content-Type": "multipart/form-data" }
+            });
+    
+            setFormData((prev) => ({ ...prev, profile_picture: response.data.url }));
         } catch (err: any) {
-            console.error("Full image upload error object:", err);
-            console.error("Image upload error response data:", err?.response?.data);
-            setImageError(err?.response?.data?.error || "Failed to upload image. Please try again.");
-            setSelectedFile(null); 
+            setError((prev) => ({
+                ...prev,
+                profile_picture: err?.response?.data?.error || "Failed to upload image."
+            }));
         } finally {
-            setImageLoading(false); 
+            setLoading((prev) => ({ ...prev, profile_picture: false }));
         }
     };
+    
+    
+    const handleFileKtpChange = async (e: ChangeEvent<HTMLInputElement>) => {
+        setError((prev) => ({ ...prev, ktp: "" }));
+        setFormData((prev) => ({ ...prev, ktp: "" }));
+    
+        const file = e.target.files?.[0];
+        if (!file) {
+            setError((prev) => ({ ...prev, ktp: "No file selected." }));
+            return;
+        }
+    
+        // bikin preview dari file lokal
+        setPreview((prev) => ({ ...prev, ktp: URL.createObjectURL(file) }));
+    
+        setLoading((prev) => ({ ...prev, ktp: true }));
+    
+        try {
+            const cloudinaryFormData = new FormData();
+            cloudinaryFormData.append("image", file);
+    
+            const apiUrl = `${baseApiUrl}upload`;
+            const response = await axios.post(apiUrl, cloudinaryFormData, {
+                headers: { "Content-Type": "multipart/form-data" }
+            });
+    
+            setFormData((prev) => ({ ...prev, ktp: response.data.url }));
+        } catch (err: any) {
+            setError((prev) => ({
+                ...prev,
+                ktp: err?.response?.data?.error || "Failed to upload image."
+            }));
+        } finally {
+            setLoading((prev) => ({ ...prev, ktp: false }));
+        }
+    };
+    
+    
 
     const handleSubmitClick = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -107,7 +144,7 @@ export default function Registration() {
         if (formData.password !== formData.confirmPassword) {
             setFormData((prev) => ({
                 ...prev,
-                errorMessage: "Passwords do not match",
+                errorMessage: "Password tidak cocok.",
             }));
             return;
         }
@@ -115,7 +152,7 @@ export default function Registration() {
         if (imageLoading) {
             setFormData((prev) => ({
                 ...prev,
-                errorMessage: "Please wait for the image to finish uploading.",
+                errorMessage: "Sedang mengunggah gambar...",
             }));
             return;
         }
@@ -123,7 +160,7 @@ export default function Registration() {
         if (imageError) {
             setFormData((prev) => ({
                 ...prev,
-                errorMessage: `Image upload failed: ${imageError}. Please fix or re-upload.`,
+                errorMessage: `Upload gambar gagal: ${imageError}. Tolong upload lagi.`,
             }));
             return;
         }
@@ -136,13 +173,13 @@ export default function Registration() {
             return;
         }
 
-        // if (!formData.identity_card) {
-        //     setFormData((prev) => ({
-        //         ...prev,
-        //         errorMessage: "Please upload a profile picture.",
-        //     }));
-        //     return;
-        // }
+        if (!formData.ktp) {
+            setFormData((prev) => ({
+                ...prev,
+                errorMessage: "Please upload your identity card.",
+            }));
+            return;
+        }
 
         if (!formData.email || !formData.password || !formData.username || !formData.role) {
             setFormData((prev) => ({
@@ -158,7 +195,8 @@ export default function Registration() {
                 password: formData.password,
                 username: formData.username,
                 role: formData.role,
-                profile_picture: formData.profile_picture
+                profile_picture: formData.profile_picture,
+                ktp: formData.ktp
             };
 
             const authUrl = `${baseAuthUrl}signup`;
@@ -193,7 +231,7 @@ export default function Registration() {
             </Head>
         <div>
             <div>
-                <div className="flex h-screen bg-yellow-700">
+                <div className="flex h-screen bg-yellow-700 overflow-auto">
                     <div className="w-full max-w-xs m-auto bg-indigo-100 rounded p-5">
                         <header>
                             <img className="w-20 mx-auto mb-5" src="/images/Polri_Logo.png" alt="Polri Logo" />
@@ -239,7 +277,7 @@ export default function Registration() {
                                 />
                             </div>
                             <div>
-                                <label className="block mb-2 text-yellow-800 text-sm" htmlFor="confirmPassword">Confirm Password</label>
+                                <label className="block mb-2 text-yellow-800 text-sm" htmlFor="confirmPassword">Konfirmasi Password</label>
                                 <input
                                     className="w-full p-2 mb-4 text-yellow-700 border-b-2 text-sm border-yellow-500 outline-none focus:bg-gray-300 rounded-md"
                                     type="password"
@@ -257,40 +295,54 @@ export default function Registration() {
                                     className="w-full p-2 mb-4 text-yellow-700 border-b-2 text-sm border-yellow-500 outline-none focus:bg-gray-300 rounded-md"
                                     type="file"
                                     accept="image/*"
-                                    onChange={handleFilePictureChange} 
-                                    disabled={imageLoading} 
+                                    onChange={handleFilePictureChange}
+                                    disabled={loading.profile_picture}
                                 />
-                                {imageLoading && <p className="text-blue-600">Uploading image...</p>}
-                                {imageError && <p style={{ color: 'red' }}>{imageError}</p>}
+                                {preview.profile_picture && (
+                                    <img
+                                        src={preview.profile_picture}
+                                        alt="Preview Profile"
+                                        className="w-24 h-24 object-cover mt-2 rounded-full border"
+                                    />
+                                )}
+                                {loading.profile_picture && <p className="text-blue-600">Uploading profile picture...</p>}
+                                {error.profile_picture && <p className="text-red-600">{error.profile_picture}</p>}
                                 {formData.profile_picture && (
                                     <div className="text-green-600 mb-4">
                                         <p>Image uploaded successfully!</p>
                                     </div>
                                 )}
-                                {selectedFile && !imageLoading && !formData.profile_picture && !imageError && (
+                                {selectedFile && !loading.profile_picture && !formData.profile_picture && !error.ktp && (
                                     <p className="text-gray-600">Ready to upload: {selectedFile.name}</p>
                                 )}
                             </div>
-                            {/* <div>
-                                <label className="block mb-2 text-yellow-800 text-sm" htmlFor="profile_picture">Upload Foto KTP</label>
+                            <div>
+                                <label className="block mb-2 text-yellow-800 text-sm" htmlFor="ktp">Upload Foto KTP</label>
                                 <input
                                     className="w-full p-2 mb-4 text-yellow-700 border-b-2 text-sm border-yellow-500 outline-none focus:bg-gray-300 rounded-md"
                                     type="file"
                                     accept="image/*"
-                                    onChange={handleFilePictureChange} 
-                                    disabled={imageLoading} 
+                                    onChange={handleFileKtpChange} 
+                                    disabled={loading.ktp} 
                                 />
-                                {imageLoading && <p className="text-blue-600">Uploading image...</p>}
-                                {imageError && <p style={{ color: 'red' }}>{imageError}</p>}
-                                {formData.profile_picture && (
+                                {preview.ktp && (
+                                    <img
+                                        src={preview.ktp}
+                                        alt="Preview KTP"
+                                        className="w-32 h-20 object-cover mt-2 border"
+                                    />
+                                )}
+                                {loading.ktp && <p className="text-blue-600">Uploading image...</p>}
+                                {error.ktp && <p style={{ color: 'red' }}>{error.ktp}</p>}
+                                {formData.ktp && (
                                     <div className="text-green-600 mb-4">
                                         <p>Image uploaded successfully!</p>
                                     </div>
                                 )}
-                                {selectedFile && !imageLoading && !formData.profile_picture && !imageError && (
+                                {selectedFile && !loading.ktp && !formData.ktp && !error.ktp && (
                                     <p className="text-gray-600">Ready to upload: {selectedFile.name}</p>
                                 )}
-                            </div> */}
+                            </div>
 
                             {formData.errorMessage && <p style={{ color: 'red' }} className="mb-4">{formData.errorMessage}</p>}
                             {formData.successMessage && <p style={{ color: 'green' }} className="mb-4">{formData.successMessage}</p>}
@@ -299,8 +351,8 @@ export default function Registration() {
                                 <input
                                     className="w-full bg-yellow-700 hover:bg-yellow-500 text-white font-bold py-2 px-4 mb-4 rounded-md"
                                     type="submit"
-                                    value={imageLoading ? "Uploading Image..." : "Register"} 
-                                    disabled={imageLoading} 
+                                    value={loading.ktp && loading.profile_picture ? "Uploading Image..." : "Register"} 
+                                    disabled={loading.ktp && loading.profile_picture} 
                                 />
                             </div>
                         </form>
