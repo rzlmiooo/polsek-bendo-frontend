@@ -113,12 +113,12 @@ export default function KelolaLaporanKehilangan() {
 
       if (status === 'diterima') {
         setMessage({ type: 'success', text: 'Laporan diterima!' });
-        router.push(`/admin/layanan/laporan_kehilangan/proses?slk_id=${slkId}`)
       } else if (status === 'selesai') {
         setMessage({ type: 'error', text: 'Laporan ditolak!' });
         router.push(`/api/slk/download?slk_id=${slkId}`)
       } else if (status === 'investigasi') {
         setMessage({ type: 'success', text: 'Laporan dalam investigasi!' });
+        router.push(`/admin/layanan/laporan_kehilangan/proses?slk_id=${slkId}`)
       }
 
       fetchData();
@@ -130,14 +130,6 @@ export default function KelolaLaporanKehilangan() {
       setIsLoading(false);
     }
   };
-
-  // if (loading) {
-  //   return (
-  //     <div className="flex h-screen items-center justify-center">
-  //       <p className="text-xl dark:text-white">Loading Kelola Slk...</p>
-  //     </div>
-  //   );
-  // }
 
   if (error) {
     return (
@@ -185,7 +177,7 @@ export default function KelolaLaporanKehilangan() {
                     <div className="divide-y divide-gray-200 dark:divide-gray-700">
                       <div className="flex flex-wrap items-start gap-4 py-6">
                         {/* slk ID */}
-                        <dl className="w-6 sm:w-8 lg:w-10 lg:flex-1">
+                        <dl className="w-full sm:w-8 lg:w-10 lg:flex-1">
                           <dt className="text-base font-medium text-gray-500 dark:text-gray-400">ID Laporan:</dt>
                           <dd className="mt-1.5 text-base font-semibold text-gray-900 dark:text-white">
                             <Link href={`#${slk.id}`} className="hover:underline">{slk.id}</Link>
@@ -201,7 +193,7 @@ export default function KelolaLaporanKehilangan() {
                         </dl>
                         
                         {/* Reporter Contact */}
-                        <dl className="w-auto">
+                        <dl className="w-1/2 sm:w-fit">
                           <dt className="text-base font-medium text-gray-500 dark:text-gray-400">Nomor Telepon:</dt>
                           <dd className="mt-1.5 text-base font-semibold text-gray-900 dark:text-white">
                             <WhatsAppButton
@@ -247,21 +239,21 @@ export default function KelolaLaporanKehilangan() {
                         <div className="mt-auto flex w-full flex-col gap-4 border-t border-gray-200 pt-4 dark:border-neutral-700 sm:flex-row sm:justify-end sm:pt-0">
                           <button
                               type="button"
-                              onClick={() => handleSubmitStatus(slk.id, 'diterima')}
+                              onClick={() => handleSubmitStatus(slk.id, 'investigasi')}
                               disabled={isLoading}
                               className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-bold text-white ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'}`}
                           >
-                              {isLoading ? 'Processing...' : 'Terima & Proses'}
+                              {isLoading ? 'Processing...' : 'Investigasi & Proses'}
                           </button>
                           <button
                               type="button"
                               onClick={() => handleSubmitStatus(slk.id, 'selesai')}
-                              disabled={slk.status_handling == 'investigasi'}
-                              className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-bold text-white } ${slk.status_handling == 'investigasi' ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-red-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'}`}
+                              disabled={slk.status_handling == 'diterima'}
+                              className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-bold text-white } ${slk.status_handling == 'investigasi' ? 'bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-red-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800' : 'bg-gray-400 cursor-not-allowed'}`}
                           >
                               {slk.status_handling == 'selesai' ? 'Download PDF' : 'Konfirmasi Selesai & Download PDF'}
                           </button>
-                          <Link href={`/admin/layanan/laporan_kehilangan/edit-slk?slk_id=${slk.id}`} className={`flex-1 rounded-lg  px-3 py-2 text-center text-sm font-bold text-white ${slk.status_handling == 'diterima' ? 'bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800' : 'bg-gray-400 cursor-not-allowed'}`}>
+                          <Link href={`/admin/layanan/laporan_kehilangan/edit-slk?slk_id=${slk.id}`} className={`flex-1 rounded-lg  px-3 py-2 text-center text-sm font-bold text-white ${slk.status_handling == 'diterima' ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800'}`}>
                               Tolak Pengajuan
                           </Link>
                         </div>

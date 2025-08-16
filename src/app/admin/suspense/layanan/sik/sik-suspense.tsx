@@ -1,9 +1,6 @@
 "use client";
 
 import axios from "axios";
-import AdminNavbar from "@/app/components/adminnavbar";
-import Footer from "../../../../components/footer";
-import Navbar from "../../../../components/navbar";
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from "next/navigation";
@@ -49,16 +46,12 @@ export default function KelolaIzinKeramaian() {
     useEffect(() => {
         setIsClient(true);
         if (typeof window !== 'undefined') {
-
             const storedToken = localStorage.getItem('token');
-            console.log("Token", storedToken);
             const role = localStorage.getItem('role');
-
             if (role !== 'admin') {
                 router.replace('/unauthorized');
                 return;
             }
-
             if (storedToken) {
                 setToken(storedToken);
                 setLoading(false);
@@ -142,14 +135,6 @@ export default function KelolaIzinKeramaian() {
     function capitalize(text: string | null | undefined) {
         return text ? text.charAt(0).toUpperCase() + text.slice(1) : 'Tidak ada status';
     }
-
-    // if (loading) {
-    //     return (
-    //         <div className="flex h-screen items-center justify-center">
-    //             <p className="text-xl dark:text-white">Loading Kelola sik...</p>
-    //         </div>
-    //     );
-    // }
 
     if (error) {
         return (

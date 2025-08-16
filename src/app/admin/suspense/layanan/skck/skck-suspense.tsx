@@ -1,7 +1,6 @@
 "use client";
 
 import axios from "axios";
-import AdminNavbar from "@/app/components/adminnavbar";
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from "next/navigation";
@@ -85,8 +84,6 @@ export default function KelolaSkck() {
                 },
             });
             setSkck(skckRes.data || []);
-            console.log("skck: ", skckRes);
-            
         } catch (err: any) {
             console.error('Error fetching data:', err);
             setError(err.response?.data?.message || 'Failed to fetch SLK data.');
@@ -142,14 +139,6 @@ export default function KelolaSkck() {
             setIsLoading(false);
         }
     };
-
-    // if (loading) {
-    //     return (
-    //         <div className="flex h-screen items-center justify-center">
-    //             <p className="text-xl dark:text-white">Loading Kelola Skck...</p>
-    //         </div>
-    //     );
-    // }
 
     if (error) {
         return (

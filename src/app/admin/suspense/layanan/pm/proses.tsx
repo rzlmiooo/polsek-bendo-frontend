@@ -52,71 +52,54 @@ export default function ProsesPM(){
     }, []);
 
     useEffect(() => {
-            if (typeof window !== 'undefined') {
-                const storedToken = localStorage.getItem('token');
-                const role = localStorage.getItem('role');
-    
-                if (role !== 'admin') {
-                    router.replace('/unauthorized');
-                    return;
-                }
-    
-                if (storedToken) {
-                    setToken(storedToken);
-                } else {
-                    router.replace('/login');
-                }
-            }
-        }, [router]);
+        if (typeof window !== 'undefined') {
+            const storedToken = localStorage.getItem('token');
+            const role = localStorage.getItem('role');
 
-        const fetchData = useCallback(async () => {
-            if (!token) {
+            if (role !== 'admin') {
+                router.replace('/unauthorized');
                 return;
             }
-            try {
-                const apipmUrl = `${baseUrl}pm`;
-                const apiUserUrl = `${baseUrl}users`;
-                const pmRes = await axios.get<Pm[]>(apipmUrl, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
-                const userRes = await axios.get<User[]>(apiUserUrl, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json', 
-                    }
-                })
-                const filtered = pmRes.data.filter(item => String(item.id) === pmId);
-                const userKTP = userRes.data.filter(user => user.id === filtered[0].user_id)
-                setpm(filtered);
-                setUser(userKTP);
-                console.log("Filtered pm:", filtered); 
-                console.log("user", userKTP);
-                
-            } catch (err: any) {
-                console.error('Error fetching data:', err);
+
+            if (storedToken) {
+                setToken(storedToken);
+            } else {
+                router.replace('/login');
             }
-        }, [token, baseUrl]);
-    
-        useEffect(() => {
-            fetchData();
-        }, [fetchData]);
-
-    function handleMessage(item_type:string) {
-        if (item_type == "Mouse") {
-            return `Halo, ${greeting}.\n\n
-
-            Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
-            Tipe Barang Hilang = KTP, meminta persyaratan berikut:\n\n
-
-            1. Foto Surat Keterangan dari Desa\n
-            2. Foto KTP (fotokopi atau asli)\n\n
-            
-            Jika pesan tidak dibalas dalam 1 minggu kedepan, maka permohonan laporan kehilangan kami anggap hangus`;
         }
-    }
+    }, [router]);
+
+    const fetchData = useCallback(async () => {
+        if (!token) {
+            return;
+        }
+        try {
+            const apipmUrl = `${baseUrl}pm`;
+            const apiUserUrl = `${baseUrl}users`;
+            const pmRes = await axios.get<Pm[]>(apipmUrl, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            const userRes = await axios.get<User[]>(apiUserUrl, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json', 
+                }
+            })
+            const filtered = pmRes.data.filter(item => String(item.id) === pmId);
+            const userKTP = userRes.data.filter(user => user.id === filtered[0].user_id)
+            setpm(filtered);
+            setUser(userKTP);
+        } catch (err: any) {
+            console.error('Error fetching data:', err);
+        }
+    }, [token, baseUrl]);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     return (
         <div className="lg:ml-[260px]">
@@ -170,7 +153,7 @@ export default function ProsesPM(){
                             <td className="py-4">
                                 <WhatsAppButton
                                     phone={item.contact}
-                                    message={handleMessage(item.item_type)}
+                                    message=""
                                 />
                             </td>
                         </tr>
