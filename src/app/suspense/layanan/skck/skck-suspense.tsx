@@ -13,12 +13,148 @@ interface SkckFormState {
   needs: string;
   id_number: string;
   submission_date: string;
-  officer_notes: string;
   passport_photo: string;
   verification_status: string;
   successMessage: string | null;
   errorMessage: string | null;
+  sex: string;
+  nationality: string;
+  religion: string;
 }
+
+const sexOptions = ["Laki-laki", "Perempuan"];
+
+const religionOptions = [
+  "Islam",
+  "Kristen",
+  "Katolik",
+  "Hindu",
+  "Budha",
+  "Konghucu",
+];
+
+const countryOptions = [
+  "Afganistan",
+  "Afrika Selatan",
+  "Albania",
+  "Aljazair",
+  "Amerika Serikat",
+  "Andorra",
+  "Angola",
+  "Arab Saudi",
+  "Argentina",
+  "Armenia",
+  "Australia",
+  "Austria",
+  "Bangladesh",
+  "Belanda",
+  "Belgia",
+  "Bhutan",
+  "Brasil",
+  "Brunei Darussalam",
+  "Bulgaria",
+  "Ceko",
+  "Chili",
+  "China",
+  "Denmark",
+  "Ekuador",
+  "Eritrea",
+  "Estonia",
+  "Ethiopia",
+  "Filipina",
+  "Finlandia",
+  "Hongaria",
+  "India",
+  "Indonesia", // default
+  "Inggris",
+  "Iran",
+  "Irak",
+  "Irlandia",
+  "Islandia",
+  "Israel",
+  "Italia",
+  "Jamaika",
+  "Jepang",
+  "Jerman",
+  "Kanada",
+  "Kamboja",
+  "Kazakhstan",
+  "Kenya",
+  "Kirgistan",
+  "Kolombia",
+  "Korea Selatan",
+  "Korea Utara",
+  "Kosta Rika",
+  "Kroasia",
+  "Kuwait",
+  "Laos",
+  "Latvia",
+  "Lebanon",
+  "Libanon",
+  "Libya",
+  "Lituania",
+  "Luksemburg",
+  "Madagaskar",
+  "Malaysia",
+  "Maladewa",
+  "Malawi",
+  "Mali",
+  "Malta",
+  "Maroko",
+  "Mauritius",
+  "Mesir",
+  "Meksiko",
+  "Monako",
+  "Mongolia",
+  "Myanmar",
+  "Nepal",
+  "Nigeria",
+  "Norwegia",
+  "Oman",
+  "Pakistan",
+  "Palestina",
+  "Panama",
+  "Perancis",
+  "Peru",
+  "Polandia",
+  "Portugal",
+  "Qatar",
+  "Rumania",
+  "Rusia",
+  "Selandia Baru",
+  "Senegal",
+  "Serbia",
+  "Singapura",
+  "Siprus",
+  "Slovakia",
+  "Slovenia",
+  "Spanyol",
+  "Sri Lanka",
+  "Sudan",
+  "Suriah",
+  "Swedia",
+  "Swiss",
+  "Taiwan",
+  "Tajikistan",
+  "Tanzania",
+  "Thailand",
+  "Timor Leste",
+  "Tiongkok",
+  "Tunisia",
+  "Turki",
+  "Turkmenistan",
+  "Ukraina",
+  "Uni Emirat Arab",
+  "Uruguay",
+  "Uzbekistan",
+  "Venezuela",
+  "Vietnam",
+  "Yaman",
+  "Yordania",
+  "Yunani",
+  "Zambia",
+  "Zimbabwe",
+];
 
 export default function SkckForm() {
   const router = useRouter();
@@ -36,10 +172,12 @@ export default function SkckForm() {
     id_number: "",
     submission_date: "",
     verification_status: "pending",
-    officer_notes: "null",
     passport_photo: "",
     successMessage: null,
     errorMessage: null,
+    sex: "",
+    nationality: "Indonesia",
+    religion: "",
   });
 
 
@@ -160,6 +298,9 @@ export default function SkckForm() {
       !formData.complete_address ||
       !formData.id_number ||
       !formData.needs ||
+      !formData.sex ||
+      !formData.nationality ||
+      !formData.religion ||
       !formData.submission_date
     ) {
       setFormData((prev) => ({
@@ -176,10 +317,12 @@ export default function SkckForm() {
         place_date_birth: formData.place_date_birth,
         complete_address: formData.complete_address,
         needs: formData.needs,
+        sex: formData.sex,
+        nationality: formData.nationality,
+        religion: formData.religion,
         id_number: formData.id_number,
         submission_date: formData.submission_date,
         verification_status: formData.verification_status,
-        officer_notes: formData.officer_notes,
         passport_photo: formData.passport_photo,
       };
       const apiSkckUrl = `${baseApiUrl}skck`;
@@ -237,6 +380,59 @@ export default function SkckForm() {
               placeholder="Muhammad Rokiaten"
               required
             />
+          </div>
+
+          {/* Sex */}
+          <div>
+            <label className="block mb-2">Jenis Kelamin</label>
+            <select
+              name="sex"
+              value={formData.sex}
+              onChange={handleChange}
+              className="border rounded p-2 w-full"
+            >
+              <option value="">-- Pilih Jenis Kelamin --</option>
+              {sexOptions.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Nationality */}
+          <div>
+            <label className="block mb-2">Kewarganegaraan</label>
+            <select
+              name="nationality"
+              value={formData.nationality}
+              onChange={handleChange}
+              className="border rounded p-2 w-full"
+            >
+              {countryOptions.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Religion */}
+          <div>
+            <label className="block mb-2">Agama</label>
+            <select
+              name="religion"
+              value={formData.religion}
+              onChange={handleChange}
+              className="border rounded p-2 w-full"
+            >
+              <option value="">-- Pilih Agama --</option>
+              {religionOptions.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Alamat Lengkap */}
@@ -343,6 +539,15 @@ export default function SkckForm() {
             )}
             {selectedFile && !imageLoading && !formData.passport_photo && !imageError && (
               <p className="text-gray-600 mt-2">Ready to upload: {selectedFile.name}</p>
+            )}
+            {formData.passport_photo && !imageLoading && (
+              <div className="mt-3">
+                <img
+                  src={formData.passport_photo}
+                  alt="Uploaded Pas Foto"
+                  className="mt-2 w-40 h-auto rounded border"
+                />
+              </div>
             )}
           </div>
 

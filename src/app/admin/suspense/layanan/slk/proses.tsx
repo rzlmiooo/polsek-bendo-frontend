@@ -41,7 +41,6 @@ const itemTypeMap: Record<ItemType, string> = {
   kk: "Kartu Keluarga",
 };
 
-
 export default function ProsesSLK(){
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -130,75 +129,38 @@ export default function ProsesSLK(){
           .join(" ");
     }
 
-    function handleMessage(item_type:string) {
-        if (item_type == "ktp") {
-            return `Halo, ${greeting}.\n\n
-
+    function handleMessage(item_type: string) {
+        const templates: Record<string, string> = {
+          ktp: `1. Foto Surat Keterangan dari Desa\n2. Foto Kartu Keluarga (fotokopi atau asli)`,
+          kk: `1. Foto Surat Keterangan dari Desa\n2. Foto KTP (fotokopi atau asli)`,
+          buku_rek_atm: `1. Foto KTP (fotokopi atau asli)\n2. Nomor rekening Bank yang hilang`,
+          sim: `1. Foto KTP (fotokopi atau asli)\n2. Nomor SIM jika ada (opsional)`,
+          sim_card: `1. Foto Surat Keterangan dari Desa\n2. Foto KTP (fotokopi atau asli)`,
+        };
+      
+        // kalau item_type termasuk yg dialihkan ke Polres
+        const polresItems = ["stnk", "bpkb", "ijazah", "surat_nikah", "surat_lainnya"];
+      
+        if (templates[item_type]) {
+          return `Halo, ${greeting}.\n\n
             Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
-            Tipe Barang Hilang = KTP, kami meminta Anda untuk mengirim:\n\n
-
-            1. Foto Surat Keterangan dari Desa\n
-            2. Foto Kartu Keluarga (fotokopi atau asli)\n\n
-            
+            Tipe Barang Hilang = ${formatItemType(item_type)}, kami meminta Anda untuk mengirim:\n\n
+            ${templates[item_type]}\n\n
             Jika pesan tidak dibalas dalam 1 minggu kedepan, maka permohonan laporan kehilangan kami anggap hangus`;
-        } else if (item_type == "kk") {
-            return `Halo, ${greeting}.\n\n
-
-            Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
-            Tipe Barang Hilang = Kartu Keluarga, kami meminta Anda untuk mengirim:\n\n
-
-            1. Foto Surat Keterangan dari Desa\n
-            2. Foto KTP (fotokopi atau asli)\n\n
-            
-            Jika pesan tidak dibalas dalam 1 minggu kedepan, maka permohonan laporan kehilangan kami anggap hangus`;
-        } else if (item_type == "buku_rek_atm") {
-            return `Halo, ${greeting}.\n\n
-
-            Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
-            Tipe Barang Hilang = Buku Rekening / ATM, kami meminta Anda untuk mengirim:\n\n
-
-            1. Foto KTP (fotokopi atau asli)\n
-            2. Nomor rekening Bank yang hilang\n\n
-            
-            Jika pesan tidak dibalas dalam 1 minggu kedepan, maka permohonan laporan kehilangan kami anggap hangus`;
-        } else if (item_type == "sim") {
-            return `Halo, ${greeting}.\n\n
-
-            Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
-            Tipe Barang Hilang = SIM, kami meminta Anda untuk mengirim:\n\n
-
-            1. Foto KTP (fotokopi atau asli)\n
-            2. Nomor SIM jika ada (opsional)\n
-            
-            Jika pesan tidak dibalas dalam 1 minggu kedepan, maka permohonan laporan kehilangan kami anggap hangus`;
-        } else if (item_type == "sim_card") {
-            return `Halo, ${greeting}.\n\n
-
-            Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
-            Tipe Barang Hilang = SIM Card, kami meminta Anda untuk mengirim:\n\n
-
-            1. Foto Surat Keterangan dari Desa\n
-            2. Foto KTP (fotokopi atau asli)\n\n
-            
-            Jika pesan tidak dibalas dalam 1 minggu kedepan, maka permohonan laporan kehilangan kami anggap hangus`;
-        } else if (["stnk", "bpkb", "ijazah", "surat_nikah", "surat_lainnya", "kk"].includes(item_type)) {
-            const formattedType = formatItemType(item_type);
-            return `Halo, ${greeting}.\n\n
-
+        } else if (polresItems.includes(item_type)) {
+          const formattedType = formatItemType(item_type);
+          return `Halo, ${greeting}.\n\n
             Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
             Tipe Barang Hilang = ${formattedType}, menginformasikan untuk sekarang pelayanan atas kehilangan ${formattedType} dialihkan ke Polres Magetan`;
-        }  else {
-            return `Halo, ${greeting}.\n\n
-
+        } else {
+          return `Halo, ${greeting}.\n\n
             Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
-            Tipe Barang Hilang = ${item_type}, kami meminta Anda untuk mengirim:\n\n
-
-            1. Foto struk/nota pembelian barang atau foto bukti kuat kepemilikan barang 
+            Tipe Barang Hilang = ${formatItemType(item_type)}, kami meminta Anda untuk mengirim:\n\n
+            1. Foto struk/nota pembelian barang atau foto bukti kuat kepemilikan barang\n
             2. Foto KTP (fotokopi atau asli)\n\n
-            
             Jika pesan tidak dibalas dalam 1 minggu kedepan, maka permohonan laporan kehilangan kami anggap hangus`;
         }
-    }
+    }      
 
     return (
         <div className="lg:ml-[260px]">
