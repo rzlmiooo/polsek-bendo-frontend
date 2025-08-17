@@ -24,8 +24,8 @@ export default function WhatsAppButton({ phone, message }: WhatsAppButtonProps) 
       rel="noopener noreferrer"
       className="inline-flex items-center gap-2 rounded-lg bg-green-500 px-4 py-2 font-semibold text-white shadow hover:bg-green-600 transition"
     >
-      <Image src="/icons/icon-whatsapp.svg" alt="WA" width={50} height={50} className="size-5"></Image>
-      Chat via WhatsApp
+      <Image src="/icons/icon-whatsapp.svg" alt="WA" width={50} height={50} className="size-10 sm:size-6"></Image>
+      <span className="hidden sm:inline-flex">Chat via WhatsApp</span>
     </a>
   );
 }

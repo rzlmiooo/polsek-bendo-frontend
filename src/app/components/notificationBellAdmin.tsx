@@ -122,7 +122,7 @@ export default function NotificationBell() {
 
         const pendingSlk = allSlk.filter(
           (b:any) =>
-            b.status_handling === "investigasi" &&
+            b.status_handling === "diterima" &&
             users.filter((user:any) => user.id === b.user_id)
         );
 

@@ -19,6 +19,69 @@ interface LPFormState {
   errorMessage: string | null;
 }
 
+type ItemType =
+  | "stnk"
+  | "ktp"
+  | "akte"
+  | "buku_rekening"
+  | "sim"
+  | "sim_card"
+  | "bpkb"
+  | "ijazah"
+  | "surat_nikah"
+  | "surat_lainnya"
+  | "surat_tanah"
+  | "kk";
+
+const itemTypeMap: Record<ItemType, string> = {
+  stnk: "STNK",
+  ktp: "KTP",
+  akte: "Akta Kelahiran",
+  buku_rekening: "Buku Rekening / ATM",
+  sim: "SIM",
+  sim_card: "SIM Card HP",
+  bpkb: "BPKB",
+  ijazah: "Ijazah",
+  surat_nikah: "Surat Nikah",
+  surat_lainnya: "Surat Berharga Lainnya",
+  surat_tanah: "Sertifikat Tanah",
+  kk: "Kartu Keluarga",
+};
+
+const polresItems = [
+  "stnk",
+  "bpkb",
+  "ijazah",
+  "akte",
+  "surat_nikah",
+  "surat_tanah",
+  "surat_lainnya"
+];
+
+const polsekItemsMessage: Record<string, string[]> = {
+  ktp: [
+    "1. Surat Keterangan dari Desa",
+    "2. Fotokopi Kartu Keluarga",
+    "3. Fotokopi KTP hilang (jika ada)",
+  ],
+  kk: [
+    "1. Surat Pengantar dari Desa",
+    "2. Fotokopi KTP",
+  ],
+  buku_rekening: [
+    "1. Fotokopi KTP",
+    "2. Nomor rekening dari Buku Rekening/ATM yang hilang",
+  ],
+  sim: [
+    "1. Fotokopi KTP",
+    "2. Nomor SIM (jika ada)",
+  ],
+  sim_card: [
+    "1. Fotokopi KTP",
+    "2. Nomor telepon yang hilang",
+  ],
+};
+
 export default function LaporanKehilanganForm() {
   const router = useRouter();
   const userId = getUserId();
@@ -39,22 +102,22 @@ export default function LaporanKehilanganForm() {
   });
 
   useEffect(() => {
-            setIsClient(true);
-            if (typeof window !== 'undefined') {
-    
-                const storedToken = localStorage.getItem('token');
-                const role = localStorage.getItem('role');
-    
-                if (role !== 'user') {
-                    router.replace('/unauthorized');
-                    return;
-                }
-    
-                if (storedToken) {
-                    setToken(storedToken);
-                }
-            }
-        }, [router]);
+      setIsClient(true);
+      if (typeof window !== 'undefined') {
+
+          const storedToken = localStorage.getItem('token');
+          const role = localStorage.getItem('role');
+
+          if (role !== 'user') {
+              router.replace('/unauthorized');
+              return;
+          }
+
+          if (storedToken) {
+              setToken(storedToken);
+          }
+      }
+  }, [router]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -124,6 +187,16 @@ export default function LaporanKehilanganForm() {
     }
   };
 
+  function formatItemType(item_type: string): string {
+    if (itemTypeMap[item_type as ItemType]) {
+      return itemTypeMap[item_type as ItemType];
+    }
+    return item_type
+      .split("_")
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
   return (
     <>
     <Head>
@@ -181,7 +254,7 @@ export default function LaporanKehilanganForm() {
         </div>
 
         {/* Jenis Barang  */}
-        <div>
+        {/* <div>
           <label htmlFor="item_type" className="block font-medium">Jenis Barang</label>
           <input
             type="text"
@@ -193,7 +266,63 @@ export default function LaporanKehilanganForm() {
             placeholder="Dompet"
             required
           />
+        </div> */}
+        <div>
+          <label htmlFor="item_type" className="block font-medium">Jenis Barang</label>
+          <select
+            id="item_type"
+            name="item_type"
+            value={formData.item_type}
+            onChange={handleChange}
+            className="w-full mt-1 border p-2 rounded"
+            required
+          >
+            <option value="">-- Pilih Dokumen --</option>
+            {Object.entries(itemTypeMap).map(([key, label]) => (
+              <option key={key} value={key}>
+                {label}
+              </option>
+            ))}
+          </select>
+          {polresItems.includes(formData.item_type) && (
+            <p className="text-base text-red-600 mt-1">
+              Pelayanan atas kehilangan <span className="font-bold">{formatItemType((formData.item_type))}</span> dialihkan ke <span className="font-bold">Polres Magetan</span>
+            </p>
+          )}
+          {formData.item_type in polsekItemsMessage && (
+            <div className="text-base text-gray-700 mt-2">
+              <p className="font-medium text-red-600 mb-1">
+                Persyaratan untuk kehilangan{" "}
+                <span className="font-bold">
+                  {formatItemType(formData.item_type)}
+                </span>:
+              </p>
+              <ul className="list-disc list-inside space-y-1">
+                {polsekItemsMessage[formData.item_type].map((req, i) => (
+                  <li key={i}>{req}</li>
+                ))}
+              </ul>
+              <p className="font-medium text-red-600 mt-1">Harap membawa dokumen diatas saat pengambilan surat laporan di Polsek.</p>
+            </div>
+          )}
         </div>
+
+        {formData.item_type === "surat_lainnya" && (
+          <div className="mt-3">
+            <label htmlFor="surat_lainnya_detail" className="block text-sm font-medium">
+              Jenis Surat Lainnya
+            </label>
+            <input
+              type="text"
+              id="surat_lainnya_detail"
+              name="surat_lainnya_detail"
+              value=""
+              onChange={handleChange}
+              className="w-full mt-1 border p-2 rounded"
+              placeholder="Contoh: Surat Tanah, Surat Warisan, dll"
+            />
+          </div>
+        )}
 
         {/* chronology */}
         <div>
@@ -213,12 +342,17 @@ export default function LaporanKehilanganForm() {
         {formData.successMessage && <p className="text-green-600 mb-4">{formData.successMessage}</p>}
 
         <div>
-          <button
-            type="submit"
-            className="w-full bg-yellow-700 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded"
-          >
-            Kirim Permohonan
-          </button>
+        <button
+          type="submit"
+          disabled={polresItems.includes(formData.item_type)}
+          className={`w-full mt-4 px-4 py-2 font-bold rounded text-white ${
+            polresItems.includes(formData.item_type)
+              ? "bg-gray-500 cursor-not-allowed"
+              : "bg-yellow-700 hover:bg-yellow-500"
+          }`}
+        >
+          Kirim Permohonan
+        </button>
         </div>
       </form>
     </div>

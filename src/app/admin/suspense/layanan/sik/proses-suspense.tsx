@@ -82,9 +82,6 @@ export default function ProsesSik(){
                 const userKTP = userRes.data.filter(user => user.id === filtered[0].user_id)
                 setsik(filtered);
                 setUser(userKTP);
-                console.log("Filtered sik:", filtered); 
-                console.log("user", userKTP);
-                
             } catch (err: any) {
                 console.error('Error fetching data:', err);
             }

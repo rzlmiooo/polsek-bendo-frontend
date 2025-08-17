@@ -25,6 +25,7 @@ interface Pm {
 interface EditedPm {
     complaint_status: string;
 }
+
 export default function KelolaPengaduanMasyarakat() {
     const router = useRouter();
     const [pmData, setPm] = useState<Pm[]>([]);
@@ -51,9 +52,7 @@ export default function KelolaPengaduanMasyarakat() {
     useEffect(() => {
         setIsClient(true);
         if (typeof window !== 'undefined') {
-
             const storedToken = localStorage.getItem('token');
-            console.log("Token", storedToken);
             const role = localStorage.getItem('role');
 
             if (role !== 'admin') {
@@ -145,14 +144,6 @@ export default function KelolaPengaduanMasyarakat() {
     const [formData, setFormData] = useState<EditedPm>({
         complaint_status: "",
     });
-
-    // if (isLoading) {
-    //     return (
-    //         <div className="flex h-screen items-center justify-center">
-    //             <p className="text-xl dark:text-white">Loading Kelola Pengaduan Masyarakat...</p>
-    //         </div>
-    //     );
-    // }
 
     if (error) {
         return (

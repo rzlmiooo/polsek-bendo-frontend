@@ -3,7 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import formatJamIndonesia from "@/app/components/formatJamIndonesia";
+import formatTanggalIndonesia from "@/app/components/formatTanggal";
 import Back from "@/app/components/back";
 import WhatsAppButton from "@/app/components/whatsappLink";
 import Image from "next/image";
@@ -26,21 +26,32 @@ interface User {
 
 type ItemType =
   | "stnk"
+  | "ktp"
+  | "akte"
+  | "buku_rekening"
+  | "sim"
+  | "sim_card"
   | "bpkb"
   | "ijazah"
   | "surat_nikah"
   | "surat_lainnya"
+  | "surat_tanah"
   | "kk";
 
 const itemTypeMap: Record<ItemType, string> = {
-  stnk: "STNK",
-  bpkb: "BPKB",
-  ijazah: "Ijazah",
-  surat_nikah: "Surat Nikah",
-  surat_lainnya: "Surat Lainnya",
-  kk: "Kartu Keluarga",
+    stnk: "STNK",
+    ktp: "KTP",
+    akte: "Akta Kelahiran",
+    buku_rekening: "Buku Rekening / ATM",
+    sim: "SIM",
+    sim_card: "SIM Card HP",
+    bpkb: "BPKB",
+    ijazah: "Ijazah",
+    surat_nikah: "Surat Nikah",
+    surat_lainnya: "Surat Berharga Lainnya",
+    surat_tanah: "Sertifikat Tanah",
+    kk: "Kartu Keluarga",
 };
-
 
 export default function ProsesSLK(){
     const searchParams = useSearchParams();
@@ -51,9 +62,6 @@ export default function ProsesSLK(){
     const [token, setToken] = useState<string | null>(null);
     
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-
-    let start = new Date();
-    let expiration = new Date(start.getTime() + (182 * 24 * 60 * 60 * 1000));
 
     const [greeting, setGreeting] = useState("");
     
@@ -107,10 +115,6 @@ export default function ProsesSLK(){
             const userKTP = userRes.data.filter(user => user.id === filtered[0].user_id)
             setslk(filtered);
             setUser(userKTP);
-            
-            console.log("Filtered slk:", filtered); 
-            console.log("user", userKTP);
-            
         } catch (err: any) {
             console.error('Error fetching data:', err);
         }
@@ -130,75 +134,38 @@ export default function ProsesSLK(){
           .join(" ");
     }
 
-    function handleMessage(item_type:string) {
-        if (item_type == "ktp") {
-            return `Halo, ${greeting}.\n\n
-
+    function handleMessage(item_type: string) {
+        const templates: Record<string, string> = {
+          ktp: `1. Foto Surat Keterangan dari Desa\n2. Foto Kartu Keluarga (fotokopi atau asli)`,
+          kk: `1. Foto Surat Keterangan dari Desa\n2. Foto KTP (fotokopi atau asli)`,
+          buku_rek_atm: `1. Foto KTP (fotokopi atau asli)\n2. Nomor rekening Bank yang hilang`,
+          sim: `1. Foto KTP (fotokopi atau asli)\n2. Nomor SIM jika ada (opsional)`,
+          sim_card: `1. Foto Surat Keterangan dari Desa\n2. Foto KTP (fotokopi atau asli)`,
+        };
+      
+        // kalau item_type termasuk yg dialihkan ke Polres
+        const polresItems = ["stnk", "bpkb", "ijazah", "surat_nikah", "surat_lainnya"];
+      
+        if (templates[item_type]) {
+          return `Halo, ${greeting}.\n\n
             Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
-            Tipe Barang Hilang = KTP, kami meminta Anda untuk mengirim:\n\n
-
-            1. Foto Surat Keterangan dari Desa\n
-            2. Foto Kartu Keluarga (fotokopi atau asli)\n\n
-            
+            Tipe Barang Hilang = ${formatItemType(item_type)}, kami meminta Anda untuk mengirim:\n\n
+            ${templates[item_type]}\n\n
             Jika pesan tidak dibalas dalam 1 minggu kedepan, maka permohonan laporan kehilangan kami anggap hangus`;
-        } else if (item_type == "kk") {
-            return `Halo, ${greeting}.\n\n
-
-            Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
-            Tipe Barang Hilang = Kartu Keluarga, kami meminta Anda untuk mengirim:\n\n
-
-            1. Foto Surat Keterangan dari Desa\n
-            2. Foto KTP (fotokopi atau asli)\n\n
-            
-            Jika pesan tidak dibalas dalam 1 minggu kedepan, maka permohonan laporan kehilangan kami anggap hangus`;
-        } else if (item_type == "buku_rek_atm") {
-            return `Halo, ${greeting}.\n\n
-
-            Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
-            Tipe Barang Hilang = Buku Rekening / ATM, kami meminta Anda untuk mengirim:\n\n
-
-            1. Foto KTP (fotokopi atau asli)\n
-            2. Nomor rekening Bank yang hilang\n\n
-            
-            Jika pesan tidak dibalas dalam 1 minggu kedepan, maka permohonan laporan kehilangan kami anggap hangus`;
-        } else if (item_type == "sim") {
-            return `Halo, ${greeting}.\n\n
-
-            Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
-            Tipe Barang Hilang = SIM, kami meminta Anda untuk mengirim:\n\n
-
-            1. Foto KTP (fotokopi atau asli)\n
-            2. Nomor SIM jika ada (opsional)\n
-            
-            Jika pesan tidak dibalas dalam 1 minggu kedepan, maka permohonan laporan kehilangan kami anggap hangus`;
-        } else if (item_type == "sim_card") {
-            return `Halo, ${greeting}.\n\n
-
-            Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
-            Tipe Barang Hilang = SIM Card, kami meminta Anda untuk mengirim:\n\n
-
-            1. Foto Surat Keterangan dari Desa\n
-            2. Foto KTP (fotokopi atau asli)\n\n
-            
-            Jika pesan tidak dibalas dalam 1 minggu kedepan, maka permohonan laporan kehilangan kami anggap hangus`;
-        } else if (["stnk", "bpkb", "ijazah", "surat_nikah", "surat_lainnya", "kk"].includes(item_type)) {
-            const formattedType = formatItemType(item_type);
-            return `Halo, ${greeting}.\n\n
-
+        } else if (polresItems.includes(item_type)) {
+          const formattedType = formatItemType(item_type);
+          return `Halo, ${greeting}.\n\n
             Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
             Tipe Barang Hilang = ${formattedType}, menginformasikan untuk sekarang pelayanan atas kehilangan ${formattedType} dialihkan ke Polres Magetan`;
-        }  else {
-            return `Halo, ${greeting}.\n\n
-
+        } else {
+          return `Halo, ${greeting}.\n\n
             Kami dari Polsek Bendo, berdasarkan permohonan Surat Laporan Kehilangan atas 
-            Tipe Barang Hilang = ${item_type}, kami meminta Anda untuk mengirim:\n\n
-
-            1. Foto struk/nota pembelian barang atau foto bukti kuat kepemilikan barang 
+            Tipe Barang Hilang = ${formatItemType(item_type)}, kami meminta Anda untuk mengirim:\n\n
+            1. Foto struk/nota pembelian barang atau foto bukti kuat kepemilikan barang\n
             2. Foto KTP (fotokopi atau asli)\n\n
-            
             Jika pesan tidak dibalas dalam 1 minggu kedepan, maka permohonan laporan kehilangan kami anggap hangus`;
         }
-    }
+    }      
 
     return (
         <div className="lg:ml-[260px]">
@@ -222,11 +189,11 @@ export default function ProsesSLK(){
                         </tr>
                         <tr>
                         <td className="font-bold">Tanggal Kehilangan</td>
-                        <td>: {formatJamIndonesia(item.date_lost)}</td>
+                        <td>: {formatTanggalIndonesia(item.date_lost)}</td>
                         </tr>
                         <tr>
                         <td className="font-bold">Jenis Barang</td>
-                        <td>: {item.item_type}</td>
+                        <td>: {formatItemType(item.item_type)}</td>
                         </tr>
                         <tr>
                         <td className="font-bold">Kronologi Kehilangan</td>
@@ -235,17 +202,15 @@ export default function ProsesSLK(){
                         <tr>
                         <td className="font-bold">Nomor Telepon</td>
                         <td>: {item.contact_reporter}</td>
-                        <td>
-                        <WhatsAppButton
-                            phone={item.contact_reporter}
-                            message={handleMessage(item.item_type)}
-                            />
-                        </td>
                         </tr>
                     </tbody>
                     </table>
                 </div>
-                <div className="flex flex-col justify-start mb-6">
+                    <WhatsAppButton
+                        phone={item.contact_reporter}
+                        message={handleMessage(item.item_type)}
+                    />
+                <div className="flex flex-col justify-start my-6">
                     <div className="border border-black w-fit h-auto flex items-center justify-center">
                     {userData[0] ? (
                         <Image
