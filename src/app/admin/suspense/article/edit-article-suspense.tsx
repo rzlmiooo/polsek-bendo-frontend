@@ -88,7 +88,7 @@ export default function EditArticlePage() {
                     },
                 });
 
-                const articleData = response.data[0]; 
+                const articleData = response.data[0];
                 console.log("Fetched article data:", articleData);
 
                 setFormData(articleData);
@@ -124,6 +124,7 @@ export default function EditArticlePage() {
         }));
     };
 
+
     const handleFilePictureChange = async (e: ChangeEvent<HTMLInputElement>) => {
         setErrorMessage(null);
         const file = e.target.files?.[0] || null;
@@ -133,7 +134,7 @@ export default function EditArticlePage() {
             return;
         }
 
-        const MAX_FILE_SIZE = 5 * 1024 * 1024; 
+        const MAX_FILE_SIZE = 5 * 1024 * 1024;
         const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/gif'];
 
         if (file.size > MAX_FILE_SIZE) {
@@ -217,12 +218,10 @@ export default function EditArticlePage() {
     };
 
     const handleEditorChange = () => {
-        if (editorRef.current) {
-            setFormData((prev) => ({
-                ...prev,
-                content: editorRef.current.innerHTML,
-            }));
-        }
+        setFormData((prev) => ({
+            ...prev,
+            content: editorRef.current?.innerHTML ?? "",
+        }));
     };
 
     const formatDoc = (command: string, value: string | null = null) => {
@@ -283,7 +282,7 @@ export default function EditArticlePage() {
             </div>
         );
     }
-    
+
     return (
         <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100">
             <main className="flex-1 transition-all duration-300 pt-16 lg:pt-0 lg:ps-64">
@@ -296,9 +295,8 @@ export default function EditArticlePage() {
                                     <button
                                         type="button"
                                         onClick={() => setFormData(prev => ({ ...prev, status: 'draft' }))}
-                                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-semibold transition ${
-                                            formData.status === 'draft' ? 'bg-gray-300 text-gray-800' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                                        }`}
+                                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-semibold transition ${formData.status === 'draft' ? 'bg-gray-300 text-gray-800' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                                            }`}
                                     >
                                         <Save className="h-4 w-4" />
                                         <span>Save Draft</span>
