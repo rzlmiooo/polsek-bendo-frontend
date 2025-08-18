@@ -16,6 +16,7 @@ interface NewsArticle {
     content: string;
     url_gambar_unggulan: string;
     slug: string;
+    excerpt: string;
 }
 
 export default function Article() {
@@ -134,7 +135,7 @@ export default function Article() {
                                     />
                                     {/* <img src={blog.url_gambar_unggulan} alt={blog.title} className="w-full h-48 object-cover rounded-md mb-4" /> */}
                                     <h3 className="text-xl font-bold mb-2">{blog.title}</h3>
-                                    <p className="text-gray-700 mb-4">{blog.content.slice(0, 100)}...</p>
+                                    <p className="text-gray-700 mb-4">{blog.excerpt}</p>
                                     <Link href={`/artikel/read-article?blog_id=${blog.id}`} legacyBehavior>
                                         <a className="bg-[#f5b042] text-white px-4 py-2 rounded-xl inline-block hover:bg-[#e0a030] transition duration-300">Read More</a>
                                     </Link>

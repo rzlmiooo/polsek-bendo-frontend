@@ -19,7 +19,6 @@ export default function SuccessMessageAdmin({
   return (
     <Suspense>
     <div>
-      <AdminNavbar />
       <div className="bg-gray-100 h-screen">
         <div className="bg-white p-6 md:mx-auto">
           <svg
