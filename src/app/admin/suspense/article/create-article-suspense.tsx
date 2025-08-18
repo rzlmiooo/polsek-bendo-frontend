@@ -5,7 +5,7 @@ import { useState, useRef, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import getStudentId from "../../../utils/auth/page";
 import SuccessMessage from "../../../components/successMessageAdmin";
-import { ChevronDown, Calendar, Clock, MapPin, Link as LinkIcon, Save, Upload, User, Globe, Bold, Italic, Underline, Strikethrough, Link, Unlink, Image as ImageIcon, AlignLeft, AlignCenter, AlignRight, AlignJustify, ListOrdered, List, Indent, Outdent, Code, Quote } from "lucide-react";
+import { ChevronDown, Calendar, Clock, MapPin, Link as LinkIcon, Save, Upload, User, Globe, Bold, Italic, Underline, Strikethrough, Link, Unlink, Image as ImageIcon, AlignLeft, AlignCenter, AlignRight, AlignJustify, ListOrdered, List, Indent, Outdent, Code, Quote, ArrowLeft } from "lucide-react";
 
 interface CreateArticleFormState {
     title: string;
@@ -13,7 +13,7 @@ interface CreateArticleFormState {
     excerpt: string;
     content: string;
     author_id: string;
-    category_id: string;
+    category: string;
     published_at: string;
     status: 'draft' | 'published';
     url_gambar_unggulan: string;
@@ -34,7 +34,7 @@ export default function CreateArticlePage() {
         excerpt: "",
         content: "",
         author_id: studentId || "",
-        category_id: "",
+        category: "",
         published_at: new Date().toISOString(),
         status: "draft",
         url_gambar_unggulan: "",
@@ -55,6 +55,7 @@ export default function CreateArticlePage() {
         title: string;
         description: string;
         farewell: string;
+        newsUrl:string;
         backLinkHref: string;
         backLinkText: string;
     } | null>(null);
@@ -220,7 +221,7 @@ export default function CreateArticlePage() {
             return;
         }
 
-        if (!formData.title || !formData.content || !formData.category_id) {
+        if (!formData.title || !formData.content || !formData.category) {
             setErrorMessage("Please fill in all required fields.");
             setIsLoading(false);
             return;
@@ -248,12 +249,13 @@ export default function CreateArticlePage() {
                     description: "Terima kasih telah membuat Informasi yang berguna.",
                     farewell: "Semoga harimu Menyenangkan!",
                     backLinkHref: "/admin/articles/",
-                    backLinkText: "KEMBALI"
+                    backLinkText: "KEMBALI",
+                    newsUrl: `https://polsek-bendo.my.id/artikel/read-article?blog_id=${response.data.id}`
                 });
                 console.log("successDetails set to:", successDetails);
                 setFormData({
                     title: "", slug: "", excerpt: "", content: "",
-                    author_id: studentId || "", category_id: "", published_at: new Date().toISOString(),
+                    author_id: studentId || "", category: "", published_at: new Date().toISOString(),
                     status: "draft", url_gambar_unggulan: "", created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString(),
                 });
@@ -280,6 +282,13 @@ export default function CreateArticlePage() {
         <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100">
             <main className="flex-1 transition-all duration-300 pt-16 lg:pt-0 lg:ps-64">
                 <div className="bg-white text-black min-h-screen p-8">
+                    <a
+                        href='/admin/articles'
+                        className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors duration-200 dark:text-gray-400 dark:hover:text-white"
+                        aria-label="Go Back"
+                    >
+                        <ArrowLeft className="w-6 h-6" />
+                    </a>
                     <form onSubmit={handleSubmitClick}>
                         <div className="">
                             <div className="flex justify-between items-center mb-6">
@@ -318,15 +327,15 @@ export default function CreateArticlePage() {
                                         <label htmlFor="category" className="block text-sm font-medium text-gray-700 sr-only">Category</label>
                                         <select
                                             id="category"
-                                            name="category_id"
-                                            value={formData.category_id}
+                                            name="category"
+                                            value={formData.category}
                                             onChange={handleChange}
                                             className="block w-full max-w-xs rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
                                         >
                                             <option value="">Pilih Kategori</option>
-                                            <option value="1">Acara</option>
-                                            <option value="2">Pengumuman</option>
-                                            <option value="3">Berita</option>
+                                            <option value="event">Acara</option>
+                                            <option value="announcement">Pengumuman</option>
+                                            <option value="news">Berita</option>
                                         </select>
                                     </div>
 

@@ -9,6 +9,7 @@ import Navbar from '../../components/navbar';
 import Footer from '../../components/footer';
 import Image from 'next/image';
 import Head from 'next/head';
+import { ArrowLeft } from 'lucide-react';
 
 interface DetailedNewsArticle {
   id: string;
@@ -99,6 +100,13 @@ export default function ReadArticle() {
       </Head>
       <div className="bg-white text-black min-h-screen">
         <Navbar />
+        <a
+          href='/artikel'
+          className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors duration-200 dark:text-gray-400 dark:hover:text-white"
+          aria-label="Go Back"
+        >
+          <ArrowLeft className="w-6 h-6" />
+        </a>
         {article.map((article, index) => (
           <div key={index} className="max-w-4xl mt-14 mx-auto py-10 px-4 sm:px-6 lg:px-8">
             <img
@@ -112,7 +120,7 @@ export default function ReadArticle() {
               Published: {new Date(article.published_at).toLocaleDateString()}
             </p>
             <div className="prose lg:prose-lg text-gray-800 leading-relaxed">
-      
+
               <div dangerouslySetInnerHTML={{ __html: purify.sanitize(article.content) }} />
             </div>
             {article.excerpt && (

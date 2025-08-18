@@ -4,7 +4,8 @@ import axios from 'axios';
 import { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import getUserId from '@/app/utils/auth/page';
 import { useRouter } from "next/navigation";
-import { LucideXCircle } from 'lucide-react';
+import { LucideXCircle, ArrowLeft } from 'lucide-react';
+import BackLink from '@/app/components/BackLink';
 
 
 
@@ -33,7 +34,7 @@ export default function AdminProfile() {
     const [imageLoading, setImageLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
-    const [isDevMode, setIsDevMode] = useState<boolean>(false); 
+    const [isDevMode, setIsDevMode] = useState<boolean>(false);
     const [isClient, setIsClient] = useState(false);
     const [token, setToken] = useState<string | null>(null);
 
@@ -166,8 +167,8 @@ export default function AdminProfile() {
                 updated_at: formData.updated_at
             };
 
-            console.log("Isi payload:",payload)
-            
+            console.log("Isi payload:", payload)
+
             const apiUserUrl = `${baseUrl}users/${officerId}`;
             const response = await axios.patch(apiUserUrl, payload, {
                 headers: {
@@ -215,6 +216,13 @@ export default function AdminProfile() {
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900 font-inter">
             <div className="w-full lg:ps-64">
                 <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+                    <a
+                        href='/admin'
+                        className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors duration-200 dark:text-gray-400 dark:hover:text-white"
+                        aria-label="Go Back"
+                    >
+                        <ArrowLeft className="w-6 h-6" />
+                    </a>
                     <section className="w-full overflow-hidden dark:bg-gray-900 ">
                         <div className="flex flex-col">
                             <img src="https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHw2fHxlYXJ0aHxlbnwwfDB8fHwxNzQ2NTM0MzY3fDA&ixlib=rb-4.1.0&q=80&w=1080"
@@ -225,7 +233,7 @@ export default function AdminProfile() {
                                 <img src={formData.profile_picture || "https://placehold.co/200x200?text=Profile"}
                                     alt="User Profile"
                                     className="rounded-full lg:w-[12rem] lg:h-[12rem] md:w-[10rem] md:h-[10rem] sm:w-[8rem] sm:h-[8rem] w-[7rem] h-[7rem] outline-2 outline-offset-2 outline-blue-500 object-cover" />
-                                
+
                                 {/* Username */}
                                 <h1 className="w-full text-center sm:text-left sm:my-4 sm:mx-4 pl-4 text-gray-800 dark:text-white lg:text-4xl md:text-3xl sm:text-3xl text-xl font-serif mt-4">
                                     {formData.username}
@@ -249,7 +257,7 @@ export default function AdminProfile() {
                                 >
                                     {isDevMode ? "Exit " : "Edit"}
                                 </button>
-                                
+
                                 <form onSubmit={handleSubmit} className="w-full">
                                     <div className="w-full my-auto py-6 flex flex-col justify-center gap-2">
                                         <div className="w-full flex sm:flex-row flex-col gap-2 justify-center">

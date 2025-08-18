@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useRouter, useSearchParams } from "next/navigation";
 import getUserId from '@/app/utils/auth/page';
 import { useState, ChangeEvent, FormEvent, useRef, useEffect } from "react";
-import { Save, Upload, User, Globe, Bold, Italic, Underline, Strikethrough, Link, Unlink, Image as ImageIcon, AlignLeft, AlignCenter, AlignRight, AlignJustify, ListOrdered, List, Indent, Outdent, Code, Quote, Calendar } from "lucide-react";
+import { Save, Upload, User, Globe, Bold, Italic, Underline, Strikethrough, Link, Unlink, Image as ImageIcon, AlignLeft, AlignCenter, AlignRight, AlignJustify, ListOrdered, List, Indent, Outdent, Code, Quote, Calendar, ArrowLeft } from "lucide-react";
 
 interface EditedNewsArticle {
     id: number;
@@ -287,6 +287,13 @@ export default function EditArticlePage() {
         <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100">
             <main className="flex-1 transition-all duration-300 pt-16 lg:pt-0 lg:ps-64">
                 <div className="bg-white text-black min-h-screen p-8">
+                    <a
+                        href='/admin/articles'
+                        className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors duration-200 dark:text-gray-400 dark:hover:text-white"
+                        aria-label="Go Back"
+                    >
+                        <ArrowLeft className="w-6 h-6" />
+                    </a>
                     <form onSubmit={handleSubmit}>
                         <div className="">
                             <div className="flex justify-between items-center mb-6">

@@ -97,11 +97,11 @@ export default function Article() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                             {/* New Post Card */}
                             <div className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col items-center justify-center p-6 text-center transition-transform hover:scale-105 hover:shadow-lg cursor-pointer">
-                                <div className="bg-gray-200 rounded-full w-24 h-24 flex items-center justify-center mb-4">
-                                    <Plus className="w-10 h-10 text-gray-500" />
-                                </div>
-                                <Link href="./articles/create-article">
-                                    <span className="text-xl font-semibold text-gray-700">New Post</span>
+                                <Link href="/admin/articles/create-article">
+                                    <div className="bg-gray-200 rounded-full w-24 h-24 flex items-center justify-center mb-4">
+                                        <Plus className="w-10 h-10 text-gray-500" />
+                                    </div>
+                                        <span className="text-xl font-semibold text-gray-700">New Post</span>
                                 </Link>
                             </div>
 
