@@ -120,11 +120,11 @@ export default function Article() {
 
                                         <div className="flex items-center text-gray-500 text-sm mb-1">
                                             <Calendar className="w-4 h-4 mr-2" />
-                                            <span>{article.published_at.split(' ')[0]}</span>
+                                            <span>{new Date(article.published_at).toDateString()}</span>
                                         </div>
                                         <div className="flex items-center text-gray-500 text-sm mb-1">
                                             <Clock className="w-4 h-4 mr-2" />
-                                            <span>{article.published_at.split(' ')[1]}</span>
+                                            <span>{new Date(article.published_at).toLocaleTimeString()}</span>
                                         </div>
                                         <div className="flex items-center text-gray-500 text-sm mb-4">
                                             <MapPin className="w-4 h-4 mr-2" />
@@ -132,9 +132,11 @@ export default function Article() {
                                         </div>
                                     </div>
 
-                                    <div className="inline-block text-blue-600 font-semibold hover:underline transition">
+                                    <div className="flex justify-center ">
                                         <Link href={`/admin/articles/edit-article?blog_id=${article.id}`}>
-                                            View Details
+                                            <button className="text-blue-600 font-semibold hover:underline transition">
+                                                View Details
+                                            </button>    
                                         </Link>
                                     </div>
                                 </div>

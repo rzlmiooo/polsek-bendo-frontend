@@ -22,6 +22,7 @@ interface NewsArticle {
   title: string;
   content: string;
   url_gambar_unggulan: string;
+  excerpt: string;
   slug: string;
 }
 
@@ -132,7 +133,7 @@ export default function Home() {
                             </h5>
                           </Link>
                           <p className="text-gray-700 mb-4 flex-grow line-clamp-3">
-                            {blog.content.slice(0, 100)}...
+                            {blog.excerpt}...
                           </p>
                           <Link
                             href={`/artikel/read-article?blog_id=${blog.id}`}
