@@ -5,6 +5,7 @@ import { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import getUserId from '@/app/utils/auth/page';
 import Head from 'next/head';
+import { ArrowLeft } from 'lucide-react';
 
 
 interface SIKFormState {
@@ -127,6 +128,13 @@ export default function IzinKeramaianForm() {
         <meta name="author" content="Polsek Bendo" />
         <link rel="canonical" href="https://polsek-bendo.my.id/layanan/izin_keramaian" />
       </Head>
+       <a
+          href='/layanan'
+          className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors duration-200 dark:text-gray-400 dark:hover:text-white"
+          aria-label="Go Back"
+        >
+          <ArrowLeft className="w-12 h-12" />
+        </a>
       <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
         <h2 className="text-xl font-bold mb-4">Form Izin Keramaian</h2>
         <form onSubmit={handleSubmitClick} className="space-y-5">

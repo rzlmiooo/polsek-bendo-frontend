@@ -14,7 +14,7 @@ export default function NavbarUser() {
   const pathname = usePathname();
   const isUserPage = pathname.startsWith('/order');
   const href = isUserPage ? '/order' : '/';
-  const profile = isUserPage ? '/profile' : '/settings/profile';
+  const profile = isUserPage ? '/profil/profile' : '/settings/profile';
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const router = useRouter();
   const [error, setError] = useState("");

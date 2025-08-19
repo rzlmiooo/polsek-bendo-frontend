@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import getUserId from '@/app/utils/auth/page';
 import SuccessMessage from "../../../components/successMessageAdmin";
 import Head from 'next/head';
+import { ArrowLeft } from 'lucide-react';
 
 
 interface PMFormState {
@@ -200,149 +201,156 @@ export default function PengaduanMasyarakatForm() {
 
   return (
     <>
-    <Head>
+      <Head>
         <title>Pengaduan Masyarakat</title>
         <meta name="description" content="Sampaikan pengaduan Anda ke Polsek Bendo secara langsung dan aman." />
         <meta name="keywords" content="Polsek Bendo, SKCK Online, Kepolisian Bendo, Pelayanan Kepolisian, Magetan" />
         <meta name="author" content="Polsek Bendo" />
         <link rel="canonical" href="https://polsek-bendo.my.id/layanan/pm" />
-    </Head>
-    <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
-      <h2 className="text-xl font-bold mb-4">Form Pengaduan Masyarakat</h2>
-       
-      <form onSubmit={handleSubmitClick} className="space-y-5">
-        {/* Nama Pelapor */}
-        <div>
-          <label htmlFor="complainant_name" className="block font-medium">Nama Pelapor</label>
-          <input
-            type="text"
-            id="complainant_name"
-            name="complainant_name"
-            value={formData.complainant_name}
-            onChange={handleChange}
-            className="w-full mt-1 border p-2 rounded"
-            placeholder="Muhammad Rokiaten"
-            required
-          />
-        </div>
+      </Head>
+      <a
+        href='/layanan'
+        className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors duration-200 dark:text-gray-400 dark:hover:text-white"
+        aria-label="Go Back"
+      >
+        <ArrowLeft className="w-12 h-12" />
+      </a>
+      <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
+        <h2 className="text-xl font-bold mb-4">Form Pengaduan Masyarakat</h2>
 
-        {/* contact */}
-        <div>
-          <label htmlFor="contact" className="block font-medium">Nomor Telepon</label>
-          <input
-            type="text"
-            id="contact"
-            name="contact"
-            value={formData.contact}
-            onChange={handleChange}
-            className="w-full mt-1 border p-2 rounded"
-            placeholder="081126349812"
-            required
-          />
-        </div>
-
-        {/* date_lost */}
-        <div>
-          <label htmlFor="complainant_address" className="block font-medium">Alamat Pelapor</label>
-          <input
-            type="text"
-            id="complainant_address"
-            name="complainant_address"
-            value={formData.complainant_address}
-            onChange={handleChange}
-            className="w-full mt-1 border p-2 rounded"
-            placeholder="Desa Karanganyar, Kecamatan Karangpandan, Kabupaten Karanganyar, Jawa Tengah,577777 "
-            required
-          />
-        </div>
-
-        <label htmlFor="complaint_category" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-          Pilih Kategori
-        </label>
-        <select
-          id="complaint_category"
-          name="complaint_category"
-          value={formData.complaint_category}
-          onChange={handleChange}
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-             focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
-             dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-             dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        >
-          <option value="">Pilih Kategori</option>
-          <option value="Pengaduan Informatif">Pengaduan Informatif</option>
-          <option value="Pengaduan Penyimpangan">Pengaduan Penyimpangan</option>
-          <option value="Pengaduan terkait Pelayanan Publik">Pengaduan terkait Pelayanan Publik</option>
-        </select>
-
-        {/* Jenis Barang  */}
-        <div>
-          <label htmlFor="complaint_title" className="block font-medium">Beri Nama Pengaduan</label>
-          <input
-            type="text"
-            id="complaint_title"
-            name="complaint_title"
-            value={formData.complaint_title}
-            onChange={handleChange}
-            className="w-full mt-1 border p-2 rounded"
-            placeholder="Pengaduan Pungutan Liar"
-            required
-          />
-        </div>
-
-        {/* chronology */}
-        <label htmlFor="complaint_content" className="block font-medium">Deskripsikan Pengaduanmu</label>
-        <input
-          placeholder="Isi pengaduan"
-          className="w-full px-4 py-2 border rounded text-sm"
-          type="text"
-          id="complaint_content"
-          name="complaint_content"
-          value={formData.complaint_content}
-          onChange={handleChange}
-        />
-
-        {/* chronology */}
-        <div className="mb-4">
-          <label htmlFor="proof_photo_upload" className="block font-medium mb-1">
-            Bukti foto harus berformat jpg , png , dll. bukan mov , mp3 , dll.
-          </label>
-          <div className="flex items-center space-x-3">
+        <form onSubmit={handleSubmitClick} className="space-y-5">
+          {/* Nama Pelapor */}
+          <div>
+            <label htmlFor="complainant_name" className="block font-medium">Nama Pelapor</label>
             <input
-              className="inline-block px-4 py-2 text-sm font-medium text-black bg-gray-200 border border-gray-400 rounded cursor-pointer hover:bg-gray-300"
-              type="file"
-              id="proof_photo_upload"
-              accept="image/*"
-              onChange={handleFilePictureChange}
-              disabled={imageLoading}
+              type="text"
+              id="complainant_name"
+              name="complainant_name"
+              value={formData.complainant_name}
+              onChange={handleChange}
+              className="w-full mt-1 border p-2 rounded"
+              placeholder="Muhammad Rokiaten"
               required
             />
           </div>
-          {imageLoading && <p className="text-blue-600 mt-2">Uploading image...</p>}
-          {imageError && <p className="text-red-600 mt-2">{imageError}</p>}
-          {formData.proof && !imageLoading && (
-            <div className="text-green-600 mt-2">
-              <p>Image uploaded successfully!</p>
-            </div>
-          )}
-          {selectedFile && !imageLoading && !formData.proof && !imageError && (
-            <p className="text-gray-600 mt-2">Ready to upload: {selectedFile.name}</p>
-          )}
-        </div>
 
-        {/* Jenis Barang  */}
-        <div>
-          <label htmlFor="complaint_date" className="block font-medium">Tanggal Pengaduan</label>
-          <input
-            type="date"
-            id="complaint_date"
-            name="complaint_date"
-            value={formData.complaint_date}
+          {/* contact */}
+          <div>
+            <label htmlFor="contact" className="block font-medium">Nomor Telepon</label>
+            <input
+              type="text"
+              id="contact"
+              name="contact"
+              value={formData.contact}
+              onChange={handleChange}
+              className="w-full mt-1 border p-2 rounded"
+              placeholder="081126349812"
+              required
+            />
+          </div>
+
+          {/* date_lost */}
+          <div>
+            <label htmlFor="complainant_address" className="block font-medium">Alamat Pelapor</label>
+            <input
+              type="text"
+              id="complainant_address"
+              name="complainant_address"
+              value={formData.complainant_address}
+              onChange={handleChange}
+              className="w-full mt-1 border p-2 rounded"
+              placeholder="Desa Karanganyar, Kecamatan Karangpandan, Kabupaten Karanganyar, Jawa Tengah,577777 "
+              required
+            />
+          </div>
+
+          <label htmlFor="complaint_category" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            Pilih Kategori
+          </label>
+          <select
+            id="complaint_category"
+            name="complaint_category"
+            value={formData.complaint_category}
             onChange={handleChange}
-            className="w-full mt-1 border p-2 rounded"
-            required
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+             focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
+             dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
+             dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          >
+            <option value="">Pilih Kategori</option>
+            <option value="Pengaduan Informatif">Pengaduan Informatif</option>
+            <option value="Pengaduan Penyimpangan">Pengaduan Penyimpangan</option>
+            <option value="Pengaduan terkait Pelayanan Publik">Pengaduan terkait Pelayanan Publik</option>
+          </select>
+
+          {/* Jenis Barang  */}
+          <div>
+            <label htmlFor="complaint_title" className="block font-medium">Beri Nama Pengaduan</label>
+            <input
+              type="text"
+              id="complaint_title"
+              name="complaint_title"
+              value={formData.complaint_title}
+              onChange={handleChange}
+              className="w-full mt-1 border p-2 rounded"
+              placeholder="Pengaduan Pungutan Liar"
+              required
+            />
+          </div>
+
+          {/* chronology */}
+          <label htmlFor="complaint_content" className="block font-medium">Deskripsikan Pengaduanmu</label>
+          <input
+            placeholder="Isi pengaduan"
+            className="w-full px-4 py-2 border rounded text-sm"
+            type="text"
+            id="complaint_content"
+            name="complaint_content"
+            value={formData.complaint_content}
+            onChange={handleChange}
           />
-        </div>
+
+          {/* chronology */}
+          <div className="mb-4">
+            <label htmlFor="proof_photo_upload" className="block font-medium mb-1">
+              Bukti foto harus berformat jpg , png , dll. bukan mov , mp3 , dll.
+            </label>
+            <div className="flex items-center space-x-3">
+              <input
+                className="inline-block px-4 py-2 text-sm font-medium text-black bg-gray-200 border border-gray-400 rounded cursor-pointer hover:bg-gray-300"
+                type="file"
+                id="proof_photo_upload"
+                accept="image/*"
+                onChange={handleFilePictureChange}
+                disabled={imageLoading}
+                required
+              />
+            </div>
+            {imageLoading && <p className="text-blue-600 mt-2">Uploading image...</p>}
+            {imageError && <p className="text-red-600 mt-2">{imageError}</p>}
+            {formData.proof && !imageLoading && (
+              <div className="text-green-600 mt-2">
+                <p>Image uploaded successfully!</p>
+              </div>
+            )}
+            {selectedFile && !imageLoading && !formData.proof && !imageError && (
+              <p className="text-gray-600 mt-2">Ready to upload: {selectedFile.name}</p>
+            )}
+          </div>
+
+          {/* Jenis Barang  */}
+          <div>
+            <label htmlFor="complaint_date" className="block font-medium">Tanggal Pengaduan</label>
+            <input
+              type="date"
+              id="complaint_date"
+              name="complaint_date"
+              value={formData.complaint_date}
+              onChange={handleChange}
+              className="w-full mt-1 border p-2 rounded"
+              required
+            />
+          </div>
 
         <div>
           <button
