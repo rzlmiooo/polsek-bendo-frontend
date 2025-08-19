@@ -100,7 +100,7 @@ export default function Navbar() {
 
             {/* Order Icon */}
             <div className="flex justify-center mt-4 md:mt-0">
-              <a href="/order" className="flex justify-center gap-2 items-center py-2 px-6 hover:text-[#996515] rounded border-l-1 border-black">
+              <a href="/login" className="flex justify-center gap-2 items-center py-2 px-6 hover:text-[#996515] rounded border-l-1 border-black">
                 <h2 className="font-bold">Login</h2>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

@@ -125,7 +125,6 @@ export default function PengaduanMasyarakatForm() {
     setShowSuccessMessage(false);
     setIsLoading(true);
 
-
     setFormData((prev) => ({ ...prev, successMessage: null, errorMessage: null }));
 
     if (
@@ -157,7 +156,7 @@ export default function PengaduanMasyarakatForm() {
         complaint_date: formData.complaint_date,
         complaint_status: formData.complaint_status,
       };
-      const apiReportsUrl = `${baseApiUrl}reports`;
+      const apiReportsUrl = `${baseApiUrl}pm`;
 
       const response = await axios.post(apiReportsUrl, payload);
 
@@ -348,10 +347,9 @@ export default function PengaduanMasyarakatForm() {
         <div>
           <button
             type="submit"
-            className="bg-[#00BFFF] text-white px-6 py-3 rounded-xl font-semibold"
-            disabled={isLoading}
+            className="w-full bg-yellow-700 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded"
           >
-            {isLoading ? 'Edited...' : 'Edited Pengaduan Masyarakat Post'}
+            Kirim Permohonan
           </button>
         </div>
       </form>
