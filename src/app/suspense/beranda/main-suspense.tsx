@@ -72,7 +72,7 @@ export default function Home() {
         />
       </div>
       
-      <div className="absolute z-50 top-0 w-full md:w-dvh h-full md:h-dvh flex justify-start items-center md:items-end overflow-hidden">
+      <div className="absolute z-49 top-0 w-full md:w-dvh h-full md:h-dvh flex justify-start items-center md:items-end overflow-hidden">
         <motion.p 
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
