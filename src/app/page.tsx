@@ -1,10 +1,7 @@
 import { Suspense } from "react";
-import Unauthorized from "./suspense/auth/unauthorized-suspense";
-import PathWrapper from "./components/pathWrapper";
 import { Analytics } from "@vercel/analytics/next";
 import Home from "./suspense/beranda/main-suspense";
 import Script from 'next/script';
-import { Metadata } from 'next';
 import Head from "next/head";
 
 export default function MainPage() {

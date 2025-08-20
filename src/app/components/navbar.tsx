@@ -38,7 +38,7 @@ export default function Navbar() {
   };
 
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block ">
       <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-lg border-b border-[#996515] text-black">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           {/* Logo */}

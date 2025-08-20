@@ -20,6 +20,7 @@
     "@vercel/analytics": "^1.5.0",
     "axios": "^1.10.0",
     "flowbite": "^3.1.2",
+    "framer-motion": "^12.23.12",
     "heroicons": "^2.2.0",
     "heroicons-react": "^1.4.1",
     "isomorphic-dompurify": "^2.26.0",
@@ -32,6 +33,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
+    "react-intersection-observer": "^9.16.0",
     "react-qr-code": "^2.0.18",
     "swiper": "^11.2.10"
   },

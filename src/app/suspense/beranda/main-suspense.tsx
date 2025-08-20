@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -13,9 +13,10 @@ import Footer from "../../components/footer";
 import Navbar from "../../components/navbar";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { useSearchParams } from 'next/navigation';
-import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import Image from "next/image";
+import AnimateOnScroll from "@/app/utils/aosHandler";
+import { motion } from "framer-motion";
 
 interface NewsArticle {
   id: string;
@@ -34,7 +35,6 @@ export default function Home() {
 
   const baseApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -52,11 +52,8 @@ export default function Home() {
         setLoading(false);
       }
     }
-
     fetchData();
   }, [searchParams]);
-
-  console.log("Isi Berita:", news)
 
   return (
     <>
@@ -65,22 +62,34 @@ export default function Home() {
 
       <div className="w-full">
         {/* Hero Image */}
-        <div className="w-full">
-          <Image
-            src="/images/depan_ada_tugu_polsek.jpg"
-            alt="Background Landing Page"
-            width={2100}
-            height={1100}
-            priority
-          />
-        </div>
+        <div className="w-full h-full md:h-[700px] overflow-hidden">
+        <Image
+          src="/images/depan_ada_tugu_polsek.jpg"
+          alt="Background Landing Page"
+          fill
+          priority
+          className="object-cover object-center"
+        />
+      </div>
+      
+      <div className="absolute z-50 top-0 w-full md:w-dvh h-full md:h-dvh flex justify-start items-center md:items-end overflow-hidden">
+        <motion.p 
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }} 
+          className="text-white text-7xl md:text-8xl text-shadow-lg font-bold p-10 md:p-18"
+          >
+            Selamat Datang di<br/>Polsek Bendo
+          </motion.p>
+      </div>
 
         {/* Main Content */}
-        <div className="pt-16 px-4 sm:px-6 lg:px-8">
+        <div className="pt-240 md:pt-0 px-4 sm:px-6 lg:px-8">
           <div className="max-w-screen-xl mx-auto">
 
             {/* Tentang Kami & Info */}
-            <section className="grid grid-cols-1 md:grid-cols-2 justify-center py-12 px-10 md:px-40">
+            <AnimateOnScroll>
+            <section className="grid grid-cols-1 md:grid-cols-2 justify-center py-24 px-10 md:px-40">
               <Image src="/images/polda_jatim.png" alt="Polda Jatim" height={300} width={300} className="size-50 object-contain mb-10 md:mb-0"></Image>
               <div>
                 <h2 className="text-2xl font-semibold mb-4">Tentang POLSEK BENDO</h2>
@@ -89,8 +98,10 @@ export default function Home() {
                 </p>
               </div>
             </section>
+            </AnimateOnScroll>
 
             {/* Trending Carousel */}
+            <AnimateOnScroll delay={0.2}>
             <section className="py-12">
               <h4 className="px-10 md:px-16 text-2xl font-bold mb-6 text-gray-800">Ikuti Topik yang Sedang Tren</h4>
               <div className="w-full px-4 md:px-8 lg:px-16 py-6">
@@ -164,9 +175,11 @@ export default function Home() {
               </div>
 
             </section>
+            </AnimateOnScroll>
 
             {/* Layanan Kami */}
-            <section className="py-12">
+            <AnimateOnScroll delay={0.4}>
+            <section className="pt-12 pb-32 px-12 md:px-2">
               <h2 className="text-2xl font-bold mb-8 text-center text-gray-800">Layanan Kami</h2>
               <div className="flex flex-wrap justify-center gap-8">
                 {[
@@ -189,10 +202,13 @@ export default function Home() {
                 ))}
               </div>
             </section>
+            </AnimateOnScroll>
           </div>
         </div>
       </div>
+      <AnimateOnScroll delay={0.4}>
       <Footer />
+      </AnimateOnScroll>
       <WhatsAppPopup />
     </>
   );
