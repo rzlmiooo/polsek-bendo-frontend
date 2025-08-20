@@ -41,8 +41,9 @@ export default function NotificationBell() {
         const apiSikUrl = `${baseUrl}sik`;
         const apiPmUrl = `${baseUrl}pm`;
         const apiSlkUrl = `${baseUrl}slk`;
+        const apiNotesUrl = `${baseUrl}notes`;
 
-        const [skcksRes, sikRes, pmRes, slkRes] = await Promise.all([
+        const [skcksRes, sikRes, pmRes, slkRes, notesRes] = await Promise.all([
           axios.get(apiSkckUrl, {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -67,20 +68,24 @@ export default function NotificationBell() {
               'Content-Type': 'application/json',
             },
           }),
+          axios.get(apiNotesUrl, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }),
         ]);
 
         const allSkck = skcksRes.data || [];
         const allSik = sikRes.data || [];
         const allPm = pmRes.data || [];
         const allSlk = slkRes.data || [];
+        const allNotes = notesRes.data || [];
 
-        console.log("pm", allPm);
-        
-
-        const skckWithNotes = allSkck.filter((item: any) => item.officer_notes && item.officer_notes.trim() !== '');
-        const sikWithNotes = allSik.filter((item: any) => item.officer_notes && item.officer_notes.trim() !== '');
-        const pmWithNotes = allPm.filter((item: any) => item.officer_notes && item.officer_notes.trim() !== '');
-        const slkWithNotes = allSlk.filter((item: any) => item.officer_notes && item.officer_notes.trim() !== '');
+        const skckWithNotes = allSkck.filter((item: any) => item.user_id == userId && allNotes.user_id == userId);
+        const sikWithNotes = allSik.filter((item: any) => item.user_id == userId && allNotes.user_id == userId);
+        const pmWithNotes = allPm.filter((item: any) => item.user_id == userId && allNotes.user_id == userId);
+        const slkWithNotes = allSlk.filter((item: any) => item.user_id == userId && allNotes.user_id == userId);
 
         const combinedNotifications = [
           ...skckWithNotes,

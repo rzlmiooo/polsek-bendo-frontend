@@ -1,6 +1,4 @@
-'use client';
-
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import UserGreeting from './clientGreetings';
@@ -18,6 +16,30 @@ export default function NavbarUser() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const router = useRouter();
   const [error, setError] = useState("");
+
+  const [isNavbarOpen, setIsNavbarOpen] = useState(false);
+  const hideTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const showDropdown = () => {
+    clearTimeout(hideTimeout.current!);
+    setIsNavbarOpen(true);
+  };
+
+  const scheduleHide = () => {
+    hideTimeout.current = setTimeout(() => setIsNavbarOpen(false), 200); // delay biar gak ke-close langsung
+  };
+
+  const [isProfilOpen, setIsProfilOpen] = useState(false);
+  const hideProfilTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const showProfilDropdown = () => {
+    clearTimeout(hideProfilTimeout.current!);
+    setIsProfilOpen(true);
+  };
+
+  const scheduleProfilHide = () => {
+    hideProfilTimeout.current = setTimeout(() => setIsProfilOpen(false), 200); // delay biar gak ke-close langsung
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.HSStaticMethods) {
@@ -43,7 +65,7 @@ export default function NavbarUser() {
       <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-lg border-b border-[#996515] text-black">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           {/* Logo */}
-          <a href={href} className="flex items-center space-x-3 rtl:space-x-reverse">
+          <a href={href} className="flex items-center pl-4 space-x-3 rtl:space-x-reverse">
             <img
               src="/images/Polda_Jawa_Timur.png"
               className="h-8"
@@ -64,7 +86,7 @@ export default function NavbarUser() {
 
           {/* Nav Links */}
           <div className={`${isMobileMenuOpen ? 'block' : 'hidden'} w-full md:flex md:w-auto items-center gap-4`} id="navbar-dropdown">
-            <ul className="flex flex-col md:flex-row items-start md:items-center md:space-x-8 mt-4 md:mt-0 font-medium">
+            <ul className="flex flex-col md:flex-row items-start md:items-center md:space-x-15 mt-4 md:mt-0 font-medium">
               <li>
                 <a href="/" className="block py-2 px-3 text-black hover:text-[#996515] md:p-0">
                   Home
@@ -77,47 +99,35 @@ export default function NavbarUser() {
               </li>
 
               {/* Dropdown Profil */}
-              <li className="relative group">
-                <button className="flex items-center w-full py-2 px-3 text-black hover:text-[#996515] md:p-0">
+              <li>
+                <button onClick={() => setIsProfilOpen(!isProfilOpen)} className="hidden py-2 md:block hover:text-[#996515]" onMouseEnter={showProfilDropdown} onMouseLeave={scheduleProfilHide}>
                   Profil
-                  <svg className="w-2.5 h-2.5 ml-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
-                  </svg>
                 </button>
-                <ul className="hidden group-hover:block absolute md:absolute md:top-full left-0 z-10 bg-white rounded-lg shadow-md mt-1 md:w-44 w-full divide-y divide-gray-200">
-                  <li><a href="./profil/struktur" className="block px-4 py-2 hover:bg-[#996515] hover:text-white">Struktur</a></li>
-                  <li><a href="#" className="block px-4 py-2 hover:bg-[#996515] hover:text-white">Forkopimca</a></li>
-                  <li><a href="./profil/biografi" className="block px-4 py-2 hover:bg-[#996515] hover:text-white">Biografi</a></li>
-                </ul>
+                <a href="/layanan" className="block md:hidden py-2 px-3 hover:text-[#996515]">
+                  Profil
+                </a>
               </li>
 
               {/* Dropdown Layanan */}
-              <li className="relative group">
-                <button className="flex items-center w-full py-2 px-3 text-black hover:text-[#996515] md:p-0">
+              <li>
+                <button onClick={() => setIsNavbarOpen(!isNavbarOpen)} className="hidden py-2 md:block hover:text-[#996515]" onMouseEnter={showDropdown} onMouseLeave={scheduleHide}>
                   Layanan
-                  <svg className="w-2.5 h-2.5 ml-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4" />
-                  </svg>
                 </button>
-                <ul className="hidden group-hover:block absolute md:absolute md:top-full left-0 z-10 bg-white rounded-lg shadow-md mt-1 md:w-44 w-full divide-y divide-gray-200">
-                  <li><a href="./layanan/skck" className="block px-4 py-2 hover:bg-[#996515] hover:text-white">SKCK Online</a></li>
-                  <li><a href="./layanan/laporan_kehilangan" className="block px-4 py-2 hover:bg-[#996515] hover:text-white">Laporan Kehilangan</a></li>
-                  <li><a href="./layanan/pengaduan" className="block px-4 py-2 hover:bg-[#996515] hover:text-white">Pengaduan</a></li>
-                  <li><a href="./layanan/izin_keramaian" className="block px-4 py-2 hover:bg-[#996515] hover:text-white">Surat Izin Keramaian</a></li>
-                  <li><a href="./layanan/rencana" className="block px-4 py-2 hover:bg-[#996515] hover:text-white">Rencana Acara</a></li>
-                </ul>
+                <a href="/layanan" className="block md:hidden py-2 px-3 hover:text-[#996515]">
+                  Layanan
+                </a>
               </li>
             </ul>
 
             {/* User Area */}
             <div className="flex gap-4 md:ms-8 mt-4 md:mt-0">
-              <div className="flex flex-col md:flex-row items-start md:items-center pl-4 gap-4 md:border-l-1 border-black">
+              <div className="flex flex-col md:flex-row items-start md:items-center pl-4 md:pl-8 gap-4 md:gap-8 md:border-l-1 border-black">
                 <NotificationBell />
                 <Link href={profile} className="flex items-center gap-2">
                   <span className="text-sm font-medium hidden sm:block">Hi, <UserGreeting /></span>
                   <UserProfile />
                 </Link>
-                <button onClick={logout} className="flex justify-center gap-2 items-center md:py-2 md:px-6 hover:text-[#996515] md:border-l-1 border-black">
+                <button onClick={logout} className="flex justify-center gap-2 items-center md:py-2 md:px-8 hover:text-[#996515] md:border-l-1 border-black">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
                 </svg>
@@ -128,6 +138,48 @@ export default function NavbarUser() {
           </div>
         </div>
       </nav>
+      <section className={`fixed flex justify-center z-50 top-18 py-4 w-full bg-white shadow-lg transition-all duration-200 ${isNavbarOpen ? 'opacity-100 pointer-events-auto visible' : 'opacity-0 pointer-events-none invisible'}`} onMouseEnter={showDropdown} onMouseLeave={scheduleHide}>
+        <div className="flex flex-wrap justify-center gap-8">
+          {[
+            { href: "./layanan/skck", icon: "icon-skck", label: "SKCK ONLINE" },
+            { href: "./layanan/laporan_kehilangan", icon: "icon-laporan", label: "Laporan Kehilangan" },
+            { href: "./layanan/pengaduan", icon: "icon-pengaduan", label: "Pengaduan Masyarakat" },
+            { href: "./layanan/rencana", icon: "icon-rencana", label: "Rencana Acara" },
+            { href: "./layanan/izin_keramaian", icon: "icon-izin", label: "Izin Keramaian" },
+          ].map((layanan, idx) => (
+            <a
+              key={idx}
+              href={layanan.href}
+              className="flex items-center gap-3 hover:text-yellow-700 transition-colors"
+            >
+              <div className="w-12 h-12 flex items-center justify-center border border-gray-300 rounded-sm">
+                <img src={`/icons/${layanan.icon}.svg`} alt={layanan.label} className="w-6 h-6" />
+              </div>
+              <span className="text-base font-semibold text-gray-700">{layanan.label}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+      <section className={`fixed flex justify-center z-50 top-18 py-4 w-full bg-white shadow-lg transition-all duration-200 ${isProfilOpen ? 'opacity-100 pointer-events-auto visible' : 'opacity-0 pointer-events-none invisible'}`} onMouseEnter={showProfilDropdown} onMouseLeave={scheduleProfilHide}>
+        <div className="flex flex-wrap justify-center gap-8">
+          {[
+            { href: "./profil/struktur", icon: "icon-struktur", label: "Struktur Organisasi" },
+            { href: "./profil/forkopimca", icon: "icon-forkopimca", label: "FORKOPIMCA" },
+            { href: "./profil/biografi", icon: "icon-biografi", label: "Biografi" },
+          ].map((layanan, idx) => (
+            <a
+              key={idx}
+              href={layanan.href}
+              className="flex items-center gap-3 hover:text-yellow-700 transition-colors"
+            >
+              <div className="w-12 h-12 flex items-center justify-center border border-gray-300 rounded-sm">
+                <img src={`/icons/${layanan.icon}.svg`} alt={layanan.label} className="w-6 h-6" />
+              </div>
+              <span className="text-base font-semibold text-gray-700">{layanan.label}</span>
+            </a>
+          ))}
+        </div>
+      </section>
     </Suspense>
   );
 }

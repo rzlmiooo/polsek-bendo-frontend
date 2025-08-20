@@ -1,6 +1,5 @@
 "use client";
 
-import axios from "axios";
 import Footer from "../../components/footer";
 import NavbarUser from "../../components/navbarUser";
 import OrderSkck from "../../order/skck/page";
@@ -11,8 +10,6 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from "next/navigation";
 import getUserId from './../../utils/auth/page';
-import Link from 'next/link';
-import Leftbar from "../../components/leftbarUser";
 import Head from "next/head";
 
 export default function Order() {
@@ -73,7 +70,7 @@ export default function Order() {
                             <section className="bg-white py-8 px-4 sm:px-6 md:px-8 rounded-lg shadow-md dark:bg-gray-900">
                                 <div className="text-center mb-6">
                                     <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">
-                                        List Surat Yang Sedang Dibuat
+                                        Daftar Surat yang Sedang Dibuat
                                     </h2>
                                 </div>
 

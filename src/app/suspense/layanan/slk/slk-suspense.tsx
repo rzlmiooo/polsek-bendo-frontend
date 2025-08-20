@@ -53,7 +53,6 @@ const polresItems = [
   "stnk",
   "bpkb",
   "ijazah",
-  "akte",
   "surat_nikah",
   "surat_tanah",
   "surat_lainnya"
@@ -62,24 +61,28 @@ const polresItems = [
 const polsekItemsMessage: Record<string, string[]> = {
   ktp: [
     "1. Surat Keterangan dari Desa",
-    "2. Fotokopi Kartu Keluarga",
+    "2. Fotokopi Kartu Keluarga Pelapor",
     "3. Fotokopi KTP hilang (jika ada)",
   ],
   kk: [
     "1. Surat Pengantar dari Desa",
-    "2. Fotokopi KTP",
+    "2. Fotokopi KTP Pelapor",
   ],
   buku_rekening: [
-    "1. Fotokopi KTP",
+    "1. Fotokopi KTP Pelapor",
     "2. Nomor rekening dari Buku Rekening/ATM yang hilang",
   ],
   sim: [
-    "1. Fotokopi KTP",
+    "1. Fotokopi KTP Pelapor",
     "2. Nomor SIM (jika ada)",
   ],
   sim_card: [
-    "1. Fotokopi KTP",
+    "1. Fotokopi KTP Pelapor",
     "2. Nomor telepon yang hilang",
+  ],
+  akte: [
+    "1. Surat Keterangan dari Desa",
+    "2. Fotokopi KTP Pelapor",
   ],
 };
 
