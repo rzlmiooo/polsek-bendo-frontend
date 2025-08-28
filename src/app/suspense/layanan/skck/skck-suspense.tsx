@@ -21,6 +21,7 @@ interface SkckFormState {
   sex: string;
   nationality: string;
   religion: string;
+  job: string;
 }
 
 const sexOptions = ["Laki-laki", "Perempuan"];
@@ -179,6 +180,7 @@ export default function SkckForm() {
     sex: "",
     nationality: "Indonesia",
     religion: "",
+    job: "",
   });
 
 
@@ -302,6 +304,7 @@ export default function SkckForm() {
       !formData.sex ||
       !formData.nationality ||
       !formData.religion ||
+      !formData.job ||
       !formData.submission_date
     ) {
       setFormData((prev) => ({
@@ -324,6 +327,7 @@ export default function SkckForm() {
         id_number: formData.id_number,
         submission_date: formData.submission_date,
         verification_status: formData.verification_status,
+        job: formData.job,
         passport_photo: formData.passport_photo,
       };
       const apiSkckUrl = `${baseApiUrl}skck`;
@@ -471,6 +475,21 @@ export default function SkckForm() {
               placeholder="35202513062007002"
               pattern="[0-9]{16}"
               title="Nomor KTP harus 16 digit angka"
+              required
+            />
+          </div>
+
+          {/* Pekerjaan */}
+          <div>
+            <label htmlFor="job" className="block font-medium">Pekerjaan</label>
+            <input
+              type="text"
+              id="job"
+              name="job"
+              value={formData.job}
+              onChange={handleChange}
+              className="w-full mt-1 border p-2 rounded"
+              placeholder="Petani"
               required
             />
           </div>
