@@ -169,6 +169,40 @@ export default function EditArticlePage() {
         }
     };
 
+    const handleDelete = async () => {
+        if (!window.confirm("Are you sure you want to delete this article? This action cannot be undone.")) {
+            return;
+        }
+
+        setErrorMessage(null);
+        setIsSubmitting(true);
+
+        try {
+            const apiArticleUrl = `${baseUrl}news/${articleId}`;
+            const response = await axios.delete(apiArticleUrl, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.status === 200 || response.status === 204) {
+                alert("Article deleted successfully!");
+                router.push('/admin/articles');
+            } else {
+                setErrorMessage(response.data?.message || "Unexpected server response.");
+            }
+        } catch (error) {
+            console.error("Delete error:", error);
+            if (axios.isAxiosError(error)) {
+                setErrorMessage("Server error: " + (error.response?.data?.message || error.message));
+            } else {
+                setErrorMessage("An unexpected error occurred.");
+            }
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     const handleEditorImageClick = () => {
         fileInputRef.current?.click();
     };
@@ -316,6 +350,17 @@ export default function EditArticlePage() {
                                     >
                                         <Upload className="h-4 w-4" />
                                         <span>{isSubmitting ? "Updating..." : "Update"}</span>
+                                    </button>
+                                </div>
+
+                                <div className="flex space-x-2">
+                                    <button
+                                        type="button"
+                                        onClick={handleDelete}
+                                        className="flex items-center space-x-2 bg-red-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-700 transition"
+                                        disabled={isSubmitting || imageLoading}
+                                    >
+                                        <span>Delete</span>
                                     </button>
                                 </div>
                             </div>
