@@ -5,10 +5,9 @@ import Footer from "../../components/footer";
 import Navbar from "../../components/navbar";
 import { useEffect, useState } from "react";
 import { useSearchParams } from 'next/navigation';
-import { useRouter } from "next/navigation";
 import Link from 'next/link';
-import Head from 'next/head';
 import Image from 'next/image';
+import LoadingSpinner from "@/app/components/LoadingSpinner";
 
 interface NewsArticle {
     id: string;
@@ -28,7 +27,6 @@ export default function Article() {
     const [filteredNews, setFilteredNews] = useState<NewsArticle[]>([]);
 
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -70,8 +68,8 @@ export default function Article() {
 
     if (loading) {
         return (
-            <div className="bg-white text-black min-h-screen flex items-center justify-center">
-                <p>Loading news...</p>
+            <div className='w-auto h-screen flex justify-center items-center'>
+                <LoadingSpinner loadingText='Loading'/>
             </div>
         );
     }
@@ -86,22 +84,13 @@ export default function Article() {
 
     return (
         <>
-            {/* SEO */}
-            <Head>
-                <title>Polsek Bendo - Pelayanan SKCK Online & Informasi Kepolisian</title>
-                <meta name="description" content="Website resmi Polsek Bendo. Informasi SKCK Online, laporan kehilangan, kontak, dan pelayanan masyarakat." />
-                <meta name="keywords" content="Polsek Bendo, SKCK Online, Kepolisian Bendo, Pelayanan Kepolisian, Madiun" />
-                <meta name="author" content="Polsek Bendo" />
-                <link rel="canonical" href="https://polsek-bendo.my.id/article" />
-            </Head>
-
             <div className="bg-white text-black min-h-screen">
                 <Navbar />
                 {/* Hero Section */}
                 <div className="pt-18" >
                     <section className="bg-[#f5b042] text-white py-12 text-center">
-                        <h1 className="text-4xl font-bold mb-4">Welcome to Polsek Bendo Blog</h1>
-                        <p className="text-lg">Share your stories, ideas, and thoughts with the world.</p>
+                        <h1 className="text-4xl font-bold mb-4">Berita Polsek Bendo</h1>
+                        <p className="text-lg">Dapatkan informasi terbaru seputar Polsek Bendo.</p>
                     </section>
                 </div>
 
@@ -110,7 +99,7 @@ export default function Article() {
                         <div className="relative">
                             <input
                                 type="text"
-                                placeholder="Search news by title or content..."
+                                placeholder="Cari berita dengan mengetik judul atau topik"
                                 className="p-3 rounded-xl w-full text-black focus:outline-none border-2 border-black focus:ring-2 focus:ring-[#f3f3f3]"
                                 value={searchTerm}
                                 onChange={handleSearchChange}
@@ -125,20 +114,22 @@ export default function Article() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredNews.length > 0 ? (
                             filteredNews.map((blog, index) => (
-                                <div key={index} className="bg-[#f9f9f9] rounded-2xl p-6 shadow hover:shadow-lg transition">
+                                <div key={index} className="bg-[#f9f9f9] flex flex-col justify-between items-start gap-3 rounded-2xl p-6 shadow hover:shadow-lg transition">
+                                    <div className="flex flex-col justify-start items-start gap-4">
                                     <Image
                                         src={blog.url_gambar_unggulan}
                                         alt={blog.title}
                                         width={600}
                                         height={400}
                                         priority
+                                        className="aspect-4/3 object-cover rounded-lg"
                                     />
-                                    {/* <img src={blog.url_gambar_unggulan} alt={blog.title} className="w-full h-48 object-cover rounded-md mb-4" /> */}
-                                    <h3 className="text-xl font-bold mb-2">{blog.title}</h3>
-                                    <p className="text-gray-700 mb-4">{blog.excerpt}</p>
-                                    <Link href={`/artikel/read-article?blog_id=${blog.id}`} legacyBehavior>
-                                        <a className="bg-[#f5b042] text-white px-4 py-2 rounded-xl inline-block hover:bg-[#e0a030] transition duration-300">Read More</a>
-                                    </Link>
+                                        <h3 className="text-xl font-bold">{blog.title}</h3>
+                                        <p>{blog.excerpt}</p>
+                                    </div>
+                                        <Link href={`/artikel/read-article?blog_id=${blog.id}`} className="bg-[#f5b042] font-bold text-white text-shadow-xs px-4 py-2 rounded-lg inline-block hover:bg-[#e0a030] transition duration-300">
+                                            Lanjut Baca
+                                        </Link>
                                 </div>
                             ))
                         ) : (

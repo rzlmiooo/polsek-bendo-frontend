@@ -4,7 +4,7 @@ import PathWrapper from "../components/pathWrapper";
 
 export default function UnauthorizedPage() {
   return (
-    <Suspense fallback={<div>Redirect Unauthorized Page...</div>}>
+    <Suspense>
       <PathWrapper />
         <Unauthorized />
     </Suspense>

@@ -2,12 +2,15 @@
 "use client";
 
 import axios from 'axios';
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import getUserId from '@/app/utils/auth/page';
 import SuccessMessage from "../../../components/successMessageAdmin";
 import Head from 'next/head';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeftIcon } from 'lucide-react';
+import SuccessPopUp from '@/app/components/successPopUp';
+import ErrorPopUp from '@/app/components/errorPopUp';
+import { tree } from 'next/dist/build/templates/app-page';
 
 
 interface PMFormState {
@@ -26,11 +29,29 @@ interface PMFormState {
 export default function PengaduanMasyarakatForm() {
   const router = useRouter();
   const userId = getUserId();
+  const [token, setToken] = useState<string | null>(null);
 
   const baseApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+
+      const storedToken = localStorage.getItem('token') || token;
+      const role = localStorage.getItem('role');
+
+      if (role !== 'user') {
+        router.replace('/unauthorized');
+        return;
+      }
+
+      if (storedToken) {
+        setToken(storedToken);
+      }
+    }
+  }, [router, token]);
+  
+  const [submitted, setSubmitted] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   const [formData, setFormData] = useState<PMFormState>({
     complainant_name: "",
@@ -164,7 +185,7 @@ export default function PengaduanMasyarakatForm() {
       if (response.status === 200 || response.status === 201) {
         console.log("API response SUCCESS (200 or 201):", response.data);
         setShowSuccessMessage(true);
-
+        setSubmitted(true);
         setSuccessDetails({
           title: response.data?.message || "Pengaduan Masyarakat berhasil diedit!",
           description: "Terima kasih telah membuat Informasi yang berguna.",
@@ -189,6 +210,7 @@ export default function PengaduanMasyarakatForm() {
         console.log("API response NOT SUCCESS:", response.status, response.data);
       }
     } catch (error: any) {
+      setFailed(true);
       console.error("Submission error:", error);
       setErrorMessage("Terjadi kesalahan: " + (error.response?.data?.message || error.message || "Gagal membuat artikel."));
     }
@@ -201,6 +223,9 @@ export default function PengaduanMasyarakatForm() {
 
   return (
     <>
+    {/* alert */}
+      <SuccessPopUp open={submitted} close={() => setSubmitted(false)} label="Formulir Anda telah terkirim. Silahkan kembali ke menu utama"/>
+      <ErrorPopUp open={failed} close={() => setFailed(false)} label='Error: Terdeteksi duplikat Nomor Induk Kependudukan (NIK). 1 NIK hanya boleh melakukan permintaan SKCK 1 kali' />
       <Head>
         <title>Pengaduan Masyarakat</title>
         <meta name="description" content="Sampaikan pengaduan Anda ke Polsek Bendo secara langsung dan aman." />
@@ -208,16 +233,17 @@ export default function PengaduanMasyarakatForm() {
         <meta name="author" content="Polsek Bendo" />
         <link rel="canonical" href="https://polsek-bendo.my.id/layanan/pm" />
       </Head>
-      <a
-        href='/layanan'
-        className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors duration-200 dark:text-gray-400 dark:hover:text-white"
-        aria-label="Go Back"
-      >
-        <ArrowLeft className="w-12 h-12" />
-      </a>
       <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
-        <h2 className="text-xl font-bold mb-4">Form Pengaduan Masyarakat</h2>
-
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-bold mb-4">Form Pengaduan Masyarakat</h2>
+          <button
+            onClick={() => router.back()}
+            className="inline-flex items-center gap-2 px-3 py-2 bg-sky-600 hover:bg-sky-500 text-sky-50 rounded-xl transition"
+          >
+            <ArrowLeftIcon className="w-4 h-auto" />
+            <span className="text-sm hidden sm:block">Kembali</span>
+          </button>
+        </div>
         <form onSubmit={handleSubmitClick} className="space-y-5">
           {/* Nama Pelapor */}
           <div>

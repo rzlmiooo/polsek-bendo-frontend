@@ -9,12 +9,10 @@ export default function Unauthorized() {
     const [countdown, setCountdown] = useState(3)
 
     useEffect(() => {
-        // Turunin angka tiap detik
         const interval = setInterval(() => {
           setCountdown((prev) => prev - 1)
         }, 1000)
-    
-        // Setelah 3 detik redirect
+        
         const timeout = setTimeout(() => {
           router.push('/login')
         }, 3100)
@@ -36,8 +34,8 @@ export default function Unauthorized() {
                 <link rel="canonical" href="https://polsek-bendo.my.id/unauthorized" />
         </Head>
         <div className="flex flex-col m-20 p-5 justify-center items-center">
-            Anda belum login atau Anda salah klik.
-            <p className="text-lg">Kamu akan diarahkan ke halaman login dalam</p>
+            Anda belum login.
+            <p className="text-lg">Anda akan diarahkan ke halaman login dalam</p>
             <p className="text-5xl font-mono mt-2 animate-pulse">{countdown}</p>
         </div>
     </>

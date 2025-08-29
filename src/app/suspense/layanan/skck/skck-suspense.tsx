@@ -5,7 +5,9 @@ import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import getUserId from '@/app/utils/auth/page';
 import Head from 'next/head';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeftIcon } from 'lucide-react';
+import SuccessPopUp from '@/app/components/successPopUp';
+import ErrorPopUp from '@/app/components/errorPopUp';
 
 interface SkckFormState {
   applicant_name: string;
@@ -160,8 +162,9 @@ const countryOptions = [
 export default function SkckForm() {
   const router = useRouter();
   const userId = getUserId();
-  const [isClient, setIsClient] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   const baseApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -183,10 +186,9 @@ export default function SkckForm() {
 
 
   useEffect(() => {
-    setIsClient(true);
     if (typeof window !== 'undefined') {
 
-      const storedToken = localStorage.getItem('token');
+      const storedToken = localStorage.getItem('token') || token;
       const role = localStorage.getItem('role');
 
       if (role !== 'user') {
@@ -198,7 +200,7 @@ export default function SkckForm() {
         setToken(storedToken);
       }
     }
-  }, [router]);
+  }, [router, token]);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imageLoading, setImageLoading] = useState<boolean>(false);
@@ -328,35 +330,38 @@ export default function SkckForm() {
       };
       const apiSkckUrl = `${baseApiUrl}skck`;
 
-
       const response = await axios.post(apiSkckUrl, payload);
 
       if (response.status === 200 || response.status === 201) {
+        setSubmitted(true);
         setFormData((prev) => ({
           ...prev,
-          successMessage: "SKCK application submitted successfully!",
+          successMessage: null,
           errorMessage: null,
         }));
-        console.log("SKCK application submitted:", response.data);
       } else {
         setFormData((prev) => ({
           ...prev,
-          errorMessage: response.data?.message || "Unexpected server response during submission.",
+          errorMessage: null,
           successMessage: null,
         }));
       }
     } catch (error: any) {
+      setFailed(true);
       console.error("SKCK submission error:", error);
       setFormData((prev) => ({
         ...prev,
-        errorMessage: "Server error: " + (error.response?.data?.message || error.message || "An unknown error occurred."),
+        errorMessage: null,
         successMessage: null,
       }));
     }
   };
 
   return (
-    <>
+    <div>
+      {/* alert */}
+      <SuccessPopUp open={submitted} close={() => setSubmitted(false)} label="Formulir Anda telah terkirim. Silahkan kembali ke menu utama"/>
+      <ErrorPopUp open={failed} close={() => setFailed(false)} label='Error: Terdeteksi duplikat Nomor Induk Kependudukan (NIK). 1 NIK hanya boleh melakukan permintaan SKCK 1 kali' />
       {/* SEO */}
       <Head>
         <title>Pengajuan SKCK</title>
@@ -365,15 +370,17 @@ export default function SkckForm() {
         <meta name="author" content="Polsek Bendo" />
         <link rel="canonical" href="https://polsek-bendo.my.id/layanan/skck" />
       </Head>
-      <a
-          href='/layanan'
-          className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors duration-200 dark:text-gray-400 dark:hover:text-white"
-          aria-label="Go Back"
-        >
-          <ArrowLeft className="w-12 h-12" />
-        </a>
       <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
-        <h1 className="text-2xl font-bold mb-6">Formulir Pengajuan SKCK Online - WNI</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Formulir Pengajuan SKCK Online - WNI</h1>
+          <button
+            onClick={() => router.back()}
+            className="inline-flex items-center gap-2 px-3 py-2 bg-sky-600 hover:bg-sky-500 text-sky-50 rounded-xl transition"
+          >
+            <ArrowLeftIcon className="w-4 h-auto" />
+            <span className="text-sm hidden sm:block">Kembali</span>
+          </button>
+        </div>
         <form onSubmit={handleSubmitClick} className="space-y-5">
           {/* Nama Lengkap */}
           <div>
@@ -573,6 +580,6 @@ export default function SkckForm() {
           </div>
         </form>
       </div>
-    </>
+    </div>
   );
 }
