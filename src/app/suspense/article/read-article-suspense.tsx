@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import purify from 'isomorphic-dompurify';
@@ -10,6 +9,7 @@ import Footer from '../../components/footer';
 import Image from 'next/image';
 import Head from 'next/head';
 import { ArrowLeft } from 'lucide-react';
+import LoadingSpinner from '@/app/components/LoadingSpinner';
 
 interface DetailedNewsArticle {
   id: string;
@@ -29,9 +29,9 @@ export default function ReadArticle() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-
   useEffect(() => {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
     if (!articleId) {
       setError("Article ID not found in URL.");
       setLoading(false);
@@ -66,8 +66,8 @@ export default function ReadArticle() {
 
   if (loading) {
     return (
-      <div className="bg-white text-black min-h-screen flex items-center justify-center">
-        <p className="text-xl text-blue-600">Loading article...</p>
+      <div className='w-auto h-screen flex justify-center items-center'>
+        <LoadingSpinner loadingText='Loading'/>
       </div>
     );
   }
@@ -109,7 +109,7 @@ export default function ReadArticle() {
         </a>
         {article.map((article, index) => (
           <div key={index} className="max-w-4xl mt-14 mx-auto py-10 px-4 sm:px-6 lg:px-8">
-            <img
+            <Image
               src={article.url_gambar_unggulan}
               alt={article.title || "Article featured image"}
               width={800}

@@ -1,3 +1,5 @@
+import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 export default function Navbar() {
@@ -7,12 +9,12 @@ export default function Navbar() {
   const hideTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-      if (typeof window !== 'undefined') {
-          const storedToken = localStorage.getItem('token');
-          if (storedToken) {
-              setToken(storedToken);
-          }
-      }
+    if (typeof window !== 'undefined') {
+        const storedToken = localStorage.getItem('token');
+        if (storedToken) {
+            setToken(storedToken);
+        }
+    }
   }, []);
 
   const showDropdown = () => {
@@ -24,7 +26,6 @@ export default function Navbar() {
     hideTimeout.current = setTimeout(() => setIsNavbarOpen(false), 300); // delay biar gak ke-close langsung
   };
 
-  // profil
   const [isProfilOpen, setIsProfilOpen] = useState(false);
   const hideProfilTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -42,16 +43,18 @@ export default function Navbar() {
       <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-lg border-b border-[#996515] text-black">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           {/* Logo */}
-          <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
-            <img
+          <Link href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
+            <Image
               src="/images/polda_jatim.png"
-              className="h-8"
+              className="h-8 w-auto"
               alt="Logo"
+              width={100}
+              height={100}
             />
             <span className="self-center text-2xl font-semibold whitespace-nowrap text-black">
               POLSEK BENDO
             </span>
-          </a>
+          </Link>
 
           {/* Hamburger button */}
           <button
@@ -95,9 +98,9 @@ export default function Navbar() {
           >
             <ul className="flex flex-col md:flex-row md:space-x-8 w-full">
               <li>
-                <a href="/" className="block py-2 px-3 hover:text-[#996515]">
+                <Link href="/" className="block py-2 px-3 hover:text-[#996515]">
                   Home
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="/artikel" className="block py-2 px-3 hover:text-[#996515]">
@@ -178,7 +181,7 @@ export default function Navbar() {
               className="flex items-center gap-3 hover:text-yellow-700 transition-colors"
             >
               <div className="w-12 h-12 flex items-center justify-center border border-gray-300 rounded-sm">
-                <img src={`/icons/${layanan.icon}.svg`} alt={layanan.label} className="w-6 h-6" />
+                <Image src={`/icons/${layanan.icon}.svg`} alt={layanan.label} width={100} height={100} className="w-6 h-6" />
               </div>
               <span className="text-base font-semibold text-gray-700">{layanan.label}</span>
             </a>
@@ -198,7 +201,7 @@ export default function Navbar() {
               className="flex items-center gap-3 hover:text-yellow-700 transition-colors"
             >
               <div className="w-12 h-12 flex items-center justify-center border border-gray-300 rounded-sm">
-                <img src={`/icons/${layanan.icon}.svg`} alt={layanan.label} className="w-6 h-6" />
+                <Image src={`/icons/${layanan.icon}.svg`} alt={layanan.label} width={100} height={100} className="w-6 h-6" />
               </div>
               <span className="text-base font-semibold text-gray-700">{layanan.label}</span>
             </a>

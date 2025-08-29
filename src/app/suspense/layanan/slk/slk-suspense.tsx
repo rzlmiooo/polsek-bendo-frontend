@@ -6,7 +6,9 @@ import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import getUserId from '@/app/utils/auth/page';
 import Head from 'next/head';
-import { ArrowLeft } from 'lucide-react';
+import ErrorPopUp from '@/app/components/errorPopUp';
+import SuccessPopUp from '@/app/components/successPopUp';
+import { ArrowLeftIcon } from 'lucide-react';
 
 
 interface LPFormState {
@@ -91,6 +93,8 @@ export default function LaporanKehilanganForm() {
   const userId = getUserId();
   const [isClient, setIsClient] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   const baseApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -109,7 +113,7 @@ export default function LaporanKehilanganForm() {
     setIsClient(true);
     if (typeof window !== 'undefined') {
 
-      const storedToken = localStorage.getItem('token');
+      const storedToken = localStorage.getItem('token') || token;
       const role = localStorage.getItem('role');
 
       if (role !== 'user') {
@@ -121,7 +125,7 @@ export default function LaporanKehilanganForm() {
         setToken(storedToken);
       }
     }
-  }, [router]);
+  }, [router, token]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -168,24 +172,25 @@ export default function LaporanKehilanganForm() {
       const response = await axios.post(apiSlkUrl, payload);
 
       if (response.status === 200 || response.status === 201) {
+        setSubmitted(true);
         setFormData((prev) => ({
           ...prev,
-          successMessage: "SLK application submitted successfully!",
+          successMessage: null,
           errorMessage: null,
         }));
-        console.log("SLK application submitted:", response.data);
       } else {
         setFormData((prev) => ({
           ...prev,
-          errorMessage: response.data?.message || "Unexpected server response during submission.",
+          errorMessage: null,
           successMessage: null,
         }));
       }
     } catch (error: any) {
+      setFailed(true);
       console.error("SLK submission error:", error);
       setFormData((prev) => ({
         ...prev,
-        errorMessage: "Server error: " + (error.response?.data?.message || error.message || "An unknown error occurred."),
+        errorMessage: null,
         successMessage: null,
       }));
     }
@@ -203,6 +208,8 @@ export default function LaporanKehilanganForm() {
 
   return (
     <>
+      <SuccessPopUp open={submitted} close={() => setSubmitted(false)} label="Formulir Anda telah terkirim. Silahkan kembali ke menu utama"/>
+      <ErrorPopUp open={failed} close={() => setFailed(false)} label='Error: Cek koneksi internet Anda' />
       <Head>
         <title>Laporan Kehilangan</title>
         <meta name="description" content="Laporkan kehilangan barang secara resmi ke Polsek Bendo." />
@@ -210,15 +217,17 @@ export default function LaporanKehilanganForm() {
         <meta name="author" content="Polsek Bendo" />
         <link rel="canonical" href="https://polsek-bendo.my.id/layanan/sik" />
       </Head>
-      <a
-        href='/layanan'
-        className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors duration-200 dark:text-gray-400 dark:hover:text-white"
-        aria-label="Go Back"
-      >
-        <ArrowLeft className="w-12 h-12" />
-      </a>
       <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
-        <h2 className="text-xl font-bold mb-4">Form Laporan Kehilangan</h2>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Formulir Laporan Kehilangan</h1>
+          <button
+            onClick={() => router.back()}
+            className="inline-flex items-center gap-2 px-3 py-2 bg-sky-600 hover:bg-sky-500 text-sky-50 rounded-xl transition"
+          >
+            <ArrowLeftIcon className="w-4 h-auto" />
+            <span className="text-sm hidden sm:block">Kembali</span>
+          </button>
+        </div>
         <form onSubmit={handleSubmitClick} className="space-y-5">
           {/* Nama Pelapor */}
           <div>
@@ -265,19 +274,6 @@ export default function LaporanKehilanganForm() {
           </div>
 
           {/* Jenis Barang  */}
-          {/* <div>
-          <label htmlFor="item_type" className="block font-medium">Jenis Barang</label>
-          <input
-            type="text"
-            id="item_type"
-            name="item_type"
-            value={formData.item_type}
-            onChange={handleChange}
-            className="w-full mt-1 border p-2 rounded"
-            placeholder="Dompet"
-            required
-          />
-        </div> */}
           <div>
             <label htmlFor="item_type" className="block font-medium">Jenis Barang</label>
             <select

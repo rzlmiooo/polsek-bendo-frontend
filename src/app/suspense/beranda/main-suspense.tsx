@@ -33,11 +33,11 @@ export default function Home() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const baseApiUrl = process.env.NEXT_PUBLIC_API_URL;
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const baseApiUrl = process.env.NEXT_PUBLIC_API_URL;
         const apiNewsUrl = `${baseApiUrl}news`;
 
         const newsRes = await axios.get(apiNewsUrl, {
@@ -128,13 +128,15 @@ export default function Home() {
                   className="mySwiper"
                 >
                   {news.map((blog, index) => (
-                    <SwiperSlide key={index} className="h-full">
-                      <div className="flex flex-col h-full bg-white border rounded-lg shadow-sm overflow-hidden">
+                    <SwiperSlide key={index}>
+                      <div className="flex h-[32rem] flex-col justify-between items-start bg-white border rounded-lg shadow-sm overflow-hidden">
                         <a href="/artikel">
-                          <img
+                          <Image
                             src={blog.url_gambar_unggulan}
                             alt={blog.title}
-                            className="w-full h-48 md:h-56 lg:h-64 object-cover"
+                            width={480}
+                            height={270}
+                            className="aspect-4/3 object-cover"
                           />
                         </a>
                         <div className="p-4 flex flex-col flex-grow">
@@ -146,27 +148,27 @@ export default function Home() {
                           <p className="text-gray-700 mb-4 flex-grow line-clamp-3">
                             {blog.excerpt}...
                           </p>
-                          <Link
-                            href={`/artikel/read-article?blog_id=${blog.id}`}
-                            className="inline-flex items-center justify-start px-3 py-2 text-sm font-medium text-white bg-yellow-600 rounded hover:bg-yellow-700 transition"
-                          >
-                            Read more
-                            <svg
-                              className="w-4 h-4 ml-2 rtl:rotate-180"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 14 10"
-                            >
-                              <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M1 5h12m0 0L9 1m4 4L9 9"
-                              />
-                            </svg>
-                          </Link>
                         </div>
+                        <Link
+                          href={`/artikel/read-article?blog_id=${blog.id}`}
+                          className="inline-flex items-center justify-start px-3 py-2 m-4 text-sm font-medium text-white bg-yellow-600 rounded hover:bg-yellow-700 transition"
+                        >
+                          Read more
+                          <svg
+                            className="w-4 h-4 ml-2 rtl:rotate-180"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 14 10"
+                          >
+                            <path
+                              stroke="currentColor"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M1 5h12m0 0L9 1m4 4L9 9"
+                            />
+                          </svg>
+                        </Link>
                       </div>
                     </SwiperSlide>
                   ))}
@@ -195,7 +197,7 @@ export default function Home() {
                     className="flex items-center gap-3 hover:text-yellow-700 transition-colors"
                   >
                     <div className="w-12 h-12 flex items-center justify-center border border-gray-300 rounded-sm">
-                      <img src={`/icons/${layanan.icon}.svg`} alt={layanan.label} className="w-6 h-6" />
+                      <Image src={`/icons/${layanan.icon}.svg`} alt={layanan.label} width={100} height={100} className="w-6 h-6" />
                     </div>
                     <span className="text-base font-semibold text-gray-700">{layanan.label}</span>
                   </a>
