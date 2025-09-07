@@ -6,21 +6,12 @@ import OrderSkck from "../../order/skck/page";
 import OrderSik from "../../order/sik/page";
 import OrderPm from "../../order/pm/page";
 import OrderSlk from "../../order/slk/page";
-import { useEffect, useState } from "react";
-import { useSearchParams } from 'next/navigation';
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import getUserId from './../../utils/auth/page';
 import Head from "next/head";
 
 export default function Order() {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const [isClient, setIsClient] = useState(false);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-    const [token, setToken] = useState<string | null>(null);
-
-    const userId = getUserId();
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -32,10 +23,8 @@ export default function Order() {
                 return;
             }
 
-            if (storedToken) {
-                setToken(storedToken);
-            } else {
-                router.replace('/auth/login');
+            if (!storedToken) {
+                router.replace('/login');
             }
         }
     }, [router]);
@@ -67,7 +56,7 @@ export default function Order() {
                             </div>
 
                             {/* Section Card */}
-                            <section className="bg-white py-8 px-4 sm:px-6 md:px-8 rounded-lg shadow-md dark:bg-gray-900">
+                            <section className="bg-white py-8 px-4 sm:px-6 md:px-8 rounded-lg shadow-md dark:bg-gray-800">
                                 <div className="text-center mb-6">
                                     <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">
                                         Daftar Surat yang Sedang Dibuat
