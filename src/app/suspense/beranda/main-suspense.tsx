@@ -30,8 +30,6 @@ interface NewsArticle {
 export default function Home() {
   const searchParams = useSearchParams();
   const [news, setNews] = useState<NewsArticle[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
 
   
   useEffect(() => {
@@ -48,8 +46,6 @@ export default function Home() {
       }
       catch (err) {
         console.error('Error fetching data:', err);
-      } finally {
-        setLoading(false);
       }
     }
     fetchData();
@@ -58,7 +54,9 @@ export default function Home() {
   return (
     <>
       {/* navbar */}
-      <Navbar />
+      <header className="relative w-full">
+        <Navbar />
+      </header>
 
       <div className="w-full">
         {/* Hero Image */}
@@ -72,7 +70,7 @@ export default function Home() {
         />
       </div>
       
-      <div className="absolute z-49 top-0 w-full md:w-dvh h-full md:h-dvh flex justify-start items-center md:items-end overflow-hidden">
+      <div className="absolute z-10 top-0 w-full md:w-dvh h-full md:h-dvh flex justify-start items-center md:items-end overflow-hidden">
         <motion.p 
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
