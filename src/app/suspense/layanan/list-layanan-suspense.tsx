@@ -22,44 +22,44 @@ export default function ListLayanan() {
         <div>
             <NavbarUser />
             <div className="bg-gray-500 min-h-screen flex items-center justify-center pt-20 p-4">
-                <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl p-6 md:p-10 lg:p-12">
-                    <h1 className="text-3xl font-bold text-gray-800 text-center mb-8">Kategori Layanan</h1>
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl p-6 md:p-10 lg:p-12">
+                    <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 text-center mb-8">Kategori Layanan</h1>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 pb-8">
 
                         <Link href={`/layanan/skck`}>
-                            <div className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center justify-center text-center transform transition duration-300 hover:scale-105 hover:bg-yellow-300 cursor-pointer">
-                                <div className="text-gray-600 text-5xl mb-4 transition duration-300 group-hover:text-gray-800">
+                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col items-center justify-center text-center transform transition duration-300 hover:scale-105 hover:bg-yellow-300 hover:dark:bg-gray-500 cursor-pointer">
+                                <div className="text-gray-600 dark:text-gray-100 text-5xl mb-4 transition duration-300 group-hover:text-gray-800">
                                     <FontAwesomeIcon icon={faFileAlt} />
                                 </div>
-                                <p className="text-gray-800 text-lg font-semibold">SKCK</p>
+                                <p className="text-gray-800 dark:text-gray-100 text-lg font-semibold">SKCK</p>
                             </div>
                         </Link>
 
                         <Link href={`/layanan/laporan_kehilangan`}>
-                            <div className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center justify-center text-center transform transition duration-300 hover:scale-105 hover:bg-yellow-300 cursor-pointer">
-                                <div className="text-gray-600 text-5xl mb-4 transition duration-300 group-hover:text-gray-800">
+                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col items-center justify-center text-center transform transition duration-300 hover:scale-105 hover:bg-yellow-300 hover:dark:bg-gray-500 cursor-pointer">
+                                <div className="text-gray-600 dark:text-gray-100 text-5xl mb-4 transition duration-300 group-hover:text-gray-800">
                                     <FontAwesomeIcon icon={faExclamationTriangle} />
                                 </div>
-                                <p className="text-gray-800 text-lg font-semibold">Laporan Kehilangan</p>
+                                <p className="text-gray-800 dark:text-gray-100 text-lg font-semibold">Laporan Kehilangan</p>
                             </div>
                         </Link>
 
                         <Link href={`/layanan/pengaduan`}>
-                            <div className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center justify-center text-center transform transition duration-300 hover:scale-105 hover:bg-yellow-300 cursor-pointer">
-                                <div className="text-gray-600 text-5xl mb-4 transition duration-300 group-hover:text-gray-800">
+                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col items-center justify-center text-center transform transition duration-300 hover:scale-105 hover:bg-yellow-300 hover:dark:bg-gray-500 cursor-pointer">
+                                <div className="text-gray-600 dark:text-gray-100 text-5xl mb-4 transition duration-300 group-hover:text-gray-800">
                                     <FontAwesomeIcon icon={faBullhorn} />
                                 </div>
-                                <p className="text-gray-800 text-lg font-semibold">Pengaduan Masyarakat</p>
+                                <p className="text-gray-800 dark:text-gray-100 text-lg font-semibold">Pengaduan Masyarakat</p>
                             </div>
                         </Link>
 
                         <Link href={`/layanan/izin_keramaian`}>
-                            <div className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center justify-center text-center transform transition duration-300 hover:scale-105 hover:bg-yellow-300 cursor-pointer">
-                                <div className="text-gray-600 text-5xl mb-4 transition duration-300 group-hover:text-gray-800">
+                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col items-center justify-center text-center transform transition duration-300 hover:scale-105 hover:bg-yellow-300 hover:dark:bg-gray-500 cursor-pointer">
+                                <div className="text-gray-600 dark:text-gray-100 text-5xl mb-4 transition duration-300 group-hover:text-gray-800">
                                     <FontAwesomeIcon icon={faUsers} />
                                 </div>
-                                <p className="text-gray-800 text-lg font-semibold">Izin Keramaian</p>
+                                <p className="text-gray-800 dark:text-gray-100 text-lg font-semibold">Izin Keramaian</p>
                             </div>
                         </Link>
 
